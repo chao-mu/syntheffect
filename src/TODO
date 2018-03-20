@@ -1,0 +1,20 @@
+March 19th
+* Render to FBO
+* Feedback
+* research graphic pipelines
+* Control shader with midi controller
+
+March 20th
+* center video in window (full screen or not)
+* Handle stretching/scaling
+* Upload to github
+* Playlist handling research
+
+Marh 21th
+* Research opensource shaders to use
+* implement a shaderAssetPath() function
+* Implement blur
+* implement edge detection
+
+Postponed:
+* Two windows, one full screen on secondary display, one not
