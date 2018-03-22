@@ -1,14 +1,17 @@
 #pragma once
 
 #include "ofMain.h"
+
 #include "RtMidi.h"
 #include "syntheffect/filter/Delay.h"
+#include "syntheffect/filter/FilterChain.h"
 #include "syntheffect/midi/CmdMicro.h"
+#include "syntheffect/video/Playlist.h"
 
 namespace syntheffect {
 	class ofApp : public ofBaseApp, midi::CmdMicro {
 		public:
-			ofApp(RtMidiIn* midi_in);
+			ofApp(RtMidiIn* midi_in, std::string playlist_path);
 			void setup();
 			void update();
 			void draw();
@@ -16,20 +19,14 @@ namespace syntheffect {
 			void onCmdMicroLeftLeftFaderSlide(unsigned char v);
 
 		protected:
-			RtMidiIn *midi_in_;
-			void setupPlane(int w, int h);
-			void setupFbo(int w, int h);
-			void setupDrawSize(ofFbo fbo);
 			void windowResized(int w, int h);
 
 		private:
-		  ofVideoPlayer video_player_;
-		  ofPlanePrimitive plane_;
-		  ofFbo fbo_;
-		  filter::Delay delay_filter_;
-		  int video_width_;
-		  int video_height_;
-		  int draw_height_;
-		  int draw_width_;
+			filter::Delay delay_filter_;
+			filter::FilterChain filters_;
+			video::Video video_;
+			video::Playlist playlist_;
+			RtMidiIn *midi_in_;
+			std::string playlist_path_;
 	};
 }

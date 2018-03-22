@@ -11,10 +11,13 @@ March 20th
 * Playlist handling research
 
 Marh 21th
+* Support multiple videos
+* Implement playlist handling
+
 * Research opensource shaders to use
-* implement a shaderAssetPath() function
+* Generalize shader loading
 * Implement blur
-* implement edge detection
+* Implement edge detection
 
 Postponed:
 * Two windows, one full screen on secondary display, one not

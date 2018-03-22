@@ -3,8 +3,15 @@
 #include "RtMidi.h"
 
 //========================================================================
-int main() {
+int main(int argc, const char *argv[]){
     RtMidiIn *midi_in = new RtMidiIn();
+
+    if (argc != 2) {
+        std::cout << "Usage: syntheffect path/to/playlist.m3u\n";
+        return 1;
+    }
+
+    std::string playlist_path = argv[1];
  
     // Check available ports.
     unsigned int nPorts = midi_in->getPortCount();
@@ -15,15 +22,15 @@ int main() {
     }
     midi_in->openPort(0);
 
-    ofGLFWWindowSettings showSettings;
-    showSettings.setGLVersion(3, 3); // OpenGL 3,3 #version 330
-    showSettings.setPosition(ofVec2f(0,0));
-    showSettings.width = 1280;
-    showSettings.height = 720;
-    shared_ptr<ofAppBaseWindow> showWindow = ofCreateWindow(showSettings);
+    ofGLFWWindowSettings settings;
+    settings.setGLVersion(3, 3); // OpenGL 3,3 #version 330
+    settings.setPosition(ofVec2f(0,0));
+    settings.width = 1280;
+    settings.height = 720;
+    ofCreateWindow(settings);
 
-    shared_ptr<syntheffect::ofApp> app(new syntheffect::ofApp(midi_in));
-    ofSetBackgroundColor(ofColor::black);
+    shared_ptr<syntheffect::ofApp> app(new syntheffect::ofApp(midi_in, playlist_path));
+    ofSetBackgroundColor(0, 0, 0);
 
     ofRunApp(app);
 

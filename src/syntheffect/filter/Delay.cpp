@@ -2,9 +2,7 @@
 
 namespace syntheffect {
     namespace filter {
-        Delay::Delay(bool active) : FilterBase(active) {
-            shader_ = ofShader();
-            shader_.load("shadersGL3/passthrough.vert", "shadersGL3/Delay.frag");
+        Delay::Delay(bool active) : ShaderFilterBase(active, std::string("Delay")) {
             setIntensity(0.5, 0, 1);
         }
 
