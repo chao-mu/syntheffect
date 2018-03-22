@@ -11,7 +11,7 @@
 namespace syntheffect {
 	class ofApp : public ofBaseApp, midi::CmdMicro {
 		public:
-			ofApp(RtMidiIn* midi_in, std::string playlist_path);
+			ofApp(shared_ptr<RtMidiIn> midi_in, std::string playlist_path);
 			void setup();
 			void update();
 			void draw();
@@ -22,11 +22,13 @@ namespace syntheffect {
 			void windowResized(int w, int h);
 
 		private:
-			filter::Delay delay_filter_;
-			filter::FilterChain filters_;
+			shared_ptr<filter::Delay> delay_filter_;
+			shared_ptr<filter::FilterChain> filters_;
+
+			shared_ptr<RtMidiIn> midi_in_;
+
 			video::Video video_;
 			video::Playlist playlist_;
-			RtMidiIn *midi_in_;
 			std::string playlist_path_;
 	};
 }

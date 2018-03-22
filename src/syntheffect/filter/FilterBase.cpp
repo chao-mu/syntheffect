@@ -2,8 +2,8 @@
 
 namespace syntheffect {
     namespace filter{
-        FilterBase::FilterBase(bool active) {
-            active_ = active;
+        FilterBase::FilterBase() {
+            active_ = false;
         }
 
         bool FilterBase::isActive() {

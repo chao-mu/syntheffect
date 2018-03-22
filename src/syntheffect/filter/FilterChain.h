@@ -8,11 +8,12 @@ namespace syntheffect {
     namespace filter {
         class FilterChain : public FilterBase {
             public:
-                void begin(float width, float height, float t);
-                void end();
-                void append(FilterBase filter);
+                FilterChain();
+                void begin(float width, float height, float t) override;
+                void end() override;
+                void append(shared_ptr<FilterBase> filter);
             private:
-                std::vector<FilterBase> filters_;
+                std::vector<shared_ptr<FilterBase>> filters_;
         };
     }
 }

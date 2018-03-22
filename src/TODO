@@ -10,14 +10,18 @@ March 20th
 * Upload to github
 * Playlist handling research
 
-Marh 21th
+March 21th
 * Support multiple videos
 * Implement playlist handling
-
-* Research opensource shaders to use
 * Generalize shader loading
-* Implement blur
-* Implement edge detection
+* Research opensource shaders to use
+* Research ofFx
+
+March 22nd
+* Figure out why shader is only sometimes activating
+* Study C++
 
 Postponed:
+* Implement blur
+* Implement edge detection
 * Two windows, one full screen on secondary display, one not

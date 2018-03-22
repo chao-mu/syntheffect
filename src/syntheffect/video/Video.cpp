@@ -69,17 +69,17 @@ namespace syntheffect {
             return fbo_.getTexture().isAllocated() && video_player_.getTexture().isAllocated();
         }
 
-        void Video::draw(filter::FilterChain filters) {
+        void Video::draw(shared_ptr<filter::FilterChain> filters) {
             float t = ofGetElapsedTimef();
             ofTexture tex = video_player_.getTexture();
 
             tex.bind();
             fbo_.begin();
-            filters.begin(video_width_, video_height_, t);
+            filters->begin(video_width_, video_height_, t);
 
             plane_.draw();
 
-            filters.end();
+            filters->end();
             fbo_.end();
             tex.unbind();
             

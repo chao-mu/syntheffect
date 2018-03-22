@@ -7,11 +7,11 @@ namespace syntheffect {
     namespace filter {
         class Delay : public ShaderFilterBase, public HasIntensityBase {
             public:
-                Delay(bool active=false);
+                Delay();
                 void setLastTexture(ofTexture last);
 
             protected:    
-                void setupUniforms();
+                void setupUniforms() override;
                 ofTexture last_texture_;
         };
     }

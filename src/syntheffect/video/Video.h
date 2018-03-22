@@ -11,7 +11,7 @@ namespace syntheffect {
         class Video {
             public:
                 bool load(std::string path);
-                void draw(filter::FilterChain filters);
+                void draw(shared_ptr<filter::FilterChain> filters);
                 void windowResized(int w, int h);
                 bool update();
                 ofTexture getLastTexture();

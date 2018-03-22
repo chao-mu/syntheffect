@@ -3,7 +3,7 @@
 
 namespace syntheffect {
     namespace filter {
-        ShaderFilterBase::ShaderFilterBase(bool active, std::string name) : FilterBase(active) {
+        ShaderFilterBase::ShaderFilterBase(std::string name) : FilterBase() {
             shader_ = ofShader();
             shader_.load("shadersGL3/passthrough.vert", "shadersGL3/" + name + ".frag");;
         }
@@ -25,10 +25,6 @@ namespace syntheffect {
             if (isActive()) {
                 shader_.end();
             }
-        }
-
-        void ShaderFilterBase::loadFragShader(std::string name) {
-            
         }
     } 
 }

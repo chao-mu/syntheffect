@@ -1,14 +1,14 @@
 #include "ofMain.h"
+
 #include "syntheffect/ofApp.h"
 #include "RtMidi.h"
 
-//========================================================================
 int main(int argc, const char *argv[]){
-    RtMidiIn *midi_in = new RtMidiIn();
+    shared_ptr<RtMidiIn> midi_in = make_shared<RtMidiIn>();
 
     if (argc != 2) {
         std::cout << "Usage: syntheffect path/to/playlist.m3u\n";
-        return 1;
+        return -1;
     }
 
     std::string playlist_path = argv[1];
@@ -17,8 +17,7 @@ int main(int argc, const char *argv[]){
     unsigned int nPorts = midi_in->getPortCount();
     if (nPorts == 0) {
         std::cout << "No MIDI ports available!\n";
-        delete midi_in;
-        return 1;
+        return -1;
     }
     midi_in->openPort(0);
 
@@ -33,8 +32,6 @@ int main(int argc, const char *argv[]){
     ofSetBackgroundColor(0, 0, 0);
 
     ofRunApp(app);
-
-    delete midi_in;
 
     return 0;
 }

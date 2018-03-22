@@ -2,11 +2,11 @@
 
 namespace syntheffect {
     namespace filter {
-        Delay::Delay(bool active) : ShaderFilterBase(active, std::string("Delay")) {
-            setIntensity(0.5, 0, 1);
+        Delay::Delay() : ShaderFilterBase(std::string("Delay")) {
         }
 
         void Delay::setupUniforms() {
+            
             float intensity = getIntensity(0, 1);
             float weight = 1.0 - (1.0 / (1.0 + (intensity * 15.0)));
             shader_.setUniform1f("weight", weight);

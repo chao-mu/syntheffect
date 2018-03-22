@@ -2,14 +2,17 @@
 
 namespace syntheffect {
     namespace filter {
-        void FilterChain::append(FilterBase filter) {
+        FilterChain::FilterChain() : FilterBase(), filters_() {
+        }
+
+        void FilterChain::append(shared_ptr<FilterBase> filter) {
             filters_.push_back(filter);
         }
 
         void FilterChain::begin(float width, float height, float t) {
             if (isActive()) {
                 for(auto filter: filters_) {
-                    filter.begin(width, height, t);
+                    filter->begin(width, height, t);
                 }
             }
         }
@@ -17,7 +20,7 @@ namespace syntheffect {
         void FilterChain::end() {
             if (isActive()) {
                 for(auto filter: filters_) {
-                    filter.end();
+                    filter->end();
                 }
             }
         }

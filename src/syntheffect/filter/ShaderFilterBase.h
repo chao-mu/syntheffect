@@ -9,14 +9,13 @@ namespace syntheffect {
     namespace filter {
         class ShaderFilterBase : public FilterBase {
             public:
-                ShaderFilterBase(bool active, std::string name);
-                void end();
-                void begin(float width, float height, float t);
+                ShaderFilterBase(std::string name);
+                void end() override;
+                void begin(float width, float height, float t) override;
 
             protected:
                 ofShader shader_;
                 virtual void setupUniforms();
-                void loadFragShader(std::string name);
         };
     }
 }

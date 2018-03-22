@@ -7,9 +7,9 @@ namespace syntheffect {
     namespace filter {
         class FilterBase {
             public:
-                FilterBase(bool active=false);
-                virtual void end() {};
-                virtual void begin(float width, float height, float t) {};
+                FilterBase();
+                virtual void end() = 0;
+                virtual void begin(float width, float height, float t) = 0;
                 void toggle();
                 void start();
                 void stop();
