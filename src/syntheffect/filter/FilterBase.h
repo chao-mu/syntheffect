@@ -2,14 +2,16 @@
 
 #include "ofShader.h"
 #include "ofTexture.h"
+#include "of3dPrimitives.h"
+
+#include "syntheffect/graphics/PingPongBuffer.h"
 
 namespace syntheffect {
     namespace filter {
         class FilterBase {
             public:
                 FilterBase();
-                virtual void end() = 0;
-                virtual void begin(float width, float height, float t) = 0;
+                virtual void draw(graphics::PingPongBuffer& ping_ping, float t) = 0;
                 void toggle();
                 void start();
                 void stop();

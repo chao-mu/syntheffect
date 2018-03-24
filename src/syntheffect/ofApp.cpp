@@ -6,7 +6,8 @@ namespace syntheffect {
     ofApp::ofApp(shared_ptr<RtMidiIn> midi_in, std::string playlist_path) 
             : ofBaseApp(),
             delay_filter_(make_shared<filter::Delay>()),
-            filters_(make_shared<filter::FilterChain>()),
+            hue_filter_(make_shared<filter::Huerific>()),
+            filters_(),
             midi_in_(move(midi_in)) {
         playlist_path_ = playlist_path;
     }
@@ -16,8 +17,8 @@ namespace syntheffect {
 
         video_ = playlist_.next();
 
-        filters_->append(delay_filter_);
-        filters_->start();
+        filters_.push_back(hue_filter_);
+        filters_.push_back(delay_filter_);
     }
 
     void ofApp::update() {
@@ -34,10 +35,16 @@ namespace syntheffect {
     }
 
     void ofApp::draw() {
-        if (video_.isAllocated()) {
-            delay_filter_->setLastTexture(video_.getLastTexture());
-            video_.draw(filters_);
+        if (!video_.isAllocated()) {
+            return;
         }
+
+        delay_filter_->setLastTexture(video_.getLastTexture());
+        video_.draw(filters_);
+
+        std::stringstream strm;
+        strm << "fps: " << ofGetFrameRate();
+        ofSetWindowTitle(strm.str());
     }
 
     void ofApp::onCmdMicroLeftLeftFaderSlide(unsigned char v) {
