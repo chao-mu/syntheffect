@@ -5,6 +5,7 @@
 #include "RtMidi.h"
 #include "syntheffect/filter/Delay.h"
 #include "syntheffect/filter/Huerific.h"
+#include "syntheffect/filter/SpinZoom.h"
 #include "syntheffect/midi/CmdMicro.h"
 #include "syntheffect/video/Playlist.h"
 
@@ -24,6 +25,7 @@ namespace syntheffect {
 		private:
 			shared_ptr<filter::Delay> delay_filter_;
 			shared_ptr<filter::Huerific> hue_filter_;
+			shared_ptr<filter::SpinZoom> spin_zoom_;
 			vector<shared_ptr<filter::FilterBase>> filters_;
 
 			shared_ptr<RtMidiIn> midi_in_;

@@ -7,18 +7,24 @@ namespace syntheffect {
             : ofBaseApp(),
             delay_filter_(make_shared<filter::Delay>()),
             hue_filter_(make_shared<filter::Huerific>()),
+            spin_zoom_(make_shared<filter::SpinZoom>()),
             filters_(),
             midi_in_(move(midi_in)) {
         playlist_path_ = playlist_path;
+
+        filters_.push_back(delay_filter_);
+        filters_.push_back(hue_filter_);
+        filters_.push_back(spin_zoom_);
     }
 
     void ofApp::setup() {
         playlist_.load(playlist_path_);
 
         video_ = playlist_.next();
-
-        filters_.push_back(hue_filter_);
-        filters_.push_back(delay_filter_);
+        // spin_zoom_->start();
+        // delay_filter_->start();
+        // hue_filter_->start();
+        // delay_filter_->setIntensity(0.8, 0, 1);
     }
 
     void ofApp::update() {
