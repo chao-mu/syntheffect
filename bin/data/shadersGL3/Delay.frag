@@ -44,16 +44,11 @@ vec3 rgbMix(vec3 present, vec3 past)
     return mix(present, past, weight);
 }
 
-vec3 rgbAverage(vec3 present, vec3 past)
-{
-    return ((present * (1 - weight)) + (past * (1 + weight))) / 2.0;
-}
-
 void main()
 {
     vec4 present = texture(tex0, texture_coord);
     vec4 past = texture(last, texture_coord);
-    vec3 future = rgbAverage(present.rgb, past.rgb);
+    vec3 future = rgbMix(present.rgb, past.rgb);
 
     outputColor = vec4(future, present.w);
 }
