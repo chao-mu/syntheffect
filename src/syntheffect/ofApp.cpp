@@ -7,24 +7,27 @@ namespace syntheffect {
             : ofBaseApp(),
             delay_filter_(make_shared<filter::Delay>()),
             hue_filter_(make_shared<filter::Huerific>()),
-            spin_zoom_(make_shared<filter::SpinZoom>()),
+            spin_zoom_filter_(make_shared<filter::SpinZoom>()),
+            color_displace_filter_(make_shared<filter::ColorDisplace>()),
             filters_(),
             midi_in_(move(midi_in)) {
         playlist_path_ = playlist_path;
 
         filters_.push_back(delay_filter_);
         filters_.push_back(hue_filter_);
-        filters_.push_back(spin_zoom_);
+        filters_.push_back(spin_zoom_filter_);
+        filters_.push_back(color_displace_filter_);
     }
 
     void ofApp::setup() {
         playlist_.load(playlist_path_);
 
         video_ = playlist_.next();
-        // spin_zoom_->start();
+        // color_displace_filter_->start();
+        // spin_zoom_filter_->start();
         // delay_filter_->start();
         // hue_filter_->start();
-        // delay_filter_->setIntensity(0.8, 0, 1);
+        // delay_filter_->setIntensity(0.2, 0, 1);
     }
 
     void ofApp::update() {
@@ -51,6 +54,17 @@ namespace syntheffect {
         std::stringstream strm;
         strm << "fps: " << ofGetFrameRate();
         ofSetWindowTitle(strm.str());
+    }
+
+    void ofApp::keyPressed(int c) {
+        if (c == 'p') {
+            ofPixels pixels;
+            video_.getLastTexture().readToPixels(pixels);
+
+            ofImage image;
+            image.setFromPixels(pixels);
+            image.save("out-" + ofGetTimestampString() + ".png");
+        }
     }
 
     void ofApp::onCmdMicroLeftLeftFaderSlide(unsigned char v) {
