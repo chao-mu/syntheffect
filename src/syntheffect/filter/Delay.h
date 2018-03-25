@@ -1,11 +1,11 @@
 #pragma once
 
-#include "syntheffect/filter/ShaderFilterBase.h"
+#include "syntheffect/filter/ShaderFilter.h"
 #include "syntheffect/filter/HasIntensityBase.h"
 
 namespace syntheffect {
     namespace filter {
-        class Delay : public ShaderFilterBase, public HasIntensityBase {
+        class Delay : public ShaderFilter, public HasIntensityBase {
             public:
                 Delay();
                 void setLastTexture(ofTexture last);

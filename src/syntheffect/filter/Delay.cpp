@@ -3,7 +3,7 @@
 
 namespace syntheffect {
     namespace filter {
-        Delay::Delay() : ShaderFilterBase(std::string("Delay")) {
+        Delay::Delay() : ShaderFilter(std::string("Delay")) {
         }
 
         void Delay::setupUniforms() {

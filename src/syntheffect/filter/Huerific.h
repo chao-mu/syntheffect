@@ -1,10 +1,10 @@
 #pragma once
 
-#include "syntheffect/filter/ShaderFilterBase.h"
+#include "syntheffect/filter/ShaderFilter.h"
 
 namespace syntheffect {
     namespace filter {
-        class Huerific : public ShaderFilterBase {
+        class Huerific : public ShaderFilter {
             public:
                 Huerific();
         };

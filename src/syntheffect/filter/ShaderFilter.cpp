@@ -1,19 +1,19 @@
 
-#include "syntheffect/filter/ShaderFilterBase.h"
+#include "syntheffect/filter/ShaderFilter.h"
 
 #include "ofGraphics.h"
 
 namespace syntheffect {
     namespace filter {
-        ShaderFilterBase::ShaderFilterBase(std::string name) : FilterBase() {
+        ShaderFilter::ShaderFilter(std::string name) : FilterBase() {
             shader_ = ofShader();
             shader_.load("shadersGL3/passthrough.vert", "shadersGL3/" + name + ".frag");;
         }
 
-        void ShaderFilterBase::setupUniforms() {
+        void ShaderFilter::setupUniforms() {
         }
 
-        void ShaderFilterBase::draw(graphics::PingPongBuffer& ping_pong, float t) {
+        void ShaderFilter::draw(graphics::PingPongBuffer& ping_pong, float t) {
             if (!isActive()) {
                 return;
             }

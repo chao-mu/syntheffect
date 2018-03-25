@@ -2,7 +2,7 @@
 
 namespace syntheffect {
     namespace filter {
-        SpinZoom::SpinZoom() : ShaderFilterBase(std::string("SpinZoom")) {
+        SpinZoom::SpinZoom() : ShaderFilter(std::string("SpinZoom")) {
         }
     }
 }

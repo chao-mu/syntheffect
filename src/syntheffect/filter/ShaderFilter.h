@@ -8,9 +8,9 @@
 
 namespace syntheffect {
     namespace filter {
-        class ShaderFilterBase : public FilterBase {
+        class ShaderFilter : public FilterBase {
             public:
-                ShaderFilterBase(std::string name);
+                ShaderFilter(std::string name);
                 void draw(graphics::PingPongBuffer& ping_pong, float t) override;
 
             protected:

@@ -2,7 +2,7 @@
 
 namespace syntheffect {
     namespace filter {
-        Huerific::Huerific() : ShaderFilterBase(std::string("Huerific")) {
+        Huerific::Huerific() : ShaderFilter(std::string("Huerific")) {
         }
     }
 }
