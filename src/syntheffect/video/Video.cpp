@@ -11,6 +11,7 @@ namespace syntheffect {
             }
 
             video_player_.setUseTexture(true);
+            video_player_.setLoopState(OF_LOOP_NONE);
             video_player_.setVolume(0);
             video_player_.play();
 
