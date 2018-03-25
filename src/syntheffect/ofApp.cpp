@@ -27,7 +27,7 @@ namespace syntheffect {
         // spin_zoom_filter_->start();
         // delay_filter_->start();
         // hue_filter_->start();
-        // delay_filter_->setIntensity(0.2, 0, 1);
+        // delay_filter_->setIntensity(0.5, 0, 1);
     }
 
     void ofApp::update() {
