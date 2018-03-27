@@ -5,9 +5,9 @@
 
 namespace syntheffect {
     namespace filter {
-        ShaderFilter::ShaderFilter(std::string name) : FilterBase() {
+        ShaderFilter::ShaderFilter(std::string name, std::string vert_name) : FilterBase() {
             shader_ = ofShader();
-            shader_.load("shadersGL3/passthrough.vert", "shadersGL3/" + name + ".frag");;
+            shader_.load("shadersGL3/" + vert_name + ".vert", "shadersGL3/" + name + ".frag");;
         }
 
         void ShaderFilter::setupUniforms() {
