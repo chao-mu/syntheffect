@@ -10,14 +10,16 @@ namespace syntheffect {
             spin_zoom_filter_(make_shared<filter::SpinZoom>()),
             color_displace_filter_(make_shared<filter::ColorDisplace>()),
             sobel_filter_(make_shared<filter::Sobel>()),
+            scharr_filter_(make_shared<filter::Scharr>()),
             filters_(),
             midi_in_(move(midi_in)) {
         playlist_path_ = playlist_path;
 
         filters_.push_back(hue_filter_);
+        filters_.push_back(scharr_filter_);
+        filters_.push_back(sobel_filter_);
         filters_.push_back(spin_zoom_filter_);
         filters_.push_back(color_displace_filter_);
-        filters_.push_back(sobel_filter_);
         filters_.push_back(delay_filter_);
     }
 
@@ -27,6 +29,7 @@ namespace syntheffect {
         video_ = playlist_.next();
         // color_displace_filter_->start();
         // sobel_filter_->start();
+        // scharr_filter_->start();
         // spin_zoom_filter_->start();
         // delay_filter_->start();
         // hue_filter_->start();

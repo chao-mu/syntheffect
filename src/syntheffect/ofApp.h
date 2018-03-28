@@ -5,6 +5,7 @@
 #include "RtMidi.h"
 #include "syntheffect/filter/Delay.h"
 #include "syntheffect/filter/Sobel.h"
+#include "syntheffect/filter/Scharr.h"
 #include "syntheffect/filter/Huerific.h"
 #include "syntheffect/filter/SpinZoom.h"
 #include "syntheffect/filter/ColorDisplace.h"
@@ -31,6 +32,7 @@ namespace syntheffect {
 			shared_ptr<filter::SpinZoom> spin_zoom_filter_;
 			shared_ptr<filter::ColorDisplace> color_displace_filter_;
 			shared_ptr<filter::Sobel> sobel_filter_;
+			shared_ptr<filter::Scharr> scharr_filter_;
 
 			vector<shared_ptr<filter::FilterBase>> filters_;
 
