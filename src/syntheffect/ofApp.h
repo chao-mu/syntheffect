@@ -4,6 +4,8 @@
 
 #include "RtMidi.h"
 #include "syntheffect/filter/Delay.h"
+#include "syntheffect/filter/Sharpen.h"
+#include "syntheffect/filter/Blur.h"
 #include "syntheffect/filter/Sobel.h"
 #include "syntheffect/filter/Scharr.h"
 #include "syntheffect/filter/Huerific.h"
@@ -33,6 +35,8 @@ namespace syntheffect {
 			shared_ptr<filter::ColorDisplace> color_displace_filter_;
 			shared_ptr<filter::Sobel> sobel_filter_;
 			shared_ptr<filter::Scharr> scharr_filter_;
+			shared_ptr<filter::Sharpen> sharpen_filter_;
+			shared_ptr<filter::Blur> blur_filter_;
 
 			vector<shared_ptr<filter::FilterBase>> filters_;
 

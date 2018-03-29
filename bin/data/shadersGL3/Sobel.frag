@@ -2,7 +2,7 @@
 #pragma include "common/convolution_frag.glsl"
 
 void main() {
-    vec3 n[9] = getTextures();
+    vec3 n[9] = get3x3();
 
     // https://gist.github.com/Hebali/6ebfc66106459aacee6a9fac029d0115
 	vec3 sobel_edge_h = n[2] + (2.0*n[5]) + n[8] - (n[0] + (2.0*n[3]) + n[6]);

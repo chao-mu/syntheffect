@@ -2,10 +2,7 @@
 #pragma include "common/convolution_frag.glsl"
 
 vec3 main3x3(vec3 n[9]) {
-    vec3 a = applyKernel(KERNEL_SCHARR_X, n);
-    vec3 b = applyKernel(KERNEL_SCHARR_Y, n);
-
-	return 1. - sqrt((a * a) + (b * b));
+    return applyKernel(KERNEL_BOX_BLUR, n) / 9.;
 }
 
 #pragma include "common/convolution_3x3_main.glsl"
