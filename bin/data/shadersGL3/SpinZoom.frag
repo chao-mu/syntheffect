@@ -1,19 +1,4 @@
-#version 330
-
-uniform sampler2DRect tex0;
-
-uniform float time;
-uniform vec2 resolution;
-
-out vec4 outputColor;
-
-in vec2 texture_coord;
-
-// From the book of shaders
-mat2 rotate2d(float angle){
-    return mat2(cos(angle),-sin(angle),
-                sin(angle),cos(angle));
-}
+#pragma include "common/frag.glsl"
 
 void main()
 {
