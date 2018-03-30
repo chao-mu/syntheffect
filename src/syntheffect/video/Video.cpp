@@ -3,6 +3,8 @@
 #include "ofUtils.h"
 #include "ofGraphics.h"
 
+#include "syntheffect/patch/Patch.h"
+
 namespace syntheffect {
     namespace video {
         bool Video::load(std::string path) {
@@ -59,19 +61,13 @@ namespace syntheffect {
             return ping_pong_.isAllocated() && video_player_.getTexture().isAllocated();
         }
 
-        void Video::draw(vector<shared_ptr<filter::FilterBase>> filters) {
+        void Video::draw(shared_ptr<patch::Patch> patch) {
             ping_pong_.dest->begin();
             ofClear(0, 255);
             video_player_.draw(0, 0);
             ping_pong_.dest->end();
 
-            float t = ofGetElapsedTimef();
-            for (auto filter: filters) {
-                if (filter->isActive()) {
-                    ping_pong_.swap();
-                    filter->draw(ping_pong_, t);
-                }
-            }
+            patch->draw(ping_pong_);
 
             ofSetColor(255);
             ping_pong_.dest->draw(

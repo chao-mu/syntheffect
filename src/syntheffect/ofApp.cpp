@@ -5,41 +5,16 @@
 namespace syntheffect {
     ofApp::ofApp(shared_ptr<RtMidiIn> midi_in, std::string playlist_path) 
             : ofBaseApp(),
-            delay_filter_(make_shared<filter::Delay>()),
-            hue_filter_(make_shared<filter::Huerific>()),
-            spin_zoom_filter_(make_shared<filter::SpinZoom>()),
-            color_displace_filter_(make_shared<filter::ColorDisplace>()),
-            sobel_filter_(make_shared<filter::Sobel>()),
-            scharr_filter_(make_shared<filter::Scharr>()),
-            sharpen_filter_(make_shared<filter::Sharpen>()),
-            blur_filter_(make_shared<filter::Blur>()),
-            filters_(),
+            patch_(make_shared<patch::Patch>()),
             midi_in_(move(midi_in)) {
         playlist_path_ = playlist_path;
-
-        filters_.push_back(blur_filter_);
-        filters_.push_back(hue_filter_);
-        filters_.push_back(scharr_filter_);
-        filters_.push_back(sobel_filter_);
-        filters_.push_back(spin_zoom_filter_);
-        filters_.push_back(color_displace_filter_);
-        filters_.push_back(sharpen_filter_);
-        filters_.push_back(delay_filter_);
     }
 
     void ofApp::setup() {
         playlist_.load(playlist_path_);
 
+        patch_->load("default.patch");
         video_ = playlist_.next();
-        // blur_filter_->start();
-        // color_displace_filter_->start();
-        // sobel_filter_->start();
-        // scharr_filter_->start();
-        // spin_zoom_filter_->start();
-        // delay_filter_->start();
-        // hue_filter_->start();
-        // sharpen_filter_->start();
-        // delay_filter_->setIntensity(0.7, 0, 1);
     }
 
     void ofApp::update() {
@@ -60,8 +35,8 @@ namespace syntheffect {
             return;
         }
 
-        delay_filter_->setLastTexture(video_.getLastTexture());
-        video_.draw(filters_);
+        //delay_filter_->setLastTexture(video_.getLastTexture());
+        video_.draw(patch_);
 
         std::stringstream strm;
         strm << "fps: " << ofGetFrameRate();
@@ -80,8 +55,8 @@ namespace syntheffect {
     }
 
     void ofApp::onCmdMicroLeftLeftFaderSlide(unsigned char v) {
-        delay_filter_->start();
-        delay_filter_->setIntensity((float)v, 0, 127);
+        // delay_filter_->start();
+        // delay_filter_->setIntensity((float)v, 0, 127);
     }
 
     void ofApp::windowResized(int w, int h) {
