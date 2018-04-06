@@ -1,16 +1,16 @@
-#include "syntheffect/filter/FilterBase.h"
+#include "syntheffect/effect/Effect.h"
 
 namespace syntheffect {
-    namespace filter{
-        FilterBase::FilterBase() {
+    namespace effect {
+        Effect::Effect() {
             active_ = true;
         }
 
-        bool FilterBase::isActive() {
+        bool Effect::isActive() {
             return active_;
         }
 
-        void FilterBase::toggle() {
+        void Effect::toggle() {
             if (isActive()) {
                 stop();
             } else {
@@ -18,11 +18,11 @@ namespace syntheffect {
             }
         }
 
-        void FilterBase::start() {
+        void Effect::start() {
             active_ = true;
         }
 
-        void FilterBase::stop() {
+        void Effect::stop() {
             active_ = false;
         }
     }

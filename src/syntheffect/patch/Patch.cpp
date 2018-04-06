@@ -6,11 +6,11 @@
 
 #include "ofXml.h"
 
-#include "syntheffect/filter/ShaderFilter.h"
+#include "syntheffect/effect/Shader.h"
 
 namespace syntheffect {
     namespace patch {
-        Patch::Patch() : filters_() {
+        Patch::Patch() : effects_() {
         }
 
         bool Patch::load(std::string path) {
@@ -27,20 +27,44 @@ namespace syntheffect {
                 do {
                     std::string el_name = conf.getName();
 
-                    if (el_name == "effect") {
+                    if (el_name == "shader") {
                         std::string name = conf.getAttribute("name");
                         std::string alias = conf.getAttribute("alias");
                         if (alias.empty()) {
                             alias = name;
                         }
 
-                        shared_ptr<filter::ShaderFilter> effect = make_shared<filter::ShaderFilter>();
-                        effect->load("shadersGL3/config/" + name + ".yaml");
+                        ofLogNotice() << "Loading " + name + "...";
 
-                        filters_.push_back(effect);
-                        filters_by_alias_[alias] = effect;
+                        shared_ptr<effect::Shader> shader = make_shared<effect::Shader>();
+                        shader->load("shadersGL3/config/" + name + ".yaml");
 
-                        ofLogNotice() << "Loaded " + name;
+                        int children = conf.getNumChildren();
+                        if (children > 0) {
+                            conf.setToChild(0);
+                            do {
+                                std::string child = conf.getName();
+                                std::string param_name = conf.getAttribute("name");
+                                if (child == "paramInt") {
+                                    int v = conf.getIntValue("[@value]");
+                                    auto func = [v](std::string name, ofShader& shad) { 
+                                        shad.setUniform1i(name, v);
+                                    };
+                                    shader->set(param_name, func);
+                                } else if (child == "paramFloat") {
+                                    float v = conf.getFloatValue("[@value]");
+                                    auto func = [v](std::string name, ofShader& shad) { 
+                                        shad.setUniform1f(name, v);
+                                    };
+                                    shader->set(param_name, func);
+                                }
+                            } while (conf.setToSibling());
+                            conf.setToParent();
+                        }
+
+                        effects_.push_back(shader);
+                        effects_by_alias_[alias] = shader;
+
                     }
                 } while (conf.setToSibling());
             }
@@ -64,10 +88,10 @@ namespace syntheffect {
 
         void Patch::draw(graphics::PingPongBuffer& ping_pong) {
             float t = ofGetElapsedTimef();
-            for (auto filter: filters_) {
-                if (filter->isActive()) {
+            for (auto effect: effects_) {
+                if (effect->isActive()) {
                     ping_pong.swap();
-                    filter->draw(ping_pong, t);
+                    effect->draw(ping_pong, t);
                 }
             }
         }

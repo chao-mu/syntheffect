@@ -1,15 +1,15 @@
-#include "syntheffect/filter/ShaderFilter.h"
+#include "syntheffect/effect/Shader.h"
 
 #include "ofGraphics.h"
 
 #include "ofxYAML.h"
 
 namespace syntheffect {
-    namespace filter {
-        ShaderFilter::ShaderFilter() : FilterBase(), shader_() {
+    namespace effect {
+        Shader::Shader() : Effect(), shader_() {
         }
 
-        bool ShaderFilter::load(std::string path) {
+        bool Shader::load(std::string path) {
             ofxYAML conf;
             conf.load(path);
             std::string frag = conf["frag"].as<std::string>();
@@ -19,7 +19,11 @@ namespace syntheffect {
             return true;
         }
 
-        void ShaderFilter::draw(graphics::PingPongBuffer& ping_pong, float t) {
+        void Shader::set(std::string name, std::function<void(std::string, ofShader&)> setter) {
+            uniform_setters_[name] = setter;
+        }
+
+        void Shader::draw(graphics::PingPongBuffer& ping_pong, float t) {
             if (!isActive()) {
                 return;
             }
@@ -32,6 +36,9 @@ namespace syntheffect {
             
             shader_.setUniform2f("resolution", tex.getWidth(), tex.getHeight());
             shader_.setUniform1f("time", t);
+            for (const auto& kv : uniform_setters_) {
+                kv.second(kv.first, shader_);
+            }
 
             tex.draw(0, 0);
 

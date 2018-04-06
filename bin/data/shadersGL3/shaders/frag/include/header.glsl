@@ -5,18 +5,16 @@ uniform sampler2DRect tex0;
 uniform float time;
 uniform vec2 resolution;
 
-uniform bool greyscaleEnabled;
+uniform bool greyscaleEnabled = false;
 
-uniform bool inversionEnabled;
-uniform bool inversionClamp;
-uniform float inversionAdjustment;
+uniform bool inversionEnabled = false;
+uniform bool inversionClamp = false;
+uniform float inversionAdjustment = 1.;
 
-uniform bool stepEnabled;
-uniform float stepThreshold;
+uniform bool stepEnabled = false;
+uniform float stepThreshold = 0.5;
 
-uniform bool multiplyOriginalEnabled;
-
-uniform bool clampEnabled;
+uniform bool multiplyOriginalEnabled = false;
 
 out vec4 outputColor;
 

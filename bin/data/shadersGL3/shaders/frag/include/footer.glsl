@@ -1,5 +1,9 @@
 void main() {
     vec3 col = mainFrag();
+
+    if (greyscaleEnabled) {
+        col = vec3(luminance(col));
+    }
     
     if (inversionEnabled) {
         if (inversionClamp) {
@@ -7,10 +11,6 @@ void main() {
         }
 
         col = inversionAdjustment - col;
-    }
-
-    if (greyscaleEnabled) {
-        col = vec3(luminance(col));
     }
 
     if (stepEnabled) {

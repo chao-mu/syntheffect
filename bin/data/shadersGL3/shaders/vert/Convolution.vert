@@ -18,12 +18,12 @@ out vec2 bottomTextureCoordinate;
 out vec2 bottomLeftTextureCoordinate;
 out vec2 bottomRightTextureCoordinate;
 
+uniform int scale = 1;
+
 void main(){
     gl_Position = modelViewProjectionMatrix * position;
 
     textureCoordinate = texcoord;
-
-    int scale = 1;
 
     leftTextureCoordinate = texcoord.xy + vec2(-scale, 0);
     rightTextureCoordinate = texcoord.xy + vec2(scale, 0);

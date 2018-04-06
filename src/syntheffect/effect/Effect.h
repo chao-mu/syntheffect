@@ -7,10 +7,10 @@
 #include "syntheffect/graphics/PingPongBuffer.h"
 
 namespace syntheffect {
-    namespace filter {
-        class FilterBase {
+    namespace effect {
+        class Effect {
             public:
-                FilterBase();
+                Effect();
                 virtual void draw(graphics::PingPongBuffer& ping_ping, float t) = 0;
                 void toggle();
                 void start();

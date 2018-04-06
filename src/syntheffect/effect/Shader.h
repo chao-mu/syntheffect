@@ -3,21 +3,21 @@
 #include "ofShader.h"
 #include "ofFbo.h"
 
-#include "syntheffect/filter/FilterBase.h"
+#include "syntheffect/effect/Effect.h"
 #include "syntheffect/graphics/PingPongBuffer.h"
-#include "syntheffect/filter/Param.h"
 
 namespace syntheffect {
-    namespace filter {
-        class ShaderFilter : public FilterBase {
+    namespace effect {
+        class Shader : public Effect {
             public:
-                ShaderFilter();
+                Shader();
                 void draw(graphics::PingPongBuffer& ping_pong, float t) override;
                 bool load(std::string path);
+                void set(std::string name, std::function<void(std::string, ofShader&)> setter);
 
             private:
                 ofShader shader_;
-                vector<shared_ptr<ParamBase>> params_;
+                map<std::string, std::function<void(std::string, ofShader&)>> uniform_setters_;
         };
     }
 }
