@@ -2,6 +2,7 @@
 
 #include "ofShader.h"
 #include "ofFbo.h"
+#include "ofXml.h"
 
 #include "syntheffect/effect/Effect.h"
 #include "syntheffect/graphics/PingPongBuffer.h"
@@ -12,7 +13,7 @@ namespace syntheffect {
             public:
                 Shader();
                 void draw(graphics::PingPongBuffer& ping_pong, float t) override;
-                bool load(std::string path);
+                bool load(std::string frag, std::string vert);
                 void set(std::string name, std::function<void(std::string, ofShader&)> setter);
 
             private:

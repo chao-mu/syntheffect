@@ -1,2 +1,0 @@
-frag: shaders/frag/Scharr.frag
-vert: shaders/vert/Convolution.vert

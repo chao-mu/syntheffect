@@ -8,13 +8,12 @@ namespace syntheffect {
         class Patch {
             public:
                 Patch();
-                bool load(std::string path);
                 void draw(graphics::PingPongBuffer& ping_ping);
+                void addEffect(std::string id, shared_ptr<effect::Effect> pipeline_effect);
 
             private:
                 std::vector<shared_ptr<effect::Effect>> effects_;
-                std::map<std::string, shared_ptr<effect::Effect>> effects_by_alias_;
-                template <typename T> bool maybeAddFilter(std::string line, std::string name);
+                std::map<std::string, shared_ptr<effect::Effect>> effects_by_id_;
         };
     }
 }

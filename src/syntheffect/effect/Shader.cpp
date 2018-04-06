@@ -9,15 +9,13 @@ namespace syntheffect {
         Shader::Shader() : Effect(), shader_() {
         }
 
-        bool Shader::load(std::string path) {
-            ofxYAML conf;
-            conf.load(path);
-            std::string frag = conf["frag"].as<std::string>();
-            std::string vert = conf["vert"].as<std::string>();
-            shader_.load("shadersGL3/" + vert, "shadersGL3/" + frag);
-
-            return true;
+        bool Shader::load(std::string frag, std::string vert) {
+            return shader_.load(
+                "shadersGL3/shaders/vert/" + vert + ".vert",
+                "shadersGL3/shaders/frag/" + frag + ".frag"
+            );
         }
+
 
         void Shader::set(std::string name, std::function<void(std::string, ofShader&)> setter) {
             uniform_setters_[name] = setter;
@@ -47,3 +45,6 @@ namespace syntheffect {
         }
     }
 }
+
+#undef DEFAULT_FRAG
+#undef DEFAULT_VERT

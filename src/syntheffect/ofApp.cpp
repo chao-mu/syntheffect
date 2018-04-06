@@ -1,11 +1,11 @@
 #include "syntheffect/ofApp.h"
 
 #include "syntheffect/midi/MidiMessage.h"
+#include "syntheffect/patch/PatchBuilder.h"
 
 namespace syntheffect {
     ofApp::ofApp(shared_ptr<RtMidiIn> midi_in, std::string playlist_path) 
             : ofBaseApp(),
-            patch_(make_shared<patch::Patch>()),
             midi_in_(move(midi_in)) {
         playlist_path_ = playlist_path;
     }
@@ -13,7 +13,13 @@ namespace syntheffect {
     void ofApp::setup() {
         playlist_.load(playlist_path_);
 
-        patch_->load("patches/default.xml");
+        unique_ptr<patch::PatchBuilder> builder = make_unique<patch::PatchBuilder>();
+
+        patch_ = builder->build("patches/default.xml");
+        if (!patch_) {
+            throw runtime_error("Unable to build patch!");
+        }
+        
         video_ = playlist_.next();
     }
 

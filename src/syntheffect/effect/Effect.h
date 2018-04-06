@@ -1,8 +1,6 @@
 #pragma once
 
-#include "ofShader.h"
-#include "ofTexture.h"
-#include "of3dPrimitives.h"
+#include "ofXml.h"
 
 #include "syntheffect/graphics/PingPongBuffer.h"
 

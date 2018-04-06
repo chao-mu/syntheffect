@@ -1,2 +1,0 @@
-frag: shaders/frag/Blur.frag
-vert: shaders/vert/Convolution.vert
