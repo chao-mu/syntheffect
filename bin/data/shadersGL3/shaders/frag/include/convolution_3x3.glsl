@@ -26,8 +26,6 @@
         0, -1, 0 \
     )
 
-uniform mat3 kernel;
-
 in vec2 leftTextureCoordinate;
 in vec2 rightTextureCoordinate;
 
@@ -42,14 +40,17 @@ in vec2 bottomRightTextureCoordinate;
 vec3[9] get3x3() {
     vec3 n[9];
 
+    // Bottom row, left to right.
     n[0] = texture(tex0, bottomLeftTextureCoordinate).rgb;
     n[1] = texture(tex0, bottomTextureCoordinate).rgb;
     n[2] = texture(tex0, bottomRightTextureCoordinate).rgb;
 
+    // Middle row, left to right.
     n[3] = texture(tex0, leftTextureCoordinate).rgb;
-    n[4] = texture(tex0, texture_coord).rgb;
+    n[4] = texture(tex0, textureCoordinate).rgb;
     n[5] = texture(tex0, rightTextureCoordinate).rgb;
 
+    // Top row, left to right.
     n[6] = texture(tex0, topLeftTextureCoordinate).rgb;
     n[7] = texture(tex0, topTextureCoordinate).rgb;
     n[8] = texture(tex0, topRightTextureCoordinate).rgb;
@@ -70,7 +71,6 @@ float[9] luminance3x3(vec3 n[9]) {
     result += n[6] * kernel[0][0] + n[7] * kernel[0][1] + n[8] * kernel[0][2]; \
     result += n[3] * kernel[1][0] + n[4] * kernel[1][1] + n[5] * kernel[1][2]; \
     result += n[0] * kernel[2][0] + n[1] * kernel[2][1] + n[2] * kernel[2][2];
-
 
 float applyKernel(mat3 kernel, float[9] n) {
     float result = 0;

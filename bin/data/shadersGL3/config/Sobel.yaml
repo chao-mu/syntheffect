@@ -1,0 +1,2 @@
+frag: shaders/frag/Sobel.frag
+vert: shaders/vert/Convolution.vert

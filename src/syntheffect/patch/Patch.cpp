@@ -1,16 +1,12 @@
 #include "syntheffect/patch/Patch.h"
 
+#include <string>
+
 #include "ofUtils.h"
 
-#include "syntheffect/filter/Blur.h"
-#include "syntheffect/filter/ColorDisplace.h"
-#include "syntheffect/filter/Delay.h"
-#include "syntheffect/filter/Huerific.h"
-#include "syntheffect/filter/Scharr.h"
-#include "syntheffect/filter/Sharpen.h"
-#include "syntheffect/filter/Sobel.h"
-#include "syntheffect/filter/SpinZoom.h"
+#include "ofXml.h"
 
+#include "syntheffect/filter/ShaderFilter.h"
 
 namespace syntheffect {
     namespace patch {
@@ -18,31 +14,52 @@ namespace syntheffect {
         }
 
         bool Patch::load(std::string path) {
-            ofBuffer buf = ofBufferFromFile(path);
-            ofBuffer::Lines lines = buf.getLines();
-            for (auto line: lines) {
-                if (!line.empty()) {
-                    maybeAddFilter<filter::Blur>(line, "blur");
-                    maybeAddFilter<filter::ColorDisplace>(line, "color_displace");
-                    maybeAddFilter<filter::Delay>(line, "delay");
-                    maybeAddFilter<filter::Huerific>(line, "huerific");
-                    maybeAddFilter<filter::Scharr>(line, "scharr");
-                    maybeAddFilter<filter::Sharpen>(line, "sharpen");
-                    maybeAddFilter<filter::Sobel>(line, "sobel");
-                    maybeAddFilter<filter::SpinZoom>(line, "spin_zoom");
-                }
+            ofXml conf = ofXml(path);
+
+            // Set to pipeline
+            if (!conf.setTo("//patch/pipeline")) {
+                return false;
+            }
+
+            // Iterate over pipeline
+            if (conf.getNumChildren() > 0) {
+                conf.setToChild(0);
+                do {
+                    std::string el_name = conf.getName();
+
+                    if (el_name == "effect") {
+                        std::string name = conf.getAttribute("name");
+                        std::string alias = conf.getAttribute("alias");
+                        if (alias.empty()) {
+                            alias = name;
+                        }
+
+                        shared_ptr<filter::ShaderFilter> effect = make_shared<filter::ShaderFilter>();
+                        effect->load("shadersGL3/config/" + name + ".yaml");
+
+                        filters_.push_back(effect);
+                        filters_by_alias_[alias] = effect;
+
+                        ofLogNotice() << "Loaded " + name;
+                    }
+                } while (conf.setToSibling());
+            }
+
+            // Set to controls
+            if (!conf.setTo("//patch/controls")) {
+                ofLogError() << "Missing <controls> element under <patch>";
+                return false;
+            }
+
+            if (conf.getNumChildren() > 0) {
+                conf.setToChild(0);
+                do {
+                    std::string el_name = conf.getName();
+                    ofLogNotice() << el_name;
+                } while (conf.setToSibling());
             }
 
             return true;
-        }
-
-        template <typename T>
-        void Patch::maybeAddFilter(std::string line, std::string name) {
-            if (line == name) {
-                shared_ptr<filter::FilterBase> filter = make_shared<T>();
-                filter->start();
-                filters_.push_back(filter);
-            }
         }
 
         void Patch::draw(graphics::PingPongBuffer& ping_pong) {

@@ -1,16 +1,22 @@
-
 #include "syntheffect/filter/ShaderFilter.h"
 
 #include "ofGraphics.h"
 
+#include "ofxYAML.h"
+
 namespace syntheffect {
     namespace filter {
-        ShaderFilter::ShaderFilter(std::string name, std::string vert_name) : FilterBase() {
-            shader_ = ofShader();
-            shader_.load("shadersGL3/" + vert_name + ".vert", "shadersGL3/" + name + ".frag");;
+        ShaderFilter::ShaderFilter() : FilterBase(), shader_() {
         }
 
-        void ShaderFilter::setupUniforms() {
+        bool ShaderFilter::load(std::string path) {
+            ofxYAML conf;
+            conf.load(path);
+            std::string frag = conf["frag"].as<std::string>();
+            std::string vert = conf["vert"].as<std::string>();
+            shader_.load("shadersGL3/" + vert, "shadersGL3/" + frag);
+
+            return true;
         }
 
         void ShaderFilter::draw(graphics::PingPongBuffer& ping_pong, float t) {
@@ -24,13 +30,11 @@ namespace syntheffect {
             ofTexture tex = ping_pong.src->getTexture();
             shader_.begin();
             
-            shader_.setUniformTexture("tex0", tex, 0);
             shader_.setUniform2f("resolution", tex.getWidth(), tex.getHeight());
             shader_.setUniform1f("time", t);
 
-            setupUniforms();
-
             tex.draw(0, 0);
+
             shader_.end();
             ping_pong.dest->end();
         }

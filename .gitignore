@@ -2,4 +2,4 @@
 /obj
 /bin/*
 !/bin/data
-/bin/data/patches/default.patch
+/bin/data/patches/default.xml

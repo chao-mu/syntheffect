@@ -12,8 +12,9 @@ namespace syntheffect {
                 void draw(graphics::PingPongBuffer& ping_ping);
 
             private:
-                vector<shared_ptr<filter::FilterBase>> filters_;
-                template <typename T> void maybeAddFilter(std::string line, std::string name);
+                std::vector<shared_ptr<filter::FilterBase>> filters_;
+                std::map<std::string, shared_ptr<filter::FilterBase>> filters_by_alias_;
+                template <typename T> bool maybeAddFilter(std::string line, std::string name);
         };
     }
 }

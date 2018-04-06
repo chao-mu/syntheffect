@@ -3,7 +3,7 @@
 namespace syntheffect {
     namespace filter{
         FilterBase::FilterBase() {
-            active_ = false;
+            active_ = true;
         }
 
         bool FilterBase::isActive() {

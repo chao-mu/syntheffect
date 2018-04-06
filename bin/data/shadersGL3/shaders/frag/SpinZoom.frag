@@ -1,8 +1,8 @@
-#pragma include "common/frag.glsl"
+#pragma include "include/header.glsl"
 
-void main()
+vec3 mainFrag()
 {
-    vec2 uv = texture_coord / resolution;
+    vec2 uv = textureCoordinate / resolution;
 
     float border = 1.0 - fract(time/10.0);
     if (
@@ -15,5 +15,7 @@ void main()
         uv += vec2(0.5);
     }
 
-    outputColor = texture(tex0, uv * resolution);
+    return texture(tex0, uv * resolution).rgb;
 }
+
+#pragma include "include/footer.glsl"

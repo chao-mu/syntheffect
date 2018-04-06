@@ -1,0 +1,2 @@
+frag: shaders/frag/SpinZoom.frag
+vert: shaders/vert/Passthrough.vert

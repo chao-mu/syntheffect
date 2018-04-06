@@ -5,9 +5,22 @@ uniform sampler2DRect tex0;
 uniform float time;
 uniform vec2 resolution;
 
+uniform bool greyscaleEnabled;
+
+uniform bool inversionEnabled;
+uniform bool inversionClamp;
+uniform float inversionAdjustment;
+
+uniform bool stepEnabled;
+uniform float stepThreshold;
+
+uniform bool multiplyOriginalEnabled;
+
+uniform bool clampEnabled;
+
 out vec4 outputColor;
 
-in vec2 texture_coord;
+in vec2 textureCoordinate;
 
 // Book of Shaders
 float rand(float n) {

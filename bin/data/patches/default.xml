@@ -1,0 +1,14 @@
+<patch>
+    <pipeline>
+        <effect name="Blur"/>
+        <effect name="Sobel"/>
+        <effect name="ColorDisplace"/>
+        <effect name="Huerific"/>
+        <effect name="SpinZoom"/>
+        <effect name="Scharr"/>
+        <effect name="Sharpen"/>
+    </pipeline>
+    <controls>
+        <toggle midi_event="LEFT_PLAY_PAUSE_BUTTON" target="ColorDisplace" target_param="inversionEnabled"/>
+    </controls>
+</patch>

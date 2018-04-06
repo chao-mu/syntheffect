@@ -13,7 +13,7 @@ namespace syntheffect {
     void ofApp::setup() {
         playlist_.load(playlist_path_);
 
-        patch_->load("patches/default.patch");
+        patch_->load("patches/default.xml");
         video_ = playlist_.next();
     }
 
