@@ -88,18 +88,18 @@ namespace syntheffect {
 
             if (param_el == "paramInt") {
                 int v = xml.getIntValue("[@value]");
-                auto func = [v](std::string name, ofShader& shad) { 
-                    shad.setUniform1i(name, v);
-                };
-                shader->set(param_name, func);
+                std::function<int()> f = [v]() { return v; };
+                shader->setParam(param_name, f);
             } else if (param_el == "paramFloat") {
                 float v = xml.getFloatValue("[@value]");
-                auto func = [v](std::string name, ofShader& shad) { 
-                    shad.setUniform1f(name, v);
-                };
-                shader->set(param_name, func);
+                std::function<float()> f = [v]() { return v; };
+                shader->setParam(param_name, f);
+            } else if (param_el == "paramBool") {
+                bool v = xml.getBoolValue("[@value]");
+                std::function<bool()> f = [v]() { return v; };
+                shader->setParam(param_name, f);
             } else {
-                ofLogWarning() << "Unrecognized element " + param_el;
+                ofLogError() << "Unrecognized element " + param_el;
                 return false;
             }
 

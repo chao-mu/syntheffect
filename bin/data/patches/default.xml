@@ -1,8 +1,8 @@
 <patch>
     <pipeline>
         <shader vert="Convolution" frag="Scharr" id="scharr">
-            <paramInt name="greyscaleEnabled" value="1"/>
-            <paramInt name="stepEnabled" value="1"/>
+            <paramBool name="greyscaleEnabled" value="1"/>
+            <paramBool name="stepEnabled" value="1"/>
             <paramFloat name="stepThreshold" value="0.3"/>
         </shader>
     </pipeline>

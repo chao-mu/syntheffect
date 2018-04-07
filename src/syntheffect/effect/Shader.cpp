@@ -17,8 +17,18 @@ namespace syntheffect {
         }
 
 
-        void Shader::set(std::string name, std::function<void(std::string, ofShader&)> setter) {
-            uniform_setters_[name] = setter;
+        void Shader::setUniforms() {
+            for (const auto& kv : float_params_) {
+                shader_.setUniform1f(kv.first, kv.second());
+            }
+
+            for (const auto& kv : int_params_) {
+                shader_.setUniform1i(kv.first, kv.second());
+            }
+
+            for (const auto& kv : bool_params_) {
+                shader_.setUniform1i(kv.first, kv.second() ? 1 : 0);
+            }
         }
 
         void Shader::draw(graphics::PingPongBuffer& ping_pong, float t) {
@@ -34,9 +44,8 @@ namespace syntheffect {
             
             shader_.setUniform2f("resolution", tex.getWidth(), tex.getHeight());
             shader_.setUniform1f("time", t);
-            for (const auto& kv : uniform_setters_) {
-                kv.second(kv.first, shader_);
-            }
+
+            setUniforms();
 
             tex.draw(0, 0);
 

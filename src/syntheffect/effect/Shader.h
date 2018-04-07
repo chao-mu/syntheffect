@@ -14,11 +14,10 @@ namespace syntheffect {
                 Shader();
                 void draw(graphics::PingPongBuffer& ping_pong, float t) override;
                 bool load(std::string frag, std::string vert);
-                void set(std::string name, std::function<void(std::string, ofShader&)> setter);
+                void setUniforms();
 
             private:
                 ofShader shader_;
-                map<std::string, std::function<void(std::string, ofShader&)>> uniform_setters_;
         };
     }
 }

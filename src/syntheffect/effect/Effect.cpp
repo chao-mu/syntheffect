@@ -2,7 +2,7 @@
 
 namespace syntheffect {
     namespace effect {
-        Effect::Effect() {
+        Effect::Effect() : float_params_(),  int_params_(), bool_params_() {
             active_ = true;
         }
 
@@ -24,6 +24,18 @@ namespace syntheffect {
 
         void Effect::stop() {
             active_ = false;
+        }
+
+        void Effect::setParam(std::string param, std::function<float()> get) {
+            float_params_[param] = get;
+        }
+
+        void Effect::setParam(std::string param, std::function<bool()> get) {
+            bool_params_[param] = get;
+        }
+
+        void Effect::setParam(std::string param, std::function<int()> get) {
+            int_params_[param] = get;
         }
     }
 }
