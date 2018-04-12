@@ -9,7 +9,7 @@ namespace syntheffect {
         class Effect {
             public:
                 Effect();
-                virtual void draw(graphics::PingPongBuffer& ping_ping, float t) = 0;
+                virtual void draw(shared_ptr<graphics::PingPongBuffer> ping_ping, float t) = 0;
                 void setParam(std::string param, std::function<float()> get);
                 void setParam(std::string param, std::function<bool()> get);
                 void setParam(std::string param, std::function<int()> get);

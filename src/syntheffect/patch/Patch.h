@@ -1,19 +1,20 @@
 #pragma once
 
 #include "syntheffect/effect/Effect.h"
-#include "syntheffect/graphics/PingPongBuffer.h"
+#include "syntheffect/graphics/PingPongBufferMap.h"
+#include "syntheffect/video/Video.h"
+#include "syntheffect/patch/Pipeline.h"
 
 namespace syntheffect {
     namespace patch {
         class Patch {
             public:
                 Patch();
-                void draw(graphics::PingPongBuffer& ping_ping);
-                void addEffect(std::string id, shared_ptr<effect::Effect> pipeline_effect);
+                void draw(shared_ptr<graphics::PingPongBufferMap> channels, float t);
+                void addPipeline(shared_ptr<Pipeline> pipeline);
 
             private:
-                std::vector<shared_ptr<effect::Effect>> effects_;
-                std::map<std::string, shared_ptr<effect::Effect>> effects_by_id_;
+                vector<shared_ptr<Pipeline>> pipelines_;
         };
     }
 }

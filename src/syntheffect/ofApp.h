@@ -6,6 +6,7 @@
 #include "syntheffect/patch/Patch.h"
 #include "syntheffect/midi/CmdMicro.h"
 #include "syntheffect/video/Playlist.h"
+#include "syntheffect/graphics/Display.h"
 
 namespace syntheffect {
 	class ofApp : public ofBaseApp, midi::CmdMicro {
@@ -15,18 +16,22 @@ namespace syntheffect {
 			void update();
 			void draw();
 
-			void onCmdMicroLeftLeftFaderSlide(unsigned char v);
-
 		protected:
 			void windowResized(int w, int h);
 			void keyPressed(int c);
+			void onCmdMicroLeftLeftFaderSlide(unsigned char v);
+			void nextVideo();
 
 		private:
 			shared_ptr<patch::Patch> patch_;
 			shared_ptr<RtMidiIn> midi_in_;
 
+			graphics::Display display_;
 			video::Video video_;
 			video::Playlist playlist_;
 			std::string playlist_path_;
+			shared_ptr<graphics::PingPongBufferMap> buffers_;
+
+			void setupDrawSize();
 	};
 }

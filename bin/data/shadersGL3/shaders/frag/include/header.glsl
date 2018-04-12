@@ -64,6 +64,19 @@ float luminance(vec3 rgb) {
     return dot(rgb, vec3(0.3, 0.59, 0.11));
 }
 
+// translate texture coordinates to -1 to 1.
+vec2 normalize_1to1(vec2 coords, vec2 res) {
+    return (2. * coords - res.xy) / res.y;
+}
+
+// translate coordinates in range -1 to 1 to texture coordinates.
+vec2 denormalize_1to1(vec2 uv, vec2 res) {
+    return ((uv * res.y) + res.xy) / 2.;
+}
+
+// Multiple the result of this function call to rotate the coordinates by the given angle.
+#define rotate(angle) mat2(cos(angle),-sin(angle), sin(angle),cos(angle))
+
 /*
 // translate texture coordinates to 0 to 1.
 vec2 normalize_0to1(vec2 coords, vec2 res) {
@@ -85,11 +98,6 @@ vec2 denormalize_0to1(vec2 uv) {
     return denormalize_0to1(uv, resolution.xy);
 }
 
-// translate texture coordinates to -1 to 1.
-vec2 normalize_1to1(vec2 coords, vec2 res) {
-    return (2. * coords - res.xy) / res.y;
-}
-
 // translate coordinates in range -1 to 1 to texture coordinates.
 vec2 denormalize_1to1(vec2 uv) {
     return ((uv * resolution.y) + resolution.xy) / 2.
@@ -108,6 +116,4 @@ vec2 denormalize_1to1(vec2 uv) {
 // Draw a line segment of length and width. 
 #define segment(U, len, width)  S( abs(U.x)-width ) * S( abs(U.y)-len )
 
-// Multiple the result of this function call to rotate the coordinates by the given angle.
-#define rotate(angle) mat2(cos(angle),-sin(angle), sin(angle),cos(angle));
 */

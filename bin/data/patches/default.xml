@@ -1,10 +1,11 @@
 <patch>
-    <pipeline>
-        <shader vert="Convolution" frag="Scharr" id="scharr">
-            <paramBool name="greyscaleEnabled" value="1"/>
-            <paramBool name="stepEnabled" value="1"/>
-            <paramFloat name="stepThreshold" value="0.3"/>
-        </shader>
-    </pipeline>
+    <pipelines>
+        <pipeline in="channel1" out="channel1-mod">
+            <shader id="foo"></shader>
+        </pipeline>
+        <pipeline in="channel1-mod" out="out">
+            <shader id="bar"></shader>
+        </pipeline>
+    </pipelines>
     <controls/>
 </patch>

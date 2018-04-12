@@ -31,15 +31,15 @@ namespace syntheffect {
             }
         }
 
-        void Shader::draw(graphics::PingPongBuffer& ping_pong, float t) {
+        void Shader::draw(shared_ptr<graphics::PingPongBuffer> ping_pong, float t) {
             if (!isActive()) {
                 return;
             }
 
-            ping_pong.dest->begin();
+            ping_pong->dest->begin();
             ofClear(0, 255);
 
-            ofTexture tex = ping_pong.src->getTexture();
+            ofTexture tex = ping_pong->src->getTexture();
             shader_.begin();
             
             shader_.setUniform2f("resolution", tex.getWidth(), tex.getHeight());
@@ -50,7 +50,7 @@ namespace syntheffect {
             tex.draw(0, 0);
 
             shader_.end();
-            ping_pong.dest->end();
+            ping_pong->dest->end();
         }
     }
 }
