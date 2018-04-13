@@ -7,7 +7,11 @@
             <shader frag="Displace" id="displace">
                 <paramTexture name="displacerTex" value="channel1-blurred"/>
             </shader>
-            <shader vert="Convolution" frag="Sharpen" id="sharpen"/>
+            <!--shader vert="Convolution" frag="Sharpen" id="sharpen"/-->
+            <shader vert="Convolution" frag="Scharr" id="scharr">
+                <paramBool name="rangeAdjustEnabled" value="1"/>
+                <paramFloat name="rangeAdjustHigh" value="10"/>
+            </shader>
         </pipeline>
     </pipelines>
     <controls/>

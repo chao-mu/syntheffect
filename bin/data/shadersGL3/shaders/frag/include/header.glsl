@@ -16,6 +16,9 @@ uniform float stepThreshold = 0.5;
 
 uniform bool multiplyOriginalEnabled = false;
 
+uniform bool rangeAdjustEnabled = true;
+uniform float rangeAdjustHigh = 1.;
+
 out vec4 outputColor;
 
 in vec2 textureCoordinate;

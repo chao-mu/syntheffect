@@ -1,6 +1,10 @@
 void main() {
     vec3 col = mainFrag();
 
+    if (rangeAdjustEnabled) {
+        col /= vec3(rangeAdjustHigh);
+    }
+
     if (greyscaleEnabled) {
         col = vec3(luminance(col));
     }
