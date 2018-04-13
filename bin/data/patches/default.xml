@@ -1,15 +1,15 @@
 <patch>
     <pipelines>
         <pipeline in="channel1" out="channel1-blurred">
-            <shader vert="Convolution" frag="Blur" id="blur"/>
+            <shader vert="Convolution" frag="Blur"/>
         </pipeline>
         <pipeline in="channel1" out="out">
-            <shader frag="Displace" id="displace">
+            <shader frag="Displace">
                 <paramTexture name="displacerTex" value="channel1-blurred"/>
             </shader>
-            <!--shader vert="Convolution" frag="Sharpen" id="sharpen"/-->
-            <shader vert="Convolution" frag="Scharr" id="scharr">
-                <paramBool name="rangeAdjustEnabled" value="1"/>
+            <!--shader vert="Convolution" frag="Sharpen"/-->
+            <shader vert="Convolution" frag="Scharr">
+                <paramBool name="rangeAdjustEnabled" value="true"/>
                 <paramFloat name="rangeAdjustHigh" value="10"/>
             </shader>
         </pipeline>

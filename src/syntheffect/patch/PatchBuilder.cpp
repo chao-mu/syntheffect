@@ -55,13 +55,6 @@ namespace syntheffect {
                 vert = DEFAULT_VERT;
             }
 
-            std::string id = xml.getAttribute("id");
-            if (id.empty()) {
-                ofLogError() << "XML shader definition missing id";
-
-                return false;
-            }
-
             if (!shader->load(frag, vert)) {
                 return false;
             }
@@ -78,7 +71,11 @@ namespace syntheffect {
             }
 
             parent->addEffect(shader);
-            effects_by_id_[id] = shader;
+
+            std::string id = xml.getAttribute("id");
+            if (!id.empty()) {
+                effects_by_id_[id] = shader;
+            }
 
             return true;
         }
@@ -102,7 +99,8 @@ namespace syntheffect {
                 };
                 parent->setParam(param_name, f);
             } else if (param_el == "paramBool") {
-                bool v = xml.getBoolValue("[@value]");
+                std::string raw = xml.getValue("[@value]");
+                bool v = raw == "true" || raw == "on" || raw == "1";
                 std::function<bool()> f = [v]() { return v; };
                 parent->setParam(param_name, f);
             } else {
