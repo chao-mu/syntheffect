@@ -9,15 +9,20 @@ namespace syntheffect {
                 PingPongBuffer();
                 void allocate(int width, int height, int internal_format=GL_RGBA);
                 bool isAllocated();
-                void swap();
                 float getHeight();
                 float getWidth();
 
-                shared_ptr<ofFbo> src;
-                shared_ptr<ofFbo> dest;
+                void begin();
+                void end();
+
+                shared_ptr<ofFbo> drawable();
 
             private:
-                vector<shared_ptr<ofFbo>> fbos_;
+                void swap();
+
+                shared_ptr<ofFbo> src_;
+                shared_ptr<ofFbo> dest_;
+                bool receiving_;
         };
     }
 }

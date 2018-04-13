@@ -1,5 +1,7 @@
 #include "syntheffect/effect/Effect.h"
 
+#include "ofTexture.h"
+
 namespace syntheffect {
     namespace effect {
         Effect::Effect() : float_params_(),  int_params_(), bool_params_() {
@@ -36,6 +38,10 @@ namespace syntheffect {
 
         void Effect::setParam(std::string param, std::function<int()> get) {
             int_params_[param] = get;
+        }
+
+        void Effect::setParam(std::string param, std::function<ofTexture()> get) {
+            texture_params_[param] = get;
         }
     }
 }

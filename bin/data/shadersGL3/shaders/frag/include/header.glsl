@@ -74,23 +74,23 @@ vec2 denormalize_1to1(vec2 uv, vec2 res) {
     return ((uv * res.y) + res.xy) / 2.;
 }
 
-// Multiple the result of this function call to rotate the coordinates by the given angle.
-#define rotate(angle) mat2(cos(angle),-sin(angle), sin(angle),cos(angle))
-
-/*
 // translate texture coordinates to 0 to 1.
 vec2 normalize_0to1(vec2 coords, vec2 res) {
     return coords / res;
 }
 
-// Get current texture coordinate
-vec2 tex_coord_0to1() {
-    return normalize_0to1(texture_coord, resolution);
-}
-
 // translate coordinates in range 0 to 1 to texture coordinates.
 vec2 denormalize_0to1(vec2 uv, vec2 res) {
     return uv * res;
+}
+
+// Multiple the result of this function call to rotate the coordinates by the given angle.
+#define rotate(angle) mat2(cos(angle),-sin(angle), sin(angle),cos(angle))
+
+/*
+// Get current texture coordinate
+vec2 tex_coord_0to1() {
+    return normalize_0to1(texture_coord, resolution);
 }
 
 // translate coordinates in range 0 to 1 to texture coordinates, using global resolution

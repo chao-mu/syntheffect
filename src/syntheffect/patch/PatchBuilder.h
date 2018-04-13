@@ -15,8 +15,8 @@ namespace syntheffect {
                 shared_ptr<Patch> build(std::string path, shared_ptr<graphics::PingPongBufferMap> buffers);
 
             private: 
-                bool addShader(ofXml& xml, shared_ptr<Pipeline> parent);
-                bool addShaderParam(ofXml& xml, shared_ptr<effect::Shader> parent);
+                bool addShader(ofXml& xml, shared_ptr<graphics::PingPongBufferMap> channels, shared_ptr<Pipeline> parent);
+                bool addShaderParam(ofXml& xml, shared_ptr<graphics::PingPongBufferMap> channels, shared_ptr<effect::Shader> parent);
                 bool addPipeline(ofXml& xml, shared_ptr<Patch> patch, shared_ptr<graphics::PingPongBufferMap> buffers);
                 bool addPipelines(ofXml& xml, shared_ptr<Patch> parent, shared_ptr<graphics::PingPongBufferMap> buffers);
                 bool addControls(ofXml& xml, shared_ptr<Patch> parent);

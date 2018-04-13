@@ -10,17 +10,15 @@ namespace syntheffect {
 
             if (out_ != in_) {
                 shared_ptr<graphics::PingPongBuffer> buf_in = channels->get(in_);
-                buf_in->swap();
 
-                buf_out->dest->begin();
+                buf_out->begin();
                 ofClear(255, 255, 255, 0);
-                buf_in->src->draw(0, 0);
-                buf_out->dest->end();
+                buf_in->drawable()->draw(0, 0);
+                buf_out->end();
             }
 
-            for (auto effect: effects_) {
+            for (auto effect : effects_) {
                 if (effect->isActive()) {
-                    buf_out->swap();
                     effect->draw(buf_out, t);
                 }
             }

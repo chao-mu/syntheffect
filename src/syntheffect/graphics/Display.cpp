@@ -54,12 +54,14 @@ namespace syntheffect {
 
         void Display::draw(shared_ptr<graphics::PingPongBuffer> ping_pong) {
             ofSetColor(255);
-            ping_pong->dest->draw(
+            shared_ptr<ofFbo> buffer = ping_pong->drawable();
+
+            buffer->draw(
                 (window_width_ / 2.0) - (draw_width_ / 2.0),
                 (window_height_ / 2.0) - (draw_height_ / 2.0),
                 draw_width_, draw_height_);
 
-            ping_pong->dest->getTexture().copyTo(buffer_copy_);
+            buffer->getTexture().copyTo(buffer_copy_);
             last_texture_.loadData(buffer_copy_, GL_RGBA, GL_UNSIGNED_BYTE);
         }
     }

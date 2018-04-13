@@ -35,10 +35,10 @@ namespace syntheffect {
         }
 
         void Video::draw(shared_ptr<graphics::PingPongBuffer> ping_pong) {
-            ping_pong->dest->begin();
+            ping_pong->begin();
             ofClear(255, 255, 255, 0);
             video_player_.draw(0, 0);
-            ping_pong->dest->end();
+            ping_pong->end();
         }
     }
 }

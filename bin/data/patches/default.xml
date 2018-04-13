@@ -1,10 +1,13 @@
 <patch>
     <pipelines>
-        <pipeline in="channel1" out="channel1-mod">
-            <shader id="foo"></shader>
+        <pipeline in="channel1" out="channel1-blurred">
+            <shader vert="Convolution" frag="Blur" id="blur"/>
         </pipeline>
-        <pipeline in="channel1-mod" out="out">
-            <shader id="bar"></shader>
+        <pipeline in="channel1" out="out">
+            <shader frag="Displace" id="displace">
+                <paramTexture name="displacerTex" value="channel1-blurred"/>
+            </shader>
+            <shader vert="Convolution" frag="Sharpen" id="sharpen"/>
         </pipeline>
     </pipelines>
     <controls/>

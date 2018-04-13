@@ -4,13 +4,13 @@
 
 namespace syntheffect {
     namespace graphics {
-        PingPongBuffer::PingPongBuffer() : src(make_shared<ofFbo>()), dest(make_shared<ofFbo>()) {
-            fbos_.push_back(src);
-            fbos_.push_back(dest);
+        PingPongBuffer::PingPongBuffer() : src_(make_shared<ofFbo>()), dest_(make_shared<ofFbo>()) {
+            receiving_ = false;
         }
 
         void PingPongBuffer::allocate(int width, int height, int internal_format) {
-            for (auto fbo: fbos_) {
+            vector<shared_ptr<ofFbo>> fbos = {src_, dest_};
+            for (auto fbo: fbos) {
                 fbo->allocate(width, height, internal_format);
 
                 // Set magnification/minification algorithm
@@ -24,19 +24,34 @@ namespace syntheffect {
         }
 
         float PingPongBuffer::getWidth() {
-            return src->getWidth();
+            return src_->getWidth();
         }
 
         float PingPongBuffer::getHeight() {
-            return src->getHeight();
+            return src_->getHeight();
         }
 
         bool PingPongBuffer::isAllocated() {
-            return src->isAllocated() && dest->isAllocated();
+            return src_->isAllocated() && dest_->isAllocated();
+        }
+
+        void PingPongBuffer::begin() {
+            swap();
+            receiving_ = true;
+            dest_->begin();
+        }
+
+        void PingPongBuffer::end() {
+            receiving_ = false;
+            dest_->end();
+        }
+
+        shared_ptr<ofFbo> PingPongBuffer::drawable() {
+            return receiving_ ? src_ : dest_;
         }
 
         void PingPongBuffer::swap() {
-            src.swap(dest);
+            src_.swap(dest_);
         }
     }
 }

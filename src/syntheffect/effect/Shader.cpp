@@ -16,7 +16,6 @@ namespace syntheffect {
             );
         }
 
-
         void Shader::setUniforms() {
             for (const auto& kv : float_params_) {
                 shader_.setUniform1f(kv.first, kv.second());
@@ -29,6 +28,11 @@ namespace syntheffect {
             for (const auto& kv : bool_params_) {
                 shader_.setUniform1i(kv.first, kv.second() ? 1 : 0);
             }
+
+            int tex_count = 1;
+            for (const auto& kv : texture_params_) {
+                shader_.setUniformTexture(kv.first, kv.second(), tex_count++);
+            }
         }
 
         void Shader::draw(shared_ptr<graphics::PingPongBuffer> ping_pong, float t) {
@@ -36,21 +40,19 @@ namespace syntheffect {
                 return;
             }
 
-            ping_pong->dest->begin();
-            ofClear(0, 255);
-
-            ofTexture tex = ping_pong->src->getTexture();
             shader_.begin();
+            ping_pong->begin();
+            ofClear(0, 255);
             
-            shader_.setUniform2f("resolution", tex.getWidth(), tex.getHeight());
+            shader_.setUniform2f("resolution", ping_pong->getWidth(), ping_pong->getHeight());
             shader_.setUniform1f("time", t);
 
             setUniforms();
 
-            tex.draw(0, 0);
+            ping_pong->drawable()->draw(0, 0);
 
+            ping_pong->end();
             shader_.end();
-            ping_pong->dest->end();
         }
     }
 }
