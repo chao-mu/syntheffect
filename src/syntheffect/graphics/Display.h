@@ -7,10 +7,8 @@ namespace syntheffect {
         class Display {
             public:
                 Display();
-                void allocate(float w, float h, int window_width, int window_height);
+                void load(float width, float height, int window_width, int window_height);
                 void windowResized(int window_width, int window_height);
-                bool isAllocated();
-                ofTexture getLastTexture();
                 void draw(shared_ptr<graphics::PingPongBuffer> ping_pong);
                 void setupDrawSize();
 

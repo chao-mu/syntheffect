@@ -1,16 +1,9 @@
 <patch>
     <pipelines>
-        <pipeline in="channel1" out="channel1-blurred">
-            <shader vert="Convolution" frag="Blur"/>
-        </pipeline>
         <pipeline in="channel1" out="out">
-            <shader frag="Displace">
-                <paramTexture name="displacerTex" value="channel1-blurred"/>
-            </shader>
-            <!--shader vert="Convolution" frag="Sharpen"/-->
-            <shader vert="Convolution" frag="Scharr">
-                <paramBool name="rangeAdjustEnabled" value="true"/>
-                <paramFloat name="rangeAdjustHigh" value="10"/>
+            <shader frag="Mix">
+                <paramTexture name="secondTex" value="last-out"/>
+                <paramFloat name="mixture" value="0.99"/>
             </shader>
         </pipeline>
     </pipelines>

@@ -30,7 +30,7 @@ namespace syntheffect {
 			video::Video video_;
 			video::Playlist playlist_;
 			std::string playlist_path_;
-			shared_ptr<graphics::PingPongBufferMap> buffers_;
+			shared_ptr<graphics::PingPongBufferMap> channels_;
 
 			void setupDrawSize();
 	};

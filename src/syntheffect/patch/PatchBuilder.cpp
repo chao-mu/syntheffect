@@ -139,12 +139,6 @@ namespace syntheffect {
          }
 
         bool PatchBuilder::addPipeline(ofXml& xml, shared_ptr<Patch> patch, shared_ptr<graphics::PingPongBufferMap> channels) {
-            int children = xml.getNumChildren();
-            if (children == 0) {
-                ofLogError() << "<pipeline> requires children";
-                return false;
-            }
-
             std::string in = xml.getAttribute("in");
             if (in.empty()) {
                 ofLogError() << "Missing 'in' attribute in pipeline element";
@@ -160,6 +154,21 @@ namespace syntheffect {
             channels->allocate(out);
 
             shared_ptr<Pipeline> pipeline = make_shared<Pipeline>(in, out);
+            patch->addPipeline(pipeline);
+
+            int children = xml.getNumChildren();
+            // Add default passthrough shader
+            if (children == 0) {
+                auto shader = make_shared<effect::Shader>();
+                if (!shader->load(DEFAULT_FRAG, DEFAULT_VERT)) {
+                    ofLogError() << "Failed to load implied shader to <pipeline>";
+                    return false;
+                }
+
+                pipeline->addEffect(shader);
+
+                return true;
+            }
 
             // Iterate over pipeline
             xml.setToChild(0);
@@ -175,8 +184,6 @@ namespace syntheffect {
                 xml.setToSibling();
             }
             xml.setToParent();
-
-            patch->addPipeline(pipeline);
             
             return true;
         }

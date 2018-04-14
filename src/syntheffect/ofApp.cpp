@@ -5,6 +5,7 @@
 
 #define CHANNEL_ONE "channel1"
 #define CHANNEL_OUT "out"
+#define CHANNEL_LAST_OUT "last-out"
 
 #define DEBUG_CHANNEL_ACCESS true
 
@@ -29,16 +30,17 @@ namespace syntheffect {
         float h = video_.getHeight();
 
         display_ = graphics::Display();
-        display_.allocate(w, h, ofGetWidth(), ofGetHeight());
+        display_.load(w, h, ofGetWidth(), ofGetHeight());
 
-        buffers_ = make_shared<graphics::PingPongBufferMap>(w, h);
+        channels_ = make_shared<graphics::PingPongBufferMap>(w, h);
 
-        buffers_->allocate(CHANNEL_ONE);
-        buffers_->allocate(CHANNEL_OUT);
+        channels_->allocate(CHANNEL_ONE);
+        channels_->allocate(CHANNEL_OUT);
+        channels_->allocate(CHANNEL_LAST_OUT);
 
         unique_ptr<patch::PatchBuilder> builder = make_unique<patch::PatchBuilder>();
 
-        patch_ = builder->build("patches/default.xml", buffers_);
+        patch_ = builder->build("patches/default.xml", channels_);
         if (!patch_) {
             throw runtime_error("Unable to build patch!");
         }
@@ -66,12 +68,23 @@ namespace syntheffect {
             return;
         }
 
-        video_.draw(buffers_->get(CHANNEL_ONE));
-        patch_->draw(buffers_, ofGetElapsedTimef());
-        display_.draw(buffers_->get(CHANNEL_OUT));
+        // Read the video frame
+        video_.draw(channels_->get(CHANNEL_ONE));
+
+        // Apply effects/write to channels
+        patch_->draw(channels_, ofGetElapsedTimef());
+
+        // Draw to display
+        display_.draw(channels_->get(CHANNEL_OUT));
+
+        // Write out channel to last-out channel
+        shared_ptr<graphics::PingPongBuffer> last_out = channels_->get(CHANNEL_LAST_OUT);
+        last_out->begin();
+        channels_->get(CHANNEL_OUT)->drawable()->draw(0, 0);
+        last_out->end();
 
         if (DEBUG_CHANNEL_ACCESS) {
-            for (auto& kv : buffers_->getAccessHistory()) {
+            for (auto& kv : channels_->getAccessHistory()) {
                 if (!kv.second) {
                     ofLogWarning() << "Unaccess channel: " + kv.first;
                 }
@@ -86,7 +99,7 @@ namespace syntheffect {
     void ofApp::keyPressed(int c) {
         if (c == 'p') {
             ofPixels pixels;
-            display_.getLastTexture().readToPixels(pixels);
+            channels_->get(CHANNEL_LAST_OUT)->drawable()->readToPixels(pixels);
 
             ofImage image;
             image.setFromPixels(pixels);
@@ -102,4 +115,5 @@ namespace syntheffect {
 
 #undef CHANNEL_ONE
 #undef CHANNEL_OUT
+#undef CHANNEL_LAST_OUT
 #undef DEBUG_CHANNEL_ACCESS
