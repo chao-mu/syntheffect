@@ -14,6 +14,7 @@ namespace syntheffect {
                 bool isAllocated();
                 float getWidth();
                 float getHeight();
+                void seek(int relative_frames);
 
             private:
                 ofVideoPlayer video_player_;

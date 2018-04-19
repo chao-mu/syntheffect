@@ -27,7 +27,7 @@ namespace syntheffect {
 			shared_ptr<RtMidiIn> midi_in_;
 
 			graphics::Display display_;
-			video::Video video_;
+			shared_ptr<video::Video> video_;
 			video::Playlist playlist_;
 			std::string playlist_path_;
 			shared_ptr<graphics::PingPongBufferMap> channels_;

@@ -28,10 +28,10 @@ namespace syntheffect {
             }
         }
 
-        video::Video Playlist::next() {
-            Video video;
+        shared_ptr<video::Video> Playlist::next() {
+           shared_ptr<Video> video = std::make_shared<Video>();
 
-            if (!video.load(filenames_[position_])) {
+            if (!video->load(filenames_[position_])) {
                 throw std::runtime_error("Unable to load video.");
             }
 

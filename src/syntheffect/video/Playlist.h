@@ -10,7 +10,7 @@ namespace syntheffect {
         class Playlist {
             public:
                 void load(std::string path);
-                Video next();
+                shared_ptr<Video> next();
 
             private:
                 std::vector<std::string> filenames_;

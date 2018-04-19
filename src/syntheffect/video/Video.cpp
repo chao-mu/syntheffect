@@ -9,7 +9,6 @@ namespace syntheffect {
                 return false;
             }
 
-            video_player_.setUseTexture(true);
             video_player_.setLoopState(OF_LOOP_NONE);
             video_player_.setVolume(0);
             video_player_.play();
@@ -32,6 +31,21 @@ namespace syntheffect {
 
         float Video::getHeight() {
             return video_player_.getHeight();
+        }
+
+        void Video::seek(int relative_frames) {
+            int current = video_player_.getCurrentFrame();
+            // Will be negative if we haven't done an update yet
+            if (current < 0) {
+                return;
+            }
+
+            int seek_to = relative_frames + current;
+            if (seek_to < 0) {
+                seek_to += video_player_.getTotalNumFrames();
+            }
+
+            video_player_.setFrame(seek_to % video_player_.getTotalNumFrames());
         }
 
         void Video::draw(shared_ptr<graphics::PingPongBuffer> ping_pong) {

@@ -9,6 +9,9 @@
 
 #define DEBUG_CHANNEL_ACCESS true
 
+// How many frames to seek forward/back in the video
+#define SEEK_FRAMES 20
+
 namespace syntheffect {
     ofApp::ofApp(shared_ptr<RtMidiIn> midi_in, std::string playlist_path) 
             : ofBaseApp(),
@@ -26,8 +29,8 @@ namespace syntheffect {
 
     void ofApp::nextVideo() {
         video_ = playlist_.next();
-        float w = video_.getWidth();
-        float h = video_.getHeight();
+        float w = video_->getWidth();
+        float h = video_->getHeight();
 
         display_ = graphics::Display();
         display_.load(w, h, ofGetWidth(), ofGetHeight());
@@ -47,11 +50,6 @@ namespace syntheffect {
     }
 
     void ofApp::update() {
-        if (!video_.update()) {
-            nextVideo();
-            video_.update();
-        }
-
         std::vector<unsigned char> raw_message;
         while (midi_in_->getMessage(&raw_message) > 0) {
             midi::MidiMessage msg(raw_message);
@@ -64,12 +62,17 @@ namespace syntheffect {
     }
 
     void ofApp::draw() {
-        if (!video_.isAllocated()) {
+        if (!video_->update()) {
+            nextVideo();
+            video_->update();
+        }
+
+        if (!video_->isAllocated()) {
             return;
         }
 
         // Read the video frame
-        video_.draw(channels_->get(CHANNEL_ONE));
+        video_->draw(channels_->get(CHANNEL_ONE));
 
         // Apply effects/write to channels
         patch_->draw(channels_, ofGetElapsedTimef());
@@ -86,14 +89,12 @@ namespace syntheffect {
         if (DEBUG_CHANNEL_ACCESS) {
             for (auto& kv : channels_->getAccessHistory()) {
                 if (!kv.second) {
-                    ofLogWarning() << "Unaccess channel: " + kv.first;
+                    ofLogWarning() << "Unaccessed channel: " + kv.first;
                 }
             }
         }
 
-        std::stringstream strm;
-        strm << "fps: " << ofGetFrameRate();
-        ofSetWindowTitle(strm.str());
+        ofSetWindowTitle("fps: " + std::to_string(ofGetFrameRate()));
     }
 
     void ofApp::keyPressed(int c) {
@@ -104,6 +105,10 @@ namespace syntheffect {
             ofImage image;
             image.setFromPixels(pixels);
             image.save("out-" + ofGetTimestampString() + ".png");
+        } else if (c == OF_KEY_LEFT) {
+            video_->seek(-SEEK_FRAMES);
+        } else if (c == OF_KEY_RIGHT) {
+            video_->seek(SEEK_FRAMES);
         }
     }
 
@@ -117,3 +122,4 @@ namespace syntheffect {
 #undef CHANNEL_OUT
 #undef CHANNEL_LAST_OUT
 #undef DEBUG_CHANNEL_ACCESS
+#undef SEEK_FRAMES
