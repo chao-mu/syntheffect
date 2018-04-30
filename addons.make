@@ -1,2 +1,2 @@
 ofxM3U
-ofxYAML
+ofxVideoRecorder

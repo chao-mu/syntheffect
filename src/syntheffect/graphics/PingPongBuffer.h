@@ -14,6 +14,7 @@ namespace syntheffect {
 
                 void begin();
                 void end();
+                void drawTo(shared_ptr<PingPongBuffer> buff, int x=0, int y=0);
 
                 shared_ptr<ofFbo> drawable();
 

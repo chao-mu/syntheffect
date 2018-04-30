@@ -10,10 +10,14 @@ namespace syntheffect {
             }
 
             video_player_.setLoopState(OF_LOOP_NONE);
-            video_player_.setVolume(0);
+            //video_player_.setVolume(0);
             video_player_.play();
 
             return true;
+        }
+
+        float Video::getFPS() {
+            return video_player_.getTotalNumFrames() / video_player_.getDuration();
         }
 
         bool Video::update() {
@@ -48,7 +52,11 @@ namespace syntheffect {
             video_player_.setFrame(seek_to % video_player_.getTotalNumFrames());
         }
 
-        void Video::draw(shared_ptr<graphics::PingPongBuffer> ping_pong) {
+        bool Video::isFrameNew() {
+            return video_player_.isFrameNew();
+        }
+
+        void Video::drawTo(shared_ptr<graphics::PingPongBuffer> ping_pong) {
             ping_pong->begin();
             ofClear(255, 255, 255, 0);
             video_player_.draw(0, 0);

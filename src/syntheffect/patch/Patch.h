@@ -10,7 +10,7 @@ namespace syntheffect {
         class Patch {
             public:
                 Patch();
-                void draw(shared_ptr<graphics::PingPongBufferMap> channels, float t);
+                void drawTo(shared_ptr<graphics::PingPongBufferMap> channels, float t);
                 void addPipeline(shared_ptr<Pipeline> pipeline);
 
             private:

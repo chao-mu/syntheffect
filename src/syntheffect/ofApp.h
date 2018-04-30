@@ -3,6 +3,7 @@
 #include "ofMain.h"
 
 #include "RtMidi.h"
+
 #include "syntheffect/patch/Patch.h"
 #include "syntheffect/midi/CmdMicro.h"
 #include "syntheffect/video/Playlist.h"
@@ -19,7 +20,6 @@ namespace syntheffect {
 		protected:
 			void windowResized(int w, int h);
 			void keyPressed(int c);
-			void onCmdMicroLeftLeftFaderSlide(unsigned char v);
 			void nextVideo();
 
 		private:
@@ -31,6 +31,7 @@ namespace syntheffect {
 			video::Playlist playlist_;
 			std::string playlist_path_;
 			shared_ptr<graphics::PingPongBufferMap> channels_;
+			ofSoundStream sound_stream_;
 
 			void setupDrawSize();
 	};

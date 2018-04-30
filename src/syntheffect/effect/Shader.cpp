@@ -2,8 +2,6 @@
 
 #include "ofGraphics.h"
 
-#include "ofxYAML.h"
-
 namespace syntheffect {
     namespace effect {
         Shader::Shader() : Effect(), shader_() {
@@ -35,7 +33,7 @@ namespace syntheffect {
             }
         }
 
-        void Shader::draw(shared_ptr<graphics::PingPongBuffer> ping_pong, float t) {
+        void Shader::drawTo(shared_ptr<graphics::PingPongBuffer> ping_pong, float t) {
             if (!isActive()) {
                 return;
             }

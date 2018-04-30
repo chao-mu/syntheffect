@@ -1,11 +1,31 @@
 #pragma include "include/header.glsl"
 
 uniform sampler2DRect secondTex;
-uniform float mixture = 0.5;
+uniform float amount = 0.5;
 
 uniform bool redEnabled = true;
 uniform bool greenEnabled = true;
 uniform bool blueEnabled = true;
+
+// 0 = Linear interpolation (GLSL mix functon)
+// 1 = square root of added squares.
+uniform int method = 0;
+
+#define METHOD_LINEAR_INTERP 0
+#define METHOD_SQUARE_SUMS 1
+
+// Mix right into left
+float mixWithMethod(float left, float right, float amount) {
+    if (method == METHOD_LINEAR_INTERP) {
+        return mix(left, right, amount);
+    }
+
+    if (method == METHOD_SQUARE_SUMS) {
+        return sqrt(mix(left * left, right * right, amount));
+    }
+
+    return 0;
+}
 
 vec3 mainFrag()
 {
@@ -13,15 +33,15 @@ vec3 mainFrag()
     vec3 right = texture(secondTex, textureCoordinate).rgb;
 
     if (redEnabled) {
-        left.r = mix(left.r, right.r, mixture);
+        left.r = mixWithMethod(left.r, right.r, amount);
     }
 
     if (greenEnabled) {
-        left.g = mix(left.g, right.g, mixture);
+        left.g = mixWithMethod(left.g, right.g, amount);
     }
 
     if (blueEnabled) {
-        left.b = mix(left.b, right.b, mixture);
+        left.b = mixWithMethod(left.b, right.b, amount);
     }
 
     return left;

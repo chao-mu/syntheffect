@@ -19,6 +19,8 @@ uniform bool multiplyOriginalEnabled = false;
 uniform bool rangeAdjustEnabled = true;
 uniform float rangeAdjustHigh = 1.;
 
+uniform float mixture = 1.;
+
 out vec4 outputColor;
 
 in vec2 textureCoordinate;

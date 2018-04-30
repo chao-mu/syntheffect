@@ -6,6 +6,7 @@
 #define CHANNEL_ONE "channel1"
 #define CHANNEL_OUT "out"
 #define CHANNEL_LAST_OUT "last-out"
+#define CHANNEL_LAST_CHANNEL_ONE "last-channel1"
 
 #define DEBUG_CHANNEL_ACCESS true
 
@@ -23,6 +24,13 @@ namespace syntheffect {
         playlist_.load(playlist_path_);
 
         ofSetBackgroundAuto(true);
+        ofSetFullscreen(true);
+
+        #ifdef __APPLE__
+            CGDisplayHideCursor(0);
+        #else
+            ofHideCursor();
+        #endif
 
         nextVideo();
     }
@@ -35,11 +43,12 @@ namespace syntheffect {
         display_ = graphics::Display();
         display_.load(w, h, ofGetWidth(), ofGetHeight());
 
-        channels_ = make_shared<graphics::PingPongBufferMap>(w, h);
+        channels_ = make_shared<graphics::PingPongBufferMap>(w, h, GL_RGB);
 
         channels_->allocate(CHANNEL_ONE);
         channels_->allocate(CHANNEL_OUT);
         channels_->allocate(CHANNEL_LAST_OUT);
+        channels_->allocate(CHANNEL_LAST_CHANNEL_ONE);
 
         unique_ptr<patch::PatchBuilder> builder = make_unique<patch::PatchBuilder>();
 
@@ -50,18 +59,6 @@ namespace syntheffect {
     }
 
     void ofApp::update() {
-        std::vector<unsigned char> raw_message;
-        while (midi_in_->getMessage(&raw_message) > 0) {
-            midi::MidiMessage msg(raw_message);
-            handleCmdMicroEvent(msg);
-        }
-    }
-
-    void ofApp::windowResized(int w, int h) {
-        display_.windowResized(w, h);
-    }
-
-    void ofApp::draw() {
         if (!video_->update()) {
             nextVideo();
             video_->update();
@@ -71,20 +68,27 @@ namespace syntheffect {
             return;
         }
 
+        if (!video_->isFrameNew()) {
+            return;
+        }
+
+        std::vector<unsigned char> raw_message;
+        while (midi_in_->getMessage(&raw_message) > 0) {
+            midi::MidiMessage msg(raw_message);
+            handleCmdMicroEvent(msg);
+        }
+
         // Read the video frame
-        video_->draw(channels_->get(CHANNEL_ONE));
+        video_->drawTo(channels_->get(CHANNEL_ONE));
 
         // Apply effects/write to channels
-        patch_->draw(channels_, ofGetElapsedTimef());
-
-        // Draw to display
-        display_.draw(channels_->get(CHANNEL_OUT));
+        patch_->drawTo(channels_, ofGetElapsedTimef());
 
         // Write out channel to last-out channel
-        shared_ptr<graphics::PingPongBuffer> last_out = channels_->get(CHANNEL_LAST_OUT);
-        last_out->begin();
-        channels_->get(CHANNEL_OUT)->drawable()->draw(0, 0);
-        last_out->end();
+        channels_->get(CHANNEL_OUT)->drawTo(channels_->get(CHANNEL_LAST_OUT));
+
+        // Write channel1 to last-channel1
+        channels_->get(CHANNEL_ONE)->drawTo(channels_->get(CHANNEL_LAST_CHANNEL_ONE));
 
         if (DEBUG_CHANNEL_ACCESS) {
             for (auto& kv : channels_->getAccessHistory()) {
@@ -93,33 +97,40 @@ namespace syntheffect {
                 }
             }
         }
+    }
 
+    void ofApp::windowResized(int w, int h) {
+        display_.windowResized(w, h);
+    }
+
+    void ofApp::draw() {
         ofSetWindowTitle("fps: " + std::to_string(ofGetFrameRate()));
+
+        // Draw to display
+        display_.draw(channels_->get(CHANNEL_OUT));
     }
 
     void ofApp::keyPressed(int c) {
         if (c == 'p') {
             ofPixels pixels;
-            channels_->get(CHANNEL_LAST_OUT)->drawable()->readToPixels(pixels);
+            channels_->get(CHANNEL_OUT)->drawable()->readToPixels(pixels);
 
             ofImage image;
             image.setFromPixels(pixels);
             image.save("out-" + ofGetTimestampString() + ".png");
+        } else if (c == 'q') {
+            ofExit();
         } else if (c == OF_KEY_LEFT) {
             video_->seek(-SEEK_FRAMES);
         } else if (c == OF_KEY_RIGHT) {
             video_->seek(SEEK_FRAMES);
         }
     }
-
-    void ofApp::onCmdMicroLeftLeftFaderSlide(unsigned char v) {
-        // delay_filter_->start();
-        // delay_filter_->setIntensity((float)v, 0, 127);
-    }
 }
 
 #undef CHANNEL_ONE
 #undef CHANNEL_OUT
 #undef CHANNEL_LAST_OUT
+#undef CHANNEL_LAST_CHANNEL_ONE
 #undef DEBUG_CHANNEL_ACCESS
 #undef SEEK_FRAMES

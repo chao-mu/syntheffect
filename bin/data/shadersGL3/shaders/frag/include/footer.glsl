@@ -1,5 +1,6 @@
 void main() {
     vec3 col = mainFrag();
+    vec3 originalCol = texture(tex0, textureCoordinate).rgb;
 
     if (rangeAdjustEnabled) {
         col /= vec3(rangeAdjustHigh);
@@ -22,10 +23,11 @@ void main() {
     }
 
     if (multiplyOriginalEnabled) {
-        vec3 originalCol = texture(tex0, textureCoordinate).rgb;
         col = clamp(col, 0., 1.);
         col *= originalCol;
     }
+
+    col = mix(originalCol, col, mixture);
 
     outputColor = vec4(col, 1.0);
 }

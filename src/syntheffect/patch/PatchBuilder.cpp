@@ -103,6 +103,43 @@ namespace syntheffect {
                 bool v = raw == "true" || raw == "on" || raw == "1";
                 std::function<bool()> f = [v]() { return v; };
                 parent->setParam(param_name, f);
+            } else if (param_el == "paramWave") {
+                float shift = 0;
+                if (xml.exists("[@shift]")) {
+                    shift = xml.getFloatValue("[@shift]");
+                }
+
+                float amplitude = 1;
+                if (xml.exists("[@amp]")) {
+                    amplitude = xml.getFloatValue("[@amp]");
+                }
+
+                float freq = 1;
+                if (xml.exists("[@freq]")) {
+                    freq = xml.getFloatValue("[@freq]");
+                }
+
+                float offset_y = 0;
+                if (xml.exists("[@offset-y]")) {
+                    offset_y = xml.getFloatValue("[@offset-y]");
+                }
+
+                std::function<float(float)> wave;
+                std::string shape = xml.getValue("[@shape]");
+                if (shape == "cos") {
+                    wave = std::cosf;
+                } else if (shape == "sin") {
+                    wave = std::sinf;
+                } else {
+                    ofLogError() << "Unspecified or invalid shape attribute: " + shape;
+                    return false;
+                }
+
+                std::function<float()> f = [wave, shift, amplitude, freq, offset_y]() {
+                    return offset_y + ((1.0 + wave((ofGetElapsedTimef() * freq) + shift) ) * 0.5 * amplitude);
+                };
+
+                parent->setParam(param_name, f);
             } else {
                 ofLogError() << "Unrecognized element " + param_el;
                 return false;

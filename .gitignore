@@ -3,3 +3,4 @@
 /bin/*
 !/bin/data
 /bin/data/patches/default.xml
+.DS_Store

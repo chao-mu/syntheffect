@@ -23,6 +23,12 @@ namespace syntheffect {
             }
         }
 
+        void PingPongBuffer::drawTo(shared_ptr<PingPongBuffer> buff, int x, int y) {
+            buff->begin();
+            drawable()->draw(x, y);
+            buff->end();
+        }
+
         float PingPongBuffer::getWidth() {
             return src_->getWidth();
         }

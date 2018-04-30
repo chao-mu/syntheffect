@@ -1,5 +1,7 @@
 #include "syntheffect/graphics/PingPongBufferMap.h"
 
+#include "ofLog.h"
+
 namespace syntheffect {
     namespace graphics {
         PingPongBufferMap::PingPongBufferMap(int width, int height, int internal_format) : buffers_() {
@@ -21,6 +23,9 @@ namespace syntheffect {
 
         shared_ptr<PingPongBuffer> PingPongBufferMap::get(std::string key) {
             access_history_[key] = true;
+            if (buffers_.count(key) == 0) {
+                ofLogError() << "Accessing non-existent buffer with key '" << key << "'";
+            }
 
             return buffers_.at(key);
         }
