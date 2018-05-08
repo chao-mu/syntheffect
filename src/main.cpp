@@ -27,6 +27,8 @@ int main(int argc, const char *argv[]){
     settings.width = 1280;
     settings.height = 720;
     ofCreateWindow(settings);
+    ofSetFullscreen(true);
+    ofHideCursor();
 
     shared_ptr<syntheffect::ofApp> app(new syntheffect::ofApp(midi_in, playlist_path));
     ofSetBackgroundColor(0, 0, 0);

@@ -13,6 +13,8 @@
 // How many frames to seek forward/back in the video
 #define SEEK_FRAMES 20
 
+const vector<std::string> DISPLAY_KEYS = {"outline", CHANNEL_OUT};
+
 namespace syntheffect {
     ofApp::ofApp(shared_ptr<RtMidiIn> midi_in, std::string playlist_path) 
             : ofBaseApp(),
@@ -107,17 +109,28 @@ namespace syntheffect {
         ofSetWindowTitle("fps: " + std::to_string(ofGetFrameRate()));
 
         // Draw to display
-        display_.draw(channels_->get(CHANNEL_OUT));
+        display_.draw(channels_, DISPLAY_KEYS);
+    }
+
+    void ofApp::screenshot() {
+        ofFbo fbo;
+        fbo.allocate(ofGetWindowWidth(), ofGetWindowHeight(), GL_RGBA);
+
+        fbo.begin();
+        display_.draw(channels_, DISPLAY_KEYS);
+        fbo.end();
+
+        ofPixels pixels;
+        fbo.readToPixels(pixels);
+
+        ofImage image;
+        image.setFromPixels(pixels);
+        image.save("out-" + ofGetTimestampString() + ".png");
     }
 
     void ofApp::keyPressed(int c) {
         if (c == 'p') {
-            ofPixels pixels;
-            channels_->get(CHANNEL_OUT)->drawable()->readToPixels(pixels);
-
-            ofImage image;
-            image.setFromPixels(pixels);
-            image.save("out-" + ofGetTimestampString() + ".png");
+            screenshot();
         } else if (c == 'q') {
             ofExit();
         } else if (c == OF_KEY_LEFT) {

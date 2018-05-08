@@ -41,9 +41,41 @@ namespace syntheffect {
             setupDrawSize();
         }
 
-        void Display::draw(shared_ptr<graphics::PingPongBuffer> ping_pong) {
+        void Display::draw(shared_ptr<PingPongBufferMap> buffers, std::vector<std::string> keys) {
+            float count = keys.size();
+            assert(count <= 4 && count > 0);
+            if (count == 1) {
+                draw(buffers->get(keys[0])->drawable());
+                return;
+            }
+
+            ofClear(255, 255, 255, 255);
             ofSetColor(255);
-            shared_ptr<ofFbo> buffer = ping_pong->drawable();
+
+            int col = 0;
+            int row = 0;
+            int i = 0;
+            float scale = 0.5;
+            for (auto key : keys) {
+                buffers->get(key)->drawable()->draw(
+                    (draw_width_ * col) * scale,
+                    (draw_height_ * row) * scale,
+                    draw_width_ * scale,
+                    draw_height_ * scale 
+                );
+
+                i++;
+                col++;
+                if (i == 2) {
+                    col = 0;
+                    row += 1;
+                }
+            }
+        }
+
+        void Display::draw(shared_ptr<ofFbo> buffer) {
+            ofClear(255, 255, 255, 255);
+            ofSetColor(255);
 
             buffer->draw(
                 (window_width_ / 2.0) - (draw_width_ / 2.0),

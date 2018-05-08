@@ -13,6 +13,8 @@ uniform int method = 0;
 
 #define METHOD_LINEAR_INTERP 0
 #define METHOD_SQUARE_SUMS 1
+#define METHOD_ADD 2
+#define METHOD_MULTIPLY 3
 
 // Mix right into left
 float mixWithMethod(float left, float right, float amount) {
@@ -23,6 +25,15 @@ float mixWithMethod(float left, float right, float amount) {
     if (method == METHOD_SQUARE_SUMS) {
         return sqrt(mix(left * left, right * right, amount));
     }
+
+    if (method == METHOD_ADD) {
+        return left + right;
+    }
+
+    if (method == METHOD_MULTIPLY) {
+        return left * right;
+    }
+
 
     return 0;
 }

@@ -1,5 +1,7 @@
 #version 330
 
+#pragma include "noise.glsl"
+
 uniform sampler2DRect tex0;
 
 uniform float time;
@@ -24,19 +26,6 @@ uniform float mixture = 1.;
 out vec4 outputColor;
 
 in vec2 textureCoordinate;
-
-// Book of Shaders
-float rand(float n) {
-    return fract(sin(n) * 43758.5453123);
-}
-
-// Book of Shaders
-float noise(float p) {
-	float fl = floor(p);
-    float fc = fract(p);
-
-	return mix(rand(fl), rand(fl + 1.0), fc);
-}
 
 vec3 rgb2hsv(vec3 c)
 {

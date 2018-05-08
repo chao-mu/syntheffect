@@ -21,6 +21,7 @@ namespace syntheffect {
 			void windowResized(int w, int h);
 			void keyPressed(int c);
 			void nextVideo();
+			void screenshot();
 
 		private:
 			shared_ptr<patch::Patch> patch_;

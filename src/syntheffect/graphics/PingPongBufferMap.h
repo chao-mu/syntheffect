@@ -17,7 +17,6 @@ namespace syntheffect {
                 int width_;
                 int height_;
                 int internal_format_;
-                
         };
     }
 }
