@@ -7,15 +7,11 @@ vec3 mainFrag()
 {
     vec3 noise = texture(displacerTex, textureCoordinate).rgb;
     
-    vec2 uv = normalize_1to1(textureCoordinate, resolution);
-    //uv = clamp(uv + noise.rb - .2, 0., 1.);
-    uv += normalize_1to1(noise.rg, vec2(0, 1)) * scale;
+    vec2 uv = normalize_0to1(textureCoordinate, resolution);
+    uv += (noise.rg * scale);
+    uv = denormalize_0to1(uv, resolution);
  
-    //uv /= noise.rb;
-
-    vec3 color = texture(tex0, denormalize_1to1(uv, resolution)).rgb;
-
-    return color;
+    return texture(tex0, uv).rgb;
 }
 
 #pragma include "include/footer.glsl"

@@ -33,5 +33,15 @@ namespace syntheffect {
         std::map<std::string, bool> PingPongBufferMap::getAccessHistory() {
             return access_history_;
         }
+
+        bool PingPongBufferMap::isAccessed() {
+            for (auto kv : getAccessHistory()) {
+                if (kv.second) {
+                    return true;
+                }
+            }
+
+            return false;
+        }
     }
 }

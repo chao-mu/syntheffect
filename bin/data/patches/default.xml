@@ -1,23 +1,24 @@
 <patch>
     <pipelines>
-        <pipeline in="channel1" out="out">
-            <shader vert="Convolution" frag="Blur"/>
-            <shader vert="Convolution" frag="Scharr">
-                <paramWave name="mixture" shape="sin" shift="3.1415" freq="0.5"/>
-            </shader>
-            <shader vert="Convolution" frag="Scharr">
-                <paramBool name="inversionEnabled" value="true"/>
-                <paramWave name="mixture" shape="sin" freq="0.5"/>
-            </shader>
-            <shader frag="Huerific">
-                <paramWave name="mixture" shape="sin" freq="0.5" amp="0.6"/>
-            </shader>
-            <shader frag="Mix">
-                <paramTexture name="secondTex" value="last-out"/>
-                <paramFloat name="amount" value="0.87"/>
-                <paramInt name="method" value="1"/>
+        <pipeline in="channel1" out="colors">
+            <shader frag="HSVOffset">
+                <paramWave name="hueOffset" shape="sin" shift="1.5"/>
+                <paramWave name="saturationOffset" shape="sin" shift="4"/>
+                <paramWave name="valueOffset" shape="sin"/>
             </shader>
         </pipeline>
-    </pipelines>
+        <pipeline in="colors" out="greyscale">
+            <shader vert="Convolution" frag="Scharr">
+                <paramBool name="greyscaleEnabled" value="true"/>
+            </shader>
+        </pipeline>
+        <pipeline in="colors" out="out">
+            <shader vert="Convolution" frag="Scharr"/>
+            <shader frag="Mix">
+                <paramTexture name="secondTex" value="greyscale"/>
+                <paramWave name="amount" shape="sin"/>
+            </shader>
+        </pipeline>
+   </pipelines>
     <controls/>
 </patch>
