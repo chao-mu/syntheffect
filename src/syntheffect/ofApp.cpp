@@ -18,10 +18,12 @@
 #define SEEK_FRAMES 20
 
 namespace syntheffect {
-    ofApp::ofApp(shared_ptr<RtMidiIn> midi_in, std::string playlist_path) 
+    ofApp::ofApp(std::shared_ptr<RtMidiIn> midi_in, std::string playlist_path) 
             : ofBaseApp(),
-            midi_in_(move(midi_in)) {
+            midi_in_(move(midi_in)),
+            effect_params_(std::make_shared<graphics::Params>()) {
         playlist_path_ = playlist_path;
+        beat_ = std::make_shared<ofxBeat>();
     }
 
     void ofApp::setup() {
@@ -39,23 +41,29 @@ namespace syntheffect {
         #endif
 
         nextVideo();
-        
-        if (is_recording_) {
-            int sample_rate = 44100;
-            int channels = 2;
 
+        int sample_rate = 44100;
+        int channels = 2;
+
+        ofSoundStreamSettings sound_settings;
+
+        std::vector<ofSoundDevice> sound_devices = sound_stream_.getMatchingDevices("ma++ ingalls for Cycling '74: Soundflower", 2, 2);
+        if (sound_devices.size() < 1) {
+            ofLogError() << "Soundflower device not found, sound features not enabled";
+        } else {
+            sound_settings.setInDevice(sound_devices[0]);
+            sound_stream_.setup(this, 0, channels, sample_rate, beat_->getBufferSize(), 4);
+        }
+
+            //ofSoundStreamSetup(sound_settings);
+            //sound_stream_.setup(this, 0, channels, sample_rate, beat_->getBufferSize(), 4);
+
+
+        if (is_recording_) {
             vid_recorder_.setVideoCodec("mpeg4");
             vid_recorder_.setVideoBitrate("800k");
             vid_recorder_.setAudioCodec("mp3");
             vid_recorder_.setAudioBitrate("192k");
-
-            std::vector<ofSoundDevice> devices = sound_stream_.getMatchingDevices("ma++ ingalls for Cycling '74: Soundflower", 2, 2);
-            if (devices.size() < 1) {
-                ofLogError() << "Sound device not found, not recording sound";
-            } else {
-                sound_stream_.setDevice(devices[0]);
-                sound_stream_.setup(this, 0, channels, sample_rate, 256, 4);
-            }
 
             vid_recorder_.setup(
                 "vid-out" + ofGetTimestampString() + ".mov",
@@ -78,7 +86,7 @@ namespace syntheffect {
         display_ = graphics::Display();
         display_.load(w, h, ofGetWidth(), ofGetHeight());
 
-        channels_ = make_shared<graphics::PingPongBufferMap>(w, h, GL_RGB);
+        channels_ = std::make_shared<graphics::PingPongBufferMap>(w, h, GL_RGB);
 
         channels_->allocate(CHANNEL_ONE);
         channels_->allocate(CHANNEL_OUT);
@@ -96,6 +104,8 @@ namespace syntheffect {
         if(is_recording_) {
             vid_recorder_.addAudioSamples(input, buffer_size, channels);
         }
+
+        beat_->audioReceived(input, buffer_size, channels);
     }
 
     void ofApp::update() {
@@ -112,6 +122,14 @@ namespace syntheffect {
         if (!video_->isFrameNew()) {
             return;
         }
+
+        beat_->update(ofGetElapsedTimeMillis());
+
+        effect_params_->float_params["kick"] = beat_->kick();
+        effect_params_->float_params["snare"] = beat_->snare();
+        effect_params_->float_params["hihat"] = beat_->hihat();
+
+        patch_->setEffectParams(effect_params_);
 
         std::vector<unsigned char> raw_message;
         while (midi_in_->getMessage(&raw_message) > 0) {

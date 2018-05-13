@@ -1,6 +1,6 @@
 #pragma once
 
-#include "syntheffect/effect/Effect.h"
+#include "syntheffect/graphics/Effect.h"
 #include "syntheffect/graphics/PingPongBufferMap.h"
 #include "syntheffect/video/Video.h"
 
@@ -10,17 +10,18 @@ namespace syntheffect {
             public:
                 Pipeline(std::string in, std::string out);
 
-                void drawTo(shared_ptr<graphics::PingPongBufferMap> channels, float t);
+                void drawTo(std::shared_ptr<graphics::PingPongBufferMap> channels, float t);
 
-                void addEffect(shared_ptr<effect::Effect> pipeline_effect);
+                void addEffect(std::shared_ptr<graphics::Effect> pipeline_effect);
 
                 std::string getIn();
                 std::string getOut();
-                std::string in_;
-                std::string out_;
+                std::vector<std::shared_ptr<graphics::Effect>> getEffects();
 
             private:
-                std::vector<shared_ptr<effect::Effect>> effects_;
+                std::vector<std::shared_ptr<graphics::Effect>> effects_;
+                std::string in_;
+                std::string out_;
         };
     }
 }

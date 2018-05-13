@@ -77,8 +77,8 @@
 # add a runtime path to search for those shared libraries, since they aren't 
 # incorporated directly into the final executable application binary.
 # TODO: should this be a default setting?
- PROJECT_LDFLAGS=-L/usr/local/lib -lrtmidi
-
+ PROJECT_LDFLAGS=-L/usr/local/lib -lrtmidi -L/usr/local/opt/openssl/lib
+#
 ################################################################################
 # PROJECT DEFINES
 #   Create a space-delimited list of DEFINES. The list will be converted into 
@@ -105,7 +105,7 @@
 #
 #   Note: Leave a leading space when adding list items with the += operator
 ################################################################################
-PROJECT_CFLAGS = -I/usr/local/include/rtmidi
+PROJECT_CFLAGS = -I/usr/local/include/rtmidi -I/usr/local/opt/openssl/include
 
 ################################################################################
 # PROJECT OPTIMIZATION CFLAGS

@@ -5,6 +5,7 @@
 #include "RtMidi.h"
 
 #include "ofxVideoRecorder.h"
+#include "ofxBeat.h"
 
 #include "syntheffect/patch/Patch.h"
 #include "syntheffect/midi/CmdMicro.h"
@@ -14,7 +15,7 @@
 namespace syntheffect {
 	class ofApp : public ofBaseApp, midi::CmdMicro {
 		public:
-			ofApp(shared_ptr<RtMidiIn> midi_in, std::string playlist_path);
+			ofApp(std::shared_ptr<RtMidiIn> midi_in, std::string playlist_path);
 			void setup();
 			void update();
 			void draw();
@@ -31,15 +32,18 @@ namespace syntheffect {
 		private:
 		    ofxVideoRecorder vid_recorder_;
 			ofSoundStream sound_stream_;
+			std::shared_ptr<ofxBeat> beat_;
 
-			shared_ptr<patch::Patch> patch_;
-			shared_ptr<RtMidiIn> midi_in_;
+			std::shared_ptr<patch::Patch> patch_;
+			std::shared_ptr<RtMidiIn> midi_in_;
 
 			graphics::Display display_;
-			shared_ptr<video::Video> video_;
+			std::shared_ptr<video::Video> video_;
 			video::Playlist playlist_;
 			std::string playlist_path_;
-			shared_ptr<graphics::PingPongBufferMap> channels_;
+			std::shared_ptr<graphics::PingPongBufferMap> channels_;
+
+			std::shared_ptr<graphics::Params> effect_params_;
 
 			void setupDrawSize();
 	};

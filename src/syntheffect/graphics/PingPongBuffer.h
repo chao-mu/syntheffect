@@ -14,15 +14,15 @@ namespace syntheffect {
 
                 void begin();
                 void end();
-                void drawTo(shared_ptr<PingPongBuffer> buff, int x=0, int y=0);
+                void drawTo(std::shared_ptr<PingPongBuffer> buff, int x=0, int y=0);
 
-                shared_ptr<ofFbo> drawable();
+                std::shared_ptr<ofFbo> drawable();
 
             private:
                 void swap();
 
-                shared_ptr<ofFbo> src_;
-                shared_ptr<ofFbo> dest_;
+                std::shared_ptr<ofFbo> src_;
+                std::shared_ptr<ofFbo> dest_;
                 bool receiving_;
         };
     }

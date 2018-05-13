@@ -1,6 +1,6 @@
 #include "syntheffect/patch/PatchBuilder.h"
 
-#include "syntheffect/effect/Shader.h"
+#include "syntheffect/graphics/Shader.h"
 
 #define DEFAULT_FRAG "Passthrough"
 #define DEFAULT_VERT "Passthrough"
@@ -12,45 +12,44 @@ namespace syntheffect {
         PatchBuilder::PatchBuilder() : effects_by_id_() {
         }
 
-        shared_ptr<Patch> PatchBuilder::build(std::string path, shared_ptr<graphics::PingPongBufferMap> channels) {
-            shared_ptr<Patch> p = make_shared<Patch>();
+        std::shared_ptr<Patch> PatchBuilder::build(std::string path, std::shared_ptr<graphics::PingPongBufferMap> channels) {
+            std::shared_ptr<Patch> p = std::make_shared<Patch>();
 
-            ofXml xml = ofXml(path);
+            ofXml xml;
 
-            // Set to pipeline
-            if (xml.setTo(PIPELINES_PATH)) {
-                if (!addPipelines(xml, p, channels)) {
-                    return nullptr;
-                }
-
-                xml.setToParent();
-            } else {
+            if (!xml.load(path)) {
+                ofLogError() << "Unable to load xml file " << path;
                 return nullptr;
             }
 
-            // Set to controls
-            if (xml.setTo(CONTROLS_PATH)) {
-                if (!addControls(xml, p)) {
-                    return nullptr;
-                }
+            ofXml::Search pipelines_search = xml.find(PIPELINES_PATH);
+            if (pipelines_search.empty()) {
+                ofLogError() << "Missing <pipelines> section";
+                return nullptr;
+            }
 
-                xml.setToParent();
-            } else {
+            if (pipelines_search.size() > 1) {
+                ofLogError() << "More than one <pipelines> section found";
+                return nullptr;
+            }
+
+            ofXml pipeleines_section = pipelines_search.getFirst();
+            if (!addPipelines(pipeleines_section,  p, channels)) {
                 return nullptr;
             }
 
             return p;
         }
 
-        bool PatchBuilder::addShader(ofXml& xml, shared_ptr<graphics::PingPongBufferMap> channels, shared_ptr<Pipeline> parent) {
-            shared_ptr<effect::Shader> shader = make_shared<effect::Shader>();
+        bool PatchBuilder::addShader(const ofXml& xml, std::shared_ptr<graphics::PingPongBufferMap> channels, std::shared_ptr<Pipeline> parent) {
+            std::shared_ptr<graphics::Shader> shader = std::make_shared<graphics::Shader>();
 
-            std::string frag = xml.getAttribute("frag");
+            std::string frag = xml.getAttribute("frag").getValue();
             if (frag.empty()) {
                 frag = DEFAULT_FRAG;
             }
 
-            std::string vert = xml.getAttribute("vert");
+            std::string vert = xml.getAttribute("vert").getValue();
             if (vert.empty()) {
                 vert = DEFAULT_VERT;
             }
@@ -59,73 +58,71 @@ namespace syntheffect {
                 return false;
             }
 
-            if (xml.getNumChildren() > 0) {
-                xml.setToChild(0);
-                do {
-                    if (!addShaderParam(xml, channels, shader)) {
-                        return false;
-                    }
-                } while (xml.setToSibling());
-
-                xml.setToParent();
+            for (const auto& child : xml.find("*")) {
+                if (!addShaderParam(child, channels, shader)) {
+                    return false;
+                }
             }
 
             parent->addEffect(shader);
 
-            std::string id = xml.getAttribute("id");
-            if (!id.empty()) {
-                effects_by_id_[id] = shader;
-            }
-
             return true;
         }
 
-        bool PatchBuilder::addShaderParam(ofXml& xml, shared_ptr<graphics::PingPongBufferMap> channels, shared_ptr<effect::Shader> parent) {
+        bool PatchBuilder::addShaderParam(const ofXml& xml, std::shared_ptr<graphics::PingPongBufferMap> channels, std::shared_ptr<graphics::Shader> parent) {
             std::string param_el = xml.getName();
-            std::string param_name = xml.getAttribute("name");
+            std::string param_name = xml.getAttribute("name").getValue();
 
             if (param_el == "paramInt") {
-                int v = xml.getIntValue("[@value]");
-                std::function<int()> f = [v]() { return v; };
-                parent->setParam(param_name, f);
+                int v = xml.getAttribute("value").getIntValue();
+                parent->params.int_params[param_name] = v;
+            } else if (param_el == "paramTime") {
+                float speed = 1;
+                if (xml.getAttribute("speed").getValue() != "") {
+                    speed = xml.getAttribute("speed").getFloatValue();
+                }
+
+                std::function<float()> f = [speed]() {
+                    return ofGetElapsedTimef();
+                };
+
+                parent->params.float_func_params[param_name] = f;
             } else if (param_el == "paramFloat") {
-                float v = xml.getFloatValue("[@value]");
-                std::function<float()> f = [v]() { return v; };
-                parent->setParam(param_name, f);
+                float v = xml.getAttribute("value").getFloatValue();
+                parent->params.float_params[param_name] = v;
             } else if (param_el == "paramTexture") {
-                string v = xml.getValue("[@value]");
+                std::string v = xml.getAttribute("value").getValue();
                 std::function<ofTexture()> f = [v, channels]() {
                     return channels->get(v)->drawable()->getTexture();
                 };
-                parent->setParam(param_name, f);
+                parent->params.texture_func_params[param_name] = f;
             } else if (param_el == "paramBool") {
-                std::string raw = xml.getValue("[@value]");
+                std::string raw = xml.getAttribute("value").getValue();
                 bool v = raw == "true" || raw == "on" || raw == "1";
-                std::function<bool()> f = [v]() { return v; };
-                parent->setParam(param_name, f);
+                parent->params.bool_params[param_name] = v;
             } else if (param_el == "paramWave") {
                 float shift = 0;
-                if (xml.exists("[@shift]")) {
-                    shift = xml.getFloatValue("[@shift]");
+                if (xml.getAttribute("shift").getValue() != "") {
+                    shift = xml.getAttribute("shift").getFloatValue();
                 }
 
                 float amplitude = 1;
-                if (xml.exists("[@amp]")) {
-                    amplitude = xml.getFloatValue("[@amp]");
+                if (xml.getAttribute("amp").getValue() != "") {
+                    amplitude = xml.getAttribute("amp").getFloatValue();
                 }
 
                 float freq = 1;
-                if (xml.exists("[@freq]")) {
-                    freq = xml.getFloatValue("[@freq]");
+                if (xml.getAttribute("freq").getValue() != "") {
+                    freq = xml.getAttribute("freq").getFloatValue();
                 }
 
                 float offset_y = 0;
-                if (xml.exists("[@offset-y]")) {
-                    offset_y = xml.getFloatValue("[@offset-y]");
+                if (xml.getAttribute("offset_y").getValue() != "") {
+                    offset_y = xml.getAttribute("offset_y").getFloatValue();
                 }
 
                 std::function<float(float)> wave;
-                std::string shape = xml.getValue("[@shape]");
+                std::string shape = xml.getAttribute("shape").getValue();
                 if (shape == "cos") {
                     wave = std::cosf;
                 } else if (shape == "sin") {
@@ -139,7 +136,7 @@ namespace syntheffect {
                     return offset_y + ((1.0 + wave((ofGetElapsedTimef() * freq) + shift) ) * 0.5 * amplitude);
                 };
 
-                parent->setParam(param_name, f);
+                parent->params.float_func_params[param_name] = f;
             } else {
                 ofLogError() << "Unrecognized element " + param_el;
                 return false;
@@ -148,41 +145,31 @@ namespace syntheffect {
             return true;
         }
 
-        bool PatchBuilder::addPipelines(ofXml& xml, shared_ptr<Patch> parent, shared_ptr<graphics::PingPongBufferMap> channels) {
-            int children = xml.getNumChildren();
-            if (children == 0) {
-                ofLogError() << "<pipelines> requires children";
-                return false;
-            }
-
+        bool PatchBuilder::addPipelines(const ofXml& xml, std::shared_ptr<Patch> parent, std::shared_ptr<graphics::PingPongBufferMap> channels) {
             // Iterate over pipeline
-            xml.setToChild(0);
-            for (int i=0; i < children; i++) {
-                std::string param_el = xml.getName();
+            for (const auto& child : xml.getChildren()) {
+               std::string param_el = child.getName();
                 if (param_el == "pipeline") {
-                    if (!addPipeline(xml, parent, channels)) {
+                    if (!addPipeline(child, parent, channels)) {
                         return false;
                     }
                 } else {
                     ofLogError() << "Expecting pipeline, got " + param_el;
                     return false;
                 }
-
-                xml.setToSibling();
             }
-            xml.setToParent();
 
             return true;
          }
 
-        bool PatchBuilder::addPipeline(ofXml& xml, shared_ptr<Patch> patch, shared_ptr<graphics::PingPongBufferMap> channels) {
-            std::string in = xml.getAttribute("in");
+        bool PatchBuilder::addPipeline(const ofXml& xml, std::shared_ptr<Patch> patch, std::shared_ptr<graphics::PingPongBufferMap> channels) {
+            std::string in = xml.getAttribute("in").getValue();
             if (in.empty()) {
                 ofLogError() << "Missing 'in' attribute in pipeline element";
                 return false;
             }
 
-            std::string out = xml.getAttribute("out");
+            std::string out = xml.getAttribute("out").getValue();
             if (out.empty()) {
                 ofLogError() << "Missing 'out' attribute in pipeline element";
                 return false;
@@ -190,42 +177,20 @@ namespace syntheffect {
 
             channels->allocate(out);
 
-            shared_ptr<Pipeline> pipeline = make_shared<Pipeline>(in, out);
+            std::shared_ptr<Pipeline> pipeline = std::make_shared<Pipeline>(in, out);
             patch->addPipeline(pipeline);
 
-            int children = xml.getNumChildren();
-            // Add default passthrough shader
-            if (children == 0) {
-                auto shader = make_shared<effect::Shader>();
-                if (!shader->load(DEFAULT_FRAG, DEFAULT_VERT)) {
-                    ofLogError() << "Failed to load implied shader to <pipeline>";
-                    return false;
-                }
-
-                pipeline->addEffect(shader);
-
-                return true;
-            }
-
             // Iterate over pipeline
-            xml.setToChild(0);
-            for (int i=0; i < children; i++) {
-                std::string el_name = xml.getName();
+            for (const auto& child : xml.getChildren()) {
+                std::string el_name = child.getName();
 
                 if (el_name == "shader") {
-                    if (!addShader(xml, channels, pipeline)) {
+                    if (!addShader(child, channels, pipeline)) {
                         return false;
                     }
                 }
-
-                xml.setToSibling();
             }
-            xml.setToParent();
             
-            return true;
-        }
-
-        bool PatchBuilder::addControls(ofXml& xml, shared_ptr<Patch> p) {
             return true;
         }
     }

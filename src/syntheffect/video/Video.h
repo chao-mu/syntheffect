@@ -9,7 +9,7 @@ namespace syntheffect {
         class Video {
             public:
                 bool load(std::string path);
-                void drawTo(shared_ptr<graphics::PingPongBuffer> ping_pong_);
+                void drawTo(std::shared_ptr<graphics::PingPongBuffer> ping_pong_);
                 bool update();
                 bool isAllocated();
                 float getWidth();

@@ -41,7 +41,7 @@ namespace syntheffect {
             setupDrawSize();
         }
 
-        void Display::draw(shared_ptr<PingPongBufferMap> buffers, std::vector<std::string> keys) {
+        void Display::draw(std::shared_ptr<PingPongBufferMap> buffers, std::vector<std::string> keys) {
             float count = keys.size();
             assert(count <= 4 && count > 0);
             if (count == 1) {
@@ -73,7 +73,7 @@ namespace syntheffect {
             }
         }
 
-        void Display::draw(shared_ptr<ofFbo> buffer) {
+        void Display::draw(std::shared_ptr<ofFbo> buffer) {
             ofClear(255, 255, 255, 255);
             ofSetColor(255);
 

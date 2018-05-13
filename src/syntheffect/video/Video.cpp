@@ -56,7 +56,7 @@ namespace syntheffect {
             return video_player_.isFrameNew();
         }
 
-        void Video::drawTo(shared_ptr<graphics::PingPongBuffer> ping_pong) {
+        void Video::drawTo(std::shared_ptr<graphics::PingPongBuffer> ping_pong) {
             ping_pong->begin();
             ofClear(255, 255, 255, 0);
             video_player_.draw(0, 0);

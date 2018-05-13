@@ -15,13 +15,13 @@ namespace syntheffect {
                 return;
             }
 
-            shared_ptr<PingPongBuffer> buf = make_shared<PingPongBuffer>();
+            std::shared_ptr<PingPongBuffer> buf = std::make_shared<PingPongBuffer>();
             buf->allocate(width_, height_, internal_format_);
             buffers_[key] = buf;
             access_history_[key] = false;
         }
 
-        shared_ptr<PingPongBuffer> PingPongBufferMap::get(std::string key) {
+        std::shared_ptr<PingPongBuffer> PingPongBufferMap::get(std::string key) {
             access_history_[key] = true;
             if (buffers_.count(key) == 0) {
                 ofLogError() << "Accessing non-existent buffer with key '" << key << "'";

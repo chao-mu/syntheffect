@@ -1,24 +1,10 @@
 <patch>
     <pipelines>
-        <pipeline in="channel1" out="colors">
+        <pipeline in="channel1" out="out">
+            <shader frag="Huerific"/>
             <shader frag="HSVOffset">
-                <paramWave name="hueOffset" shape="sin" shift="1.5"/>
-                <paramWave name="saturationOffset" shape="sin" shift="4"/>
-                <paramWave name="valueOffset" shape="sin"/>
-            </shader>
-        </pipeline>
-        <pipeline in="colors" out="greyscale">
-            <shader vert="Convolution" frag="Scharr">
-                <paramBool name="greyscaleEnabled" value="true"/>
-            </shader>
-        </pipeline>
-        <pipeline in="colors" out="out">
-            <shader vert="Convolution" frag="Scharr"/>
-            <shader frag="Mix">
-                <paramTexture name="secondTex" value="greyscale"/>
-                <paramWave name="amount" shape="sin"/>
+                <paramTime name="hueOffset"/>
             </shader>
         </pipeline>
    </pipelines>
-    <controls/>
 </patch>

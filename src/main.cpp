@@ -4,7 +4,7 @@
 #include "RtMidi.h"
 
 int main(int argc, const char *argv[]){
-    shared_ptr<RtMidiIn> midi_in = make_shared<RtMidiIn>();
+    std::shared_ptr<RtMidiIn> midi_in = std::make_shared<RtMidiIn>();
 
     if (argc != 2) {
         std::cout << "Usage: syntheffect path/to/playlist.m3u\n";
@@ -24,13 +24,12 @@ int main(int argc, const char *argv[]){
     ofGLFWWindowSettings settings;
     settings.setGLVersion(3, 3); // OpenGL 3,3 #version 330
     settings.setPosition(ofVec2f(0,0));
-    settings.width = 1280;
-    settings.height = 720;
+    settings.setSize(1280, 720);
     ofCreateWindow(settings);
     ofSetFullscreen(true);
     ofHideCursor();
 
-    shared_ptr<syntheffect::ofApp> app(new syntheffect::ofApp(midi_in, playlist_path));
+    std::shared_ptr<syntheffect::ofApp> app(new syntheffect::ofApp(midi_in, playlist_path));
     ofSetBackgroundColor(0, 0, 0);
 
     ofRunApp(app);

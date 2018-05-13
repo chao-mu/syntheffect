@@ -4,12 +4,12 @@
 
 namespace syntheffect {
     namespace graphics {
-        PingPongBuffer::PingPongBuffer() : src_(make_shared<ofFbo>()), dest_(make_shared<ofFbo>()) {
+        PingPongBuffer::PingPongBuffer() : src_(std::make_shared<ofFbo>()), dest_(std::make_shared<ofFbo>()) {
             receiving_ = false;
         }
 
         void PingPongBuffer::allocate(int width, int height, int internal_format) {
-            vector<shared_ptr<ofFbo>> fbos = {src_, dest_};
+            std::vector<std::shared_ptr<ofFbo>> fbos = {src_, dest_};
             for (auto fbo: fbos) {
                 fbo->allocate(width, height, internal_format);
 
@@ -23,7 +23,7 @@ namespace syntheffect {
             }
         }
 
-        void PingPongBuffer::drawTo(shared_ptr<PingPongBuffer> buff, int x, int y) {
+        void PingPongBuffer::drawTo(std::shared_ptr<PingPongBuffer> buff, int x, int y) {
             buff->begin();
             drawable()->draw(x, y);
             buff->end();
@@ -52,7 +52,7 @@ namespace syntheffect {
             dest_->end();
         }
 
-        shared_ptr<ofFbo> PingPongBuffer::drawable() {
+        std::shared_ptr<ofFbo> PingPongBuffer::drawable() {
             return receiving_ ? src_ : dest_;
         }
 
