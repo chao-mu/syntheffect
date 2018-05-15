@@ -76,9 +76,9 @@ namespace syntheffect {
                 "vid-out-" + ofGetTimestampString() + ".mp4",
                 video_->getWidth(),
                 video_->getHeight(),
-                FPS//,
-                //sample_rate,
-                //channels
+                FPS,
+                sample_rate,
+                channels
             );
 
             vid_recorder_.start();
@@ -108,15 +108,13 @@ namespace syntheffect {
         }
     }
     void ofApp::audioIn(ofSoundBuffer& buf) {
-        float *input = &(*buf.getBuffer().begin());
-        size_t buffer_size = buf.size();
+        float *input = &buf.getBuffer()[0];
+        size_t buffer_size = buf.getNumFrames();
         size_t channels = buf.getNumChannels();  
 
-        /*
         if(is_recording_) {
             vid_recorder_.addAudioSamples(input, buffer_size, channels);
         }
-        */
 
         beat_->audioReceived(input, buffer_size, channels);
     }
