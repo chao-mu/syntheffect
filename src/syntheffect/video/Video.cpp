@@ -53,10 +53,11 @@ namespace syntheffect {
         }
 
         bool Video::isFrameNew() {
-            return video_player_.isFrameNew();
+            return last_drawn_frame_ < video_player_.getCurrentFrame();
         }
 
         void Video::drawTo(std::shared_ptr<graphics::PingPongBuffer> ping_pong) {
+            last_drawn_frame_ = video_player_.getCurrentFrame();
             ping_pong->begin();
             ofClear(255, 255, 255, 0);
             video_player_.draw(0, 0);

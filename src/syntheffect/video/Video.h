@@ -20,6 +20,7 @@ namespace syntheffect {
 
             private:
                 ofVideoPlayer video_player_;
+                int last_drawn_frame_ = 0;
         };
     }
 }

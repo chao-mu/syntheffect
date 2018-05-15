@@ -14,8 +14,10 @@
 #define RECORDING false
 #define DISPLAY_KEYS {CHANNEL_OUT}
 
+#define FPS 30
+
 // How many frames to seek forward/back in the video
-#define SEEK_FRAMES 20
+#define SEEK_FRAMES 60
 
 namespace syntheffect {
     ofApp::ofApp(std::shared_ptr<RtMidiIn> midi_in, std::string playlist_path) 
@@ -29,6 +31,8 @@ namespace syntheffect {
     void ofApp::setup() {
         is_recording_ = RECORDING;
 
+        ofSetFrameRate(FPS);
+
         playlist_.load(playlist_path_);
 
         ofSetBackgroundAuto(true);
@@ -41,37 +45,40 @@ namespace syntheffect {
         #endif
 
         nextVideo();
-
+    
         int sample_rate = 44100;
         int channels = 2;
-
-        ofSoundStreamSettings sound_settings;
 
         std::vector<ofSoundDevice> sound_devices = sound_stream_.getMatchingDevices("ma++ ingalls for Cycling '74: Soundflower", 2, 2);
         if (sound_devices.size() < 1) {
             ofLogError() << "Soundflower device not found, sound features not enabled";
         } else {
-            sound_settings.setInDevice(sound_devices[0]);
-            sound_stream_.setup(this, 0, channels, sample_rate, beat_->getBufferSize(), 4);
+            ofSoundDevice device = sound_devices[0];
+            ofSoundStreamSettings sound_settings;
+            sound_settings.setInDevice(device);
+            sound_settings.setOutDevice(device);
+            sound_settings.setInListener(this);
+            sound_settings.numInputChannels = device.inputChannels;
+            sound_settings.numOutputChannels = device.outputChannels;
+            sound_settings.sampleRate = sample_rate;
+            sound_settings.bufferSize = beat_->getBufferSize();
+
+            ofSoundStreamSetup(sound_settings);
         }
-
-            //ofSoundStreamSetup(sound_settings);
-            //sound_stream_.setup(this, 0, channels, sample_rate, beat_->getBufferSize(), 4);
-
 
         if (is_recording_) {
             vid_recorder_.setVideoCodec("mpeg4");
-            vid_recorder_.setVideoBitrate("800k");
+            vid_recorder_.setVideoBitrate("5000k");
             vid_recorder_.setAudioCodec("mp3");
             vid_recorder_.setAudioBitrate("192k");
 
             vid_recorder_.setup(
-                "vid-out" + ofGetTimestampString() + ".mov",
+                "vid-out-" + ofGetTimestampString() + ".mp4",
                 video_->getWidth(),
                 video_->getHeight(),
-                video_->getFPS(),
-                sample_rate,
-                channels
+                FPS//,
+                //sample_rate,
+                //channels
             );
 
             vid_recorder_.start();
@@ -100,26 +107,28 @@ namespace syntheffect {
             throw runtime_error("Unable to build patch!");
         }
     }
-    void ofApp::audioIn(float *input, int buffer_size, int channels){
+    void ofApp::audioIn(ofSoundBuffer& buf) {
+        float *input = &(*buf.getBuffer().begin());
+        size_t buffer_size = buf.size();
+        size_t channels = buf.getNumChannels();  
+
+        /*
         if(is_recording_) {
             vid_recorder_.addAudioSamples(input, buffer_size, channels);
         }
+        */
 
         beat_->audioReceived(input, buffer_size, channels);
     }
 
     void ofApp::update() {
         if (!video_->update()) {
+            stopRecording();
             nextVideo();
             video_->update();
-            is_recording_ = false;
         }
 
         if (!video_->isAllocated()) {
-            return;
-        }
-
-        if (!video_->isFrameNew()) {
             return;
         }
 
@@ -167,15 +176,22 @@ namespace syntheffect {
             return;
         }
 
-        ofSetWindowTitle("fps: " + std::to_string(ofGetFrameRate()));
-
         // Draw to display
         display_.draw(channels_, DISPLAY_KEYS);
+
+        // Draw to recording
         if (is_recording_) {
             ofPixels pixels;
             channels_->get(CHANNEL_OUT)->drawable()->readToPixels(pixels);
             vid_recorder_.addFrame(pixels);
         }
+
+        ofSetWindowTitle("fps: " + std::to_string(ofGetFrameRate()));
+    }
+
+    void ofApp::stopRecording() {
+        vid_recorder_.close();
+        is_recording_ = false;
     }
 
     void ofApp::screenshot() {
@@ -198,6 +214,7 @@ namespace syntheffect {
         if (c == 'p') {
             screenshot();
         } else if (c == 'q') {
+            vid_recorder_.close();
             ofExit();
         } else if (c == OF_KEY_LEFT) {
             video_->seek(-SEEK_FRAMES);

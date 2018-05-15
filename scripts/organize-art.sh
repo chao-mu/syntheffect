@@ -8,7 +8,7 @@ do
     mv $art $art_dir
 done
 
-for art in bin/data/vid-out-*.mov
+for art in bin/data/vid-out-*
 do
     day=`echo $art | perl -ne 'm/vid-out-(\d+-\d+-\d+)-/ && print $1'`
     art_dir=art/videos/$day

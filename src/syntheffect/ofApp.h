@@ -19,13 +19,14 @@ namespace syntheffect {
 			void setup();
 			void update();
 			void draw();
+			void audioIn(ofSoundBuffer& buf);
 
 		protected:
 			void windowResized(int w, int h);
 			void keyPressed(int c);
 			void nextVideo();
 			void screenshot();
-			void audioIn(float *input, int buffer_size, int channels);
+			void stopRecording();
 
 			bool is_recording_;
 
