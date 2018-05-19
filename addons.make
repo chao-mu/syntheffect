@@ -1,4 +1,4 @@
-ofxM3U
 ofxVideoRecorder
 ofxBeat
+ofxM3U
 ofxPoco

@@ -18,18 +18,18 @@ namespace syntheffect {
             ofXml xml;
 
             if (!xml.load(path)) {
-                ofLogError() << "Unable to load xml file " << path;
+                ofLogError("PatchBuilder", "Unable to load xml file %s", path.c_str());
                 return nullptr;
             }
 
             ofXml::Search pipelines_search = xml.find(PIPELINES_PATH);
             if (pipelines_search.empty()) {
-                ofLogError() << "Missing <pipelines> section";
+                ofLogError("PatchBuilder", "Missing <pipelines> section");
                 return nullptr;
             }
 
             if (pipelines_search.size() > 1) {
-                ofLogError() << "More than one <pipelines> section found";
+                ofLogError("PatchBulder", "More than one <pipelines> section found");
                 return nullptr;
             }
 
@@ -128,7 +128,7 @@ namespace syntheffect {
                 } else if (shape == "sin") {
                     wave = std::sinf;
                 } else {
-                    ofLogError() << "Unspecified or invalid shape attribute: " + shape;
+                    ofLogError("PatchBuilder", "Unspecified or invalid shape attribute: %s", shape.c_str());
                     return false;
                 }
 
@@ -138,7 +138,7 @@ namespace syntheffect {
 
                 parent->params.float_func_params[param_name] = f;
             } else {
-                ofLogError() << "Unrecognized element " + param_el;
+                ofLogError("PatchBuilder", "Unrecognized element %s", param_el.c_str());
                 return false;
             }
 
@@ -154,7 +154,7 @@ namespace syntheffect {
                         return false;
                     }
                 } else {
-                    ofLogError() << "Expecting pipeline, got " + param_el;
+                    ofLogError("PatchBuilder", "Expecting pipeline, got %s", param_el.c_str());
                     return false;
                 }
             }
@@ -165,13 +165,13 @@ namespace syntheffect {
         bool PatchBuilder::addPipeline(const ofXml& xml, std::shared_ptr<Patch> patch, std::shared_ptr<graphics::PingPongBufferMap> channels) {
             std::string in = xml.getAttribute("in").getValue();
             if (in.empty()) {
-                ofLogError() << "Missing 'in' attribute in pipeline element";
+                ofLogError("PatchBuilder", "Missing 'in' attribute in pipeline element");
                 return false;
             }
 
             std::string out = xml.getAttribute("out").getValue();
             if (out.empty()) {
-                ofLogError() << "Missing 'out' attribute in pipeline element";
+                ofLogError("PatchBuilder", "Missing 'out' attribute in pipeline element");
                 return false;
             }
 

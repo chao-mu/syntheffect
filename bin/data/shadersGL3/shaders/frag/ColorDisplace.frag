@@ -2,13 +2,16 @@
 
 float distance = 0.05;
 
+uniform float speed = 1.;
+
 vec4 getNormalized(vec2 uv) {
     return texture(tex0, uv * resolution);
 }
 
 float noiseyChannel(vec3 base, vec2 uv, int channel) {
-    uv.x += mix(-distance, distance, noise(time + ((channel + 1) * 5)));
-    uv.y += mix(-distance, distance, noise(time + ((channel + 1) * 7)));
+    float t = speed * time;
+    uv.x += mix(-distance, distance, noise(t + ((channel + 1) * 5)));
+    uv.y += mix(-distance, distance, noise(t + ((channel + 1) * 7)));
     return mix(base[channel], getNormalized(uv)[channel], 0.5);
 }
 

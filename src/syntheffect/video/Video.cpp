@@ -5,12 +5,13 @@
 namespace syntheffect {
     namespace video {
         bool Video::load(std::string path) {
+            video_player_.setUseTexture(true);
+
             if (!video_player_.load(path)) {
                 return false;
             }
 
             video_player_.setLoopState(OF_LOOP_NONE);
-            //video_player_.setVolume(0);
             video_player_.play();
 
             return true;

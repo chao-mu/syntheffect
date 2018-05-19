@@ -1,38 +1,44 @@
-#include "ofMain.h"
+#include <tclap/CmdLine.h>
 
-#include "syntheffect/ofApp.h"
-#include "RtMidi.h"
+#include "syntheffect/app/Live.h"
+#include "syntheffect/app/DrawLoop.h"
+#include "syntheffect/patch/PatchBuilder.h"
 
 int main(int argc, const char *argv[]){
-    std::shared_ptr<RtMidiIn> midi_in = std::make_shared<RtMidiIn>();
+    TCLAP::CmdLine cmd("Syntheffect - Magical magic magic");
 
-    if (argc != 2) {
-        std::cout << "Usage: syntheffect path/to/playlist.m3u\n";
-        return -1;
+    TCLAP::SwitchArg liveArg("l", "live", "Live visual effects");
+    TCLAP::SwitchArg recordArg("r", "record", "Add visual effects to a video");
+    cmd.xorAdd(liveArg, recordArg);
+
+    TCLAP::ValueArg<std::string> inputArg("i", "input", "Input video", true, "", "string");
+    cmd.add(inputArg);
+
+    TCLAP::ValueArg<std::string> patchArg("p", "patch", "patch file", false, "patches/default.xml", "string");
+    cmd.add(patchArg);
+
+    try {
+        cmd.parse(argc, argv);
+    } catch (TCLAP::ArgException &e) {
+        std::cerr << "error: " << e.error() << " for arg " << e.argId() << std::endl;
     }
-
-    std::string playlist_path = argv[1];
  
-    // Check available ports.
-    unsigned int nPorts = midi_in->getPortCount();
-    if (nPorts == 0) {
-        std::cout << "No MIDI ports available!\n";
-        return -1;
+    if (liveArg.isSet()) {
+        ofGLFWWindowSettings settings;
+        settings.setGLVersion(3, 3); // OpenGL 3,3 #version 330
+        settings.setPosition(ofVec2f(0,0));
+        settings.setSize(1280, 720);
+        ofCreateWindow(settings);
+        ofSetFullscreen(true);
+        ofHideCursor();
+
+        auto app = make_shared<syntheffect::app::Live>(patchArg.getValue(), inputArg.getValue());
+        ofSetBackgroundColor(0, 0, 0);
+
+        ofRunApp(app);
+    } else if (recordArg.isSet()) {
+        
     }
-    midi_in->openPort(0);
-
-    ofGLFWWindowSettings settings;
-    settings.setGLVersion(3, 3); // OpenGL 3,3 #version 330
-    settings.setPosition(ofVec2f(0,0));
-    settings.setSize(1280, 720);
-    ofCreateWindow(settings);
-    ofSetFullscreen(true);
-    ofHideCursor();
-
-    std::shared_ptr<syntheffect::ofApp> app(new syntheffect::ofApp(midi_in, playlist_path));
-    ofSetBackgroundColor(0, 0, 0);
-
-    ofRunApp(app);
 
     return 0;
 }
