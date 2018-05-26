@@ -18,6 +18,10 @@ namespace syntheffect {
             return video->getWidth();
         }
 
+        float DrawLoop::getFPS() {
+            return video->getFPS();
+        }
+
         bool DrawLoop::load(std::string patch_path, std::string video_path) {
             video = std::make_shared<syntheffect::video::Video>();
             if (!video->load(video_path)) {
@@ -35,6 +39,7 @@ namespace syntheffect {
             patch = builder->build(patch_path, channels);
             if (!patch) {
                 ofLogError() << "Failed to build patch '" << patch_path << "'";
+                return false;
             }
 
             return true;

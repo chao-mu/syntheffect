@@ -1,6 +1,7 @@
 #include <tclap/CmdLine.h>
 
 #include "syntheffect/app/Live.h"
+#include "syntheffect/app/Record.h"
 #include "syntheffect/app/DrawLoop.h"
 #include "syntheffect/patch/PatchBuilder.h"
 
@@ -37,7 +38,8 @@ int main(int argc, const char *argv[]){
 
         ofRunApp(app);
     } else if (recordArg.isSet()) {
-        
+        ofSetupOpenGL(1024, 768, OF_WINDOW);
+        ofRunApp(new syntheffect::app::Record(patchArg.getValue(), inputArg.getValue()));
     }
 
     return 0;

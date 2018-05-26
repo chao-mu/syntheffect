@@ -9,8 +9,7 @@ namespace syntheffect {
         }
 
         void PingPongBuffer::allocate(int width, int height, int internal_format) {
-            std::vector<std::shared_ptr<ofFbo>> fbos = {src_, dest_};
-            for (auto fbo: fbos) {
+            for (auto fbo: {src_, dest_}) {
                 fbo->allocate(width, height, internal_format);
 
                 // Set magnification/minification algorithm
@@ -39,6 +38,13 @@ namespace syntheffect {
 
         bool PingPongBuffer::isAllocated() {
             return src_->isAllocated() && dest_->isAllocated();
+        }
+
+        void PingPongBuffer::drawFrom([]void() draw) {
+            begin();
+            ofClear(255, 255, 255, 0);
+            draw();
+            end();
         }
 
         void PingPongBuffer::begin() {

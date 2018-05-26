@@ -16,6 +16,7 @@ namespace syntheffect {
                 float getHeight();
                 void seek(int relative_frames);
                 float getFPS();
+                void nextFrame();
 
             private:
                 ofVideoPlayer video_player_;

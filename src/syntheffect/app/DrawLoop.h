@@ -20,9 +20,10 @@ namespace syntheffect {
 
                 float getWidth();
                 float getHeight();
+                float getFPS();
+                std::shared_ptr<video::Video> video;
 
             private:
-                std::shared_ptr<video::Video> video;
                 bool drawable_;
         };
     }

@@ -38,19 +38,9 @@ namespace syntheffect {
             return video_player_.getHeight();
         }
 
-        void Video::seek(int relative_frames) {
-            int current = video_player_.getCurrentFrame();
-            // Will be negative if we haven't done an update yet
-            if (current < 0) {
-                return;
-            }
-
-            int seek_to = relative_frames + current;
-            if (seek_to < 0) {
-                seek_to += video_player_.getTotalNumFrames();
-            }
-
-            video_player_.setFrame(seek_to % video_player_.getTotalNumFrames());
+        void Video::nextFrame() {
+            ofLogNotice() << std::to_string(video_player_.getCurrentFrame());
+            video_player_.nextFrame();
         }
 
         void Video::drawTo(std::shared_ptr<graphics::PingPongBuffer> ping_pong) {

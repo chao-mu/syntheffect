@@ -1,5 +1,7 @@
 #include "syntheffect/patch/PatchBuilder.h"
 
+#include <cmath>
+
 #include "syntheffect/graphics/Shader.h"
 
 #define DEFAULT_FRAG "Passthrough"
@@ -124,9 +126,9 @@ namespace syntheffect {
                 std::function<float(float)> wave;
                 std::string shape = xml.getAttribute("shape").getValue();
                 if (shape == "cos") {
-                    wave = std::cosf;
+                    wave = cosf;
                 } else if (shape == "sin") {
-                    wave = std::sinf;
+                    wave = sinf;
                 } else {
                     ofLogError("PatchBuilder", "Unspecified or invalid shape attribute: %s", shape.c_str());
                     return false;
