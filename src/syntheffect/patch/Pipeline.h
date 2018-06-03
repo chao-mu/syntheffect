@@ -2,7 +2,6 @@
 
 #include "syntheffect/graphics/Effect.h"
 #include "syntheffect/graphics/PingPongBufferMap.h"
-#include "syntheffect/video/Video.h"
 
 namespace syntheffect {
     namespace patch {

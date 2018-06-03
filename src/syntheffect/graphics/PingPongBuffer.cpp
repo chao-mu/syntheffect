@@ -36,15 +36,15 @@ namespace syntheffect {
             return src_->getHeight();
         }
 
-        bool PingPongBuffer::isAllocated() {
-            return src_->isAllocated() && dest_->isAllocated();
-        }
-
-        void PingPongBuffer::drawFrom([]void() draw) {
+        void PingPongBuffer::drawFrom(std::function<void()> draw) {
             begin();
             ofClear(255, 255, 255, 0);
             draw();
             end();
+        }
+
+        bool PingPongBuffer::isAllocated() {
+            return src_->isAllocated() && dest_->isAllocated();
         }
 
         void PingPongBuffer::begin() {

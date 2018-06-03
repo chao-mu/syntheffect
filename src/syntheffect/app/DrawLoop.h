@@ -1,10 +1,11 @@
 #pragma once
 
+#include <vector> 
+
+#include "ofVideoPlayer.h"
+
 #include "syntheffect/patch/Patch.h"
 #include "syntheffect/graphics/PingPongBufferMap.h"
-#include "syntheffect/video/Video.h"
-
-#include <vector> 
 
 namespace syntheffect {
     namespace app {
@@ -21,11 +22,13 @@ namespace syntheffect {
                 float getWidth();
                 float getHeight();
                 float getFPS();
-                std::shared_ptr<video::Video> video;
+                ofVideoPlayer video;
+                void play();
+                void stop();
+                void setLoopState(ofLoopType state);
 
             private:
                 bool drawable_;
         };
     }
 }
- 

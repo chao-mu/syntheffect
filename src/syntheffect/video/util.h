@@ -1,3 +1,5 @@
+#pragma once
+
 #include "ofVideoPlayer.h"
 #include "ofGraphics.h"
 

@@ -1,35 +1,52 @@
 #include "syntheffect/app/DrawLoop.h"
 
+#include "ofGraphics.h"
+
 #include "syntheffect/patch/PatchBuilder.h"
+#include "syntheffect/video/util.h"
 
 #define DEBUG_CHANNEL_ACCESS false
 
 namespace syntheffect {
     namespace app {
-        DrawLoop::DrawLoop() {
+        DrawLoop::DrawLoop()
+        {
             drawable_ = false;
         }
 
         float DrawLoop::getHeight() {
-            return video->getHeight();
+            return video.getHeight();
         }
 
         float DrawLoop::getWidth() {
-            return video->getWidth();
-        }
+            return video.getWidth(); }
 
         float DrawLoop::getFPS() {
-            return video->getFPS();
+            return video.getTotalNumFrames() / video.getDuration();
+        }
+
+        void DrawLoop::setLoopState(ofLoopType state) {
+            video.setLoopState(state);
+        }
+
+        void DrawLoop::play() {
+            video.play();
+        }
+        
+        void DrawLoop::stop() {
+            video.stop();
         }
 
         bool DrawLoop::load(std::string patch_path, std::string video_path) {
-            video = std::make_shared<syntheffect::video::Video>();
-            if (!video->load(video_path)) {
+            video.setUseTexture(true);
+            
+            if (!video.load(video_path)) {
                 ofLogError() <<  "Failed to load video '" << video_path << "'";
                 return false;
             }
+            
 
-            channels = std::make_shared<syntheffect::graphics::PingPongBufferMap>(video->getWidth(), video->getHeight(), GL_RGB);
+            channels = std::make_shared<syntheffect::graphics::PingPongBufferMap>(video.getWidth(), video.getHeight(), GL_RGB);
             channels->allocate(CHANNEL_ONE);
             channels->allocate(CHANNEL_OUT);
             channels->allocate(CHANNEL_LAST_OUT);
@@ -50,18 +67,25 @@ namespace syntheffect {
         }
 
         bool DrawLoop::update(std::shared_ptr<graphics::Params> effect_params, float t) {
-            if (!video->update()) {
+            video.update();
+            
+            if (video.getIsMovieDone()) {
                 return false;
             }
-
-            if (!video->isAllocated()) {
+            
+            if (!video.isInitialized()) {
+                ofLogNotice() << std::to_string(video.isPlaying());
                 return true;
             }
 
             patch->setEffectParams(effect_params);
 
             // Read the video frame
-            video->drawTo(channels->get(CHANNEL_ONE));
+            std::shared_ptr<graphics::PingPongBuffer> channel_one = channels->get(CHANNEL_ONE);
+            channel_one->begin();
+            ofClear(255, 255, 255, 0);
+            video.draw(0, 0);
+            channel_one->end();
 
             // Apply effects/write to channels
             patch->drawTo(channels, t);
@@ -86,7 +110,7 @@ namespace syntheffect {
         }
 
         void DrawLoop::seek(int relative_frames) {
-            video->seek(relative_frames);
+            video::seek(video, relative_frames);
         }
     }
 }

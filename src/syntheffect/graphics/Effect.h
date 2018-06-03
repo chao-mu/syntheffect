@@ -1,6 +1,5 @@
 #pragma once
 
-#include "ofXml.h"
 #include "ofTexture.h"
 
 #include "syntheffect/graphics/PingPongBuffer.h"

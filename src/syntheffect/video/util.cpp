@@ -1,3 +1,5 @@
+#include "syntheffect/video/util.h"
+
 namespace syntheffect {
     namespace video {
         void seek(ofVideoPlayer player, int relative_frames) {

@@ -1,8 +1,10 @@
 #pragma once
 
+#include <vector>
+#include <memory>
+
 #include "syntheffect/graphics/Effect.h"
 #include "syntheffect/graphics/PingPongBufferMap.h"
-#include "syntheffect/video/Video.h"
 #include "syntheffect/patch/Pipeline.h"
 
 #define CHANNEL_ONE "channel1"
