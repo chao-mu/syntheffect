@@ -37,7 +37,7 @@ namespace syntheffect {
                 graphics::Display display_;
                 std::shared_ptr<app::DrawLoop> draw_loop_;
                 ofxVideoRecorder recorder_;
-                
+
                 std::string patch_path_;
                 std::string video_path_;
                 std::string out_path_;

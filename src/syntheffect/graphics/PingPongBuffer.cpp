@@ -36,10 +36,10 @@ namespace syntheffect {
             return src_->getHeight();
         }
 
-        void PingPongBuffer::drawFrom(std::function<void()> draw) {
+        void PingPongBuffer::drawFrom(Drawable& drawable) {
             begin();
             ofClear(255, 255, 255, 0);
-            draw();
+            drawable.draw();
             end();
         }
 

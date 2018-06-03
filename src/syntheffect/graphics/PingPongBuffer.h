@@ -2,6 +2,8 @@
 
 #include "ofFbo.h"
 
+#include "syntheffect/graphics/Drawable.h"
+
 namespace syntheffect {
     namespace graphics {
         class PingPongBuffer {
@@ -17,7 +19,7 @@ namespace syntheffect {
                 void drawTo(std::shared_ptr<PingPongBuffer> buff, int x=0, int y=0);
 
                 std::shared_ptr<ofFbo> drawable();
-                void drawFrom(std::function<void()> draw);
+                void drawFrom(Drawable& draw);
 
             private:
                 void swap();
