@@ -119,8 +119,8 @@ namespace syntheffect {
                 }
 
                 float offset_y = 0;
-                if (xml.getAttribute("offset_y").getValue() != "") {
-                    offset_y = xml.getAttribute("offset_y").getFloatValue();
+                if (xml.getAttribute("offset-y").getValue() != "") {
+                    offset_y = xml.getAttribute("offset-y").getFloatValue();
                 }
 
                 std::function<float(float)> wave;
@@ -192,7 +192,7 @@ namespace syntheffect {
                     }
                 }
             }
-            
+
             return true;
         }
     }
