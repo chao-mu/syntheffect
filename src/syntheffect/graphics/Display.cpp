@@ -49,7 +49,7 @@ namespace syntheffect {
                 return;
             }
 
-            ofClear(255, 255, 255, 255);
+            ofClear(0);
             ofSetColor(255);
 
             int col = 0;
@@ -61,7 +61,7 @@ namespace syntheffect {
                     (draw_width_ * col) * scale,
                     (draw_height_ * row) * scale,
                     draw_width_ * scale,
-                    draw_height_ * scale 
+                    draw_height_ * scale
                 );
 
                 i++;
@@ -74,7 +74,7 @@ namespace syntheffect {
         }
 
         void Display::draw(std::shared_ptr<ofFbo> buffer) {
-            ofClear(255, 255, 255, 255);
+            ofClear(0);
             ofSetColor(255);
 
             buffer->draw(

@@ -52,8 +52,8 @@ namespace syntheffect {
 
             shader_.begin();
             ping_pong->begin();
-            ofClear(0, 255);
-            
+            ofClear(0);
+
             shader_.setUniform2f("resolution", ping_pong->getWidth(), ping_pong->getHeight());
             shader_.setUniform1f("time", t);
 

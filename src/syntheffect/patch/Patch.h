@@ -7,10 +7,8 @@
 #include "syntheffect/graphics/PingPongBufferMap.h"
 #include "syntheffect/patch/Pipeline.h"
 
-#define CHANNEL_ONE "channel1"
 #define CHANNEL_OUT "out"
 #define CHANNEL_LAST_OUT "last-out"
-#define CHANNEL_LAST_CHANNEL_ONE "last-channel1"
 
 namespace syntheffect {
     namespace patch {

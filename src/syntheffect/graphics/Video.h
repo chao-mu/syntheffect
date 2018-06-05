@@ -6,16 +6,19 @@
 
 namespace syntheffect {
     namespace graphics {
-        class Video : public ofVideoPlayer, public Drawable {
+        class Video : public Drawable {
             public:
-                Video();
+                Video(std::string path);
+                void setup() override;
                 void update(std::shared_ptr<graphics::Params> params, float t) override;
-                bool load(std::string video_path) override;
-                void draw() override;
+                void draw(float x, float y, float width, float height) override;
+                float getWidth() override;
+                float getHeight() override;
                 bool isReady() override;
 
             private:
                 std::string path_;
+                ofVideoPlayer video_;
         };
     }
 }

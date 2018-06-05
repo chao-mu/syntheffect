@@ -1,25 +1,40 @@
 #include "syntheffect/graphics/Video.h"
 
+#include <stdexcept>
+
 namespace syntheffect {
     namespace graphics {
-        Video::Video() : ofVideoPlayer(), Drawable() {
+        Video::Video(std::string path) : Drawable() {
+            path_ = path;
         }
 
-        bool Video::load(std::string path) {
-            ofVideoPlayer::setUseTexture(true);
-            return ofVideoPlayer::load(path);
+        void Video::setup() {
+            video_.setUseTexture(true);
+            video_.setLoopState(OF_LOOP_NORMAL);
+            if (!video_.load(path_)) {
+                throw std::runtime_error("Error loading video with path " + path_);
+            }
+            video_.play();
         }
 
         void Video::update(std::shared_ptr<graphics::Params> params, float t) {
-            ofVideoPlayer::update();
+            video_.update();
         }
 
-        void Video::draw() {
-            ofVideoPlayer::draw(0, 0);
+        void Video::draw(float x, float y, float width, float height) {
+            video_.draw(x, y, width, height);
         }
 
         bool Video::isReady() {
-            return isInitialized();
+            return video_.isInitialized();
+        }
+
+        float Video::getHeight() {
+            return video_.getHeight();
+        }
+
+        float Video::getWidth() {
+            return video_.getWidth();
         }
     }
 }

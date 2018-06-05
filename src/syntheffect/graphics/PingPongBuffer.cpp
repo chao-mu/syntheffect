@@ -17,7 +17,7 @@ namespace syntheffect {
 
                 // Clear any lingering garbage
                 fbo->begin();
-                ofClear(255, 255, 255, 255);
+                ofClear(0);
                 fbo->end();
             }
         }
@@ -34,13 +34,6 @@ namespace syntheffect {
 
         float PingPongBuffer::getHeight() {
             return src_->getHeight();
-        }
-
-        void PingPongBuffer::drawFrom(Drawable& drawable) {
-            begin();
-            ofClear(255, 255, 255, 0);
-            drawable.draw();
-            end();
         }
 
         bool PingPongBuffer::isAllocated() {

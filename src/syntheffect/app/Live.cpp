@@ -8,23 +8,21 @@
 #include "syntheffect/patch/PatchBuilder.h"
 
 #define DISPLAY_KEYS {CHANNEL_OUT}
-#define RECORDING_FPS 30
-
-// How many frames to seek forward/back in the video
-#define SEEK_FRAMES 60
+#define FPS 30
 
 namespace syntheffect {
     namespace app {
-            Live::Live(std::string patch_path, std::string video_path, std::string out_path)
+            Live::Live(std::string patch_path, std::vector<std::shared_ptr<graphics::Drawable>> drawables, std::string out_path)
                 : ofBaseApp(),
-                draw_loop_(std::make_shared<DrawLoop>()) {
+                draw_loop_(std::make_shared<Renderer>(patch_path, drawables)) {
             beat_ = std::make_shared<ofxBeat>();
             patch_path_ = patch_path;
-            video_path_ = video_path;
             out_path_ = out_path;
         }
 
         void Live::setup() {
+            ofSetFrameRate(FPS);
+
             ofSetBackgroundAuto(true);
             ofSetFullscreen(false);
 
@@ -54,17 +52,9 @@ namespace syntheffect {
             }
             */
 
-            if (!draw_loop_->load(patch_path_, video_path_)) {
-                ofLogFatalError() << "Failed to load draw loop!";
-                ofExit();
-            }
-
-            draw_loop_->play();
-
+            draw_loop_->setup();
 
             if (out_path_ != "") {
-                ofSetFrameRate(RECORDING_FPS);
-
                 recorder_.setVideoCodec("libx265");
                 recorder_.setVideoBitrate("8000k");
 
@@ -72,7 +62,7 @@ namespace syntheffect {
                     out_path_,
                     draw_loop_->getWidth(),
                     draw_loop_->getHeight(),
-                    RECORDING_FPS
+                    FPS
                 );
 
                 recorder_.start();
@@ -151,8 +141,6 @@ namespace syntheffect {
         }
 
         void Live::safeExit() {
-            draw_loop_->stop();
-
             if (recording_) {
                 recorder_.close();
             }
@@ -168,14 +156,10 @@ namespace syntheffect {
                 screenshot();
             } else if (c == 'q') {
                 safeExit();
-            } else if (c == OF_KEY_LEFT) {
-                draw_loop_->seek(-SEEK_FRAMES);
-            } else if (c == OF_KEY_RIGHT) {
-                draw_loop_->seek(SEEK_FRAMES);
             }
         }
     }
 }
 #undef DISPLAY_KEYS
 #undef SEEK_FRAMES
-#undef RECORDING_FPS
+#undef FPS
