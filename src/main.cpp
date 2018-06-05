@@ -10,8 +10,7 @@
 #include "syntheffect/patch/PatchBuilder.h"
 #include "syntheffect/graphics/Drawable.h"
 #include "syntheffect/graphics/Video.h"
-
-#include "syntheffect/strings.h"
+#include "syntheffect/graphics/Image.h"
 
 #define IMAGE_EXTS { "jpg", "png", "tiff", "jpeg", "bmp" }
 
@@ -83,7 +82,7 @@ int main(int argc, const char *argv[]){
         }
 
         if (is_image(path)) {
-            //drawables.push_back(make_shared<syntheffect::graphics::Image>(path));
+            drawables.push_back(make_shared<syntheffect::graphics::Image>(path));
         } else {
             drawables.push_back(make_shared<syntheffect::graphics::Video>(path));
         }

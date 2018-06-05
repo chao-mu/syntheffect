@@ -6,6 +6,9 @@ namespace syntheffect {
             return true;
         }
 
+        void Drawable::update(std::shared_ptr<Params>, float) {
+        }
+
         void Drawable::drawScaleCenter(float dest_width, float dest_height) {
             float w = getWidth();
             float h = getHeight();
