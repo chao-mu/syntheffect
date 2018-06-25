@@ -4,3 +4,11 @@
 !/bin/data
 /bin/data/patches/default.xml
 .DS_Store
+.gdb_history
+
+# Test resources
+kitty-test.mp4
+test-audio.mp4
+test-short.mp4
+test.mp3
+test.mp4
