@@ -12,12 +12,15 @@
 
 namespace syntheffect {
     namespace app {
-            Live::Live(std::string patch_path, std::vector<std::shared_ptr<graphics::Drawable>> drawables, std::string out_path)
+            Live::Live(int recording_width, int recording_height, std::string patch_path, std::vector<std::shared_ptr<graphics::Drawable>> drawables, std::string out_path)
                 : ofBaseApp(),
-                draw_loop_(std::make_shared<Renderer>(patch_path, drawables)) {
+                renderer_(std::make_shared<Renderer>(patch_path, drawables)) {
             beat_ = std::make_shared<ofxBeat>();
             patch_path_ = patch_path;
             out_path_ = out_path;
+
+            recording_width_ = recording_width;
+            recording_height_ = recording_height;
         }
 
         void Live::setup() {
@@ -52,7 +55,9 @@ namespace syntheffect {
             }
             */
 
-            draw_loop_->setup();
+            renderer_->setup();
+
+            recording_buf_.allocate(recording_width_, recording_height_, GL_RGBA);
 
             if (out_path_ != "") {
                 recorder_.setVideoCodec("libx265");
@@ -60,8 +65,8 @@ namespace syntheffect {
 
                 recorder_.setup(
                     out_path_,
-                    draw_loop_->getWidth(),
-                    draw_loop_->getHeight(),
+                    renderer_->getWidth(),
+                    renderer_->getHeight(),
                     FPS
                 );
 
@@ -74,7 +79,7 @@ namespace syntheffect {
                 recording_ = false;
             }
 
-            display_.load(draw_loop_->getWidth(), draw_loop_->getHeight(), ofGetWindowWidth(), ofGetWindowHeight());
+            display_.load(renderer_->getWidth(), renderer_->getHeight(), ofGetWindowWidth(), ofGetWindowHeight());
         }
 
         void Live::recordingComplete(ofxVideoRecorderOutputFileCompleteEventArgs& args) {
@@ -98,7 +103,7 @@ namespace syntheffect {
             effect_params->float_params["snare"] = beat_->snare();
             effect_params->float_params["hihat"] = beat_->hihat();
 
-            if (!draw_loop_->update(effect_params, ofGetElapsedTimef())) {
+            if (!renderer_->update(effect_params, ofGetElapsedTimef())) {
                 safeExit();
             }
         }
@@ -108,16 +113,21 @@ namespace syntheffect {
         }
 
         void Live::draw() {
-            if (!draw_loop_->isReady()) {
+            if (!renderer_->isReady()) {
                 return;
             }
 
             // Draw to display
-            display_.draw(draw_loop_->channels, DISPLAY_KEYS);
+            display_.draw(renderer_->channels, DISPLAY_KEYS);
 
             if (recording_) {
+                recording_buf_.begin();
+                ofClear(0);
+                renderer_->drawScaleCenter(recording_buf_.getWidth(), recording_buf_.getHeight());
+                recording_buf_.end();
+
                 ofPixels pixels;
-                draw_loop_->channels->get(CHANNEL_OUT)->drawable()->readToPixels(pixels);
+                recording_buf_.readToPixels(pixels);
                 recorder_.addFrame(pixels);
             }
 
@@ -129,7 +139,7 @@ namespace syntheffect {
             fbo.allocate(ofGetWindowWidth(), ofGetWindowHeight(), GL_RGBA);
 
             fbo.begin();
-            display_.draw(draw_loop_->channels, DISPLAY_KEYS);
+            display_.draw(renderer_->channels, DISPLAY_KEYS);
             fbo.end();
 
             ofPixels pixels;

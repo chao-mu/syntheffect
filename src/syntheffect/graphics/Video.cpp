@@ -17,8 +17,9 @@ namespace syntheffect {
             video_.play();
         }
 
-        void Video::update(std::shared_ptr<graphics::Params> params, float t) {
+        bool Video::update(std::shared_ptr<graphics::Params> params, float t) {
             video_.update();
+            return true;
         }
 
         void Video::draw(float x, float y, float width, float height) {

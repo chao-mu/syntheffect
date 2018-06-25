@@ -85,7 +85,7 @@ namespace syntheffect {
                 }
 
                 std::function<float()> f = [speed]() {
-                    return ofGetElapsedTimef();
+                    return ofGetElapsedTimef() * speed;
                 };
 
                 parent->params.float_func_params[param_name] = f;

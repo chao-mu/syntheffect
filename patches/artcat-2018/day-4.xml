@@ -3,7 +3,7 @@
         <pipeline in="channel1" out="pinwheel">
             <shader frag="Huerific"/>
             <shader frag="HSVOffset">
-                <paramTime name="hueOffset" speed="0.2"/>
+                <paramTime name="hueOffset"/>
             </shader>
             <shader frag="MixPinwheel">
                 <paramTexture name="secondTex" value="channel1"/>

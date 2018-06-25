@@ -12,7 +12,7 @@
 
 namespace syntheffect {
     namespace app {
-        class Renderer {
+        class Renderer : public graphics::Drawable {
             public:
                 Renderer(std::string patch_path, std::vector<std::shared_ptr<graphics::Drawable>> drawables);
                 void setup();
@@ -27,6 +27,8 @@ namespace syntheffect {
                 void setLoopState(ofLoopType state);
 
                 std::shared_ptr<graphics::PingPongBufferMap> channels;
+
+                void draw(float x, float y, float width, float height) override;
 
             private:
                 bool ready_;

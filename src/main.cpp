@@ -14,6 +14,8 @@
 
 #define IMAGE_EXTS { "jpg", "png", "tiff", "jpeg", "bmp" }
 
+#define DEFAULT_WIDTH 1280
+#define DEFAULT_HEIGHT 720
 
 bool check_file(std::string path) {
     if (!std::ifstream(path)) {
@@ -38,14 +40,11 @@ bool is_image(std::string path) {
 int main(int argc, const char *argv[]){
     TCLAP::CmdLine cmd("Syntheffect - Magical magic magic");
 
-    TCLAP::MultiArg<std::string> input_args("i", "input", "Input for a channel chosen by the number of times flag specified previously.", true, "string");
-    cmd.add(input_args);
-
-    TCLAP::ValueArg<std::string> outputArg("o", "output", "Output video", false, "", "string");
-    cmd.add(outputArg);
-
-    TCLAP::ValueArg<std::string> patchArg("p", "patch", "patch file", false, "patches/default.xml", "string");
-    cmd.add(patchArg);
+    TCLAP::MultiArg<std::string> input_args("i", "input", "Input for a channel chosen by the number of times flag specified previously.", true, "string", cmd);
+    TCLAP::ValueArg<std::string> outputArg("o", "output", "Output video", false, "", "string", cmd);
+    TCLAP::ValueArg<std::string> patchArg("p", "patch", "patch file", false, "patches/default.xml", "string", cmd);
+    TCLAP::ValueArg<int> widthArg("w", "width", "width of video", false, DEFAULT_WIDTH, "int", cmd);
+    TCLAP::ValueArg<int> heightArg("l", "height", "height of video", false, DEFAULT_HEIGHT, "int", cmd);
 
     try {
         cmd.parse(argc, argv);
@@ -89,7 +88,7 @@ int main(int argc, const char *argv[]){
     }
 
 
-    auto app = make_shared<syntheffect::app::Live>(patch_path, drawables, output_path);
+    auto app = make_shared<syntheffect::app::Live>(widthArg.getValue(), heightArg.getValue(), patch_path, drawables, output_path);
     ofSetBackgroundColor(0, 0, 0);
 
     try {

@@ -21,7 +21,7 @@ namespace syntheffect {
     namespace app {
         class Live : public ofBaseApp, midi::CmdMicro {
             public:
-                Live(std::string patch_path, std::vector<std::shared_ptr<graphics::Drawable>> drawables, std::string out_path);
+                Live(int recording_width, int recording_height, std::string patch_path, std::vector<std::shared_ptr<graphics::Drawable>> drawables, std::string out_path);
                 void setup();
                 void update();
                 void draw();
@@ -39,7 +39,7 @@ namespace syntheffect {
                 std::shared_ptr<ofxBeat> beat_;
                 std::shared_ptr<RtMidiIn> midi_in_;
                 graphics::Display display_;
-                std::shared_ptr<app::Renderer> draw_loop_;
+                std::shared_ptr<app::Renderer> renderer_;
                 ofxVideoRecorder recorder_;
 
                 std::string patch_path_;
@@ -49,6 +49,10 @@ namespace syntheffect {
 
                 bool should_draw_;
                 bool recording_;
+
+                int recording_width_;
+                int recording_height_;
+                ofFbo recording_buf_;
         };
     }
 }

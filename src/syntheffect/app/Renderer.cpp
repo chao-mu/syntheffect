@@ -123,6 +123,10 @@ namespace syntheffect {
         std::string Renderer::getChannelName(int i) {
             return "channel" + std::to_string(i + 1);
         }
+
+        void Renderer::draw(float x, float y, float width, float height) {
+            channels->get(CHANNEL_OUT)->drawable()->draw(x, y, width, height);
+        }
     }
 }
 
