@@ -47,7 +47,6 @@ namespace syntheffect {
 
             channels = std::make_shared<syntheffect::graphics::PingPongBufferMap>(getWidth(), getHeight(), GL_RGB);
             for (size_t i = 0; i < drawables_.size(); i++) {
-                drawables_[i]->setup();
                 channels->allocate(getChannelName(i));
                 channels->allocate(getLastName(i));
             }

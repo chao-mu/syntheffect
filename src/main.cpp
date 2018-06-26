@@ -11,6 +11,7 @@
 #include "syntheffect/graphics/Drawable.h"
 #include "syntheffect/graphics/Video.h"
 #include "syntheffect/graphics/Image.h"
+#include "syntheffect/graphics/Webcam.h"
 
 #define IMAGE_EXTS { "jpg", "png", "tiff", "jpeg", "bmp" }
 
@@ -19,7 +20,7 @@
 
 bool check_file(std::string path) {
     if (!std::ifstream(path)) {
-        std::cerr << "error: unable to open " << path;
+        std::cerr << "error: unable to open " << path << std::endl;
         return false;
     }
 
@@ -37,6 +38,11 @@ bool is_image(std::string path) {
     return false;
 }
 
+// Consider digits as device numbers for webcams
+bool is_webcam(std::string arg) {
+    return arg == "%webcam%";
+}
+
 int main(int argc, const char *argv[]){
     TCLAP::CmdLine cmd("Syntheffect - Magical magic magic");
 
@@ -50,10 +56,6 @@ int main(int argc, const char *argv[]){
         cmd.parse(argc, argv);
     } catch (TCLAP::ArgException &e) {
         std::cerr << "error: " << e.error() << " for arg " << e.argId() << std::endl;
-        return 1;
-    }
-
-    if (!check_file(patchArg.getValue())) {
         return 1;
     }
 
@@ -73,8 +75,12 @@ int main(int argc, const char *argv[]){
     ofHideCursor();
 
     std::vector<std::shared_ptr<syntheffect::graphics::Drawable>> drawables;
-
     for (std::string path : input_args.getValue()) {
+        if (is_webcam(path)) {
+            drawables.push_back(make_shared<syntheffect::graphics::Webcam>());
+            continue;
+        }
+
         path = ofFilePath::getAbsolutePath(path, false);
         if (!check_file(path)) {
             return 1;
