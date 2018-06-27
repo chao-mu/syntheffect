@@ -26,8 +26,8 @@ namespace syntheffect {
         void Live::setup() {
             ofSetFrameRate(FPS);
 
+            ofSetBackgroundColor(0, 0, 0);
             ofSetBackgroundAuto(true);
-            ofSetFullscreen(false);
 
             #ifdef __APPLE__
                 CGDisplayHideCursor(0);
@@ -111,6 +111,7 @@ namespace syntheffect {
         void Live::windowResized(int w, int h) {
             display_.windowResized(w, h);
         }
+
 
         void Live::draw() {
             if (!renderer_->isReady()) {

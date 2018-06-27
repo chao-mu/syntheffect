@@ -51,6 +51,7 @@ int main(int argc, const char *argv[]){
     TCLAP::ValueArg<std::string> patchArg("p", "patch", "patch file", false, "patches/default.xml", "string", cmd);
     TCLAP::ValueArg<int> widthArg("w", "width", "width of video", false, DEFAULT_WIDTH, "int", cmd);
     TCLAP::ValueArg<int> heightArg("l", "height", "height of video", false, DEFAULT_HEIGHT, "int", cmd);
+    TCLAP::SwitchArg fsArg("f", "fullscreen", "set window to fullscreen", cmd);
 
     try {
         cmd.parse(argc, argv);
@@ -70,9 +71,11 @@ int main(int argc, const char *argv[]){
     settings.setGLVersion(3, 3); // OpenGL 3,3 #version 330
     settings.setPosition(ofVec2f(0,0));
     settings.setSize(1280, 720);
+    if (fsArg.getValue()) {
+        settings.windowMode = OF_FULLSCREEN;
+    }
+
     ofCreateWindow(settings);
-    ofSetFullscreen(true);
-    ofHideCursor();
 
     std::vector<std::shared_ptr<syntheffect::graphics::Drawable>> drawables;
     for (std::string path : input_args.getValue()) {
@@ -95,8 +98,6 @@ int main(int argc, const char *argv[]){
 
 
     auto app = make_shared<syntheffect::app::Live>(widthArg.getValue(), heightArg.getValue(), patch_path, drawables, output_path);
-    ofSetBackgroundColor(0, 0, 0);
-
     try {
         ofRunApp(app);
     } catch (std::runtime_error& err) {
