@@ -12,7 +12,7 @@ namespace syntheffect {
                 std::shared_ptr<graphics::PingPongBuffer> buf_in = channels->get(in_);
 
                 buf_out->begin();
-                ofClear(255, 255, 255, 0);
+                ofClear(0);
                 buf_in->drawable()->draw(0, 0);
                 buf_out->end();
             }

@@ -3,25 +3,20 @@
         <pipeline in="channel1" out="pinwheel">
             <shader frag="Huerific"/>
             <shader frag="HSVOffset">
-                <paramTime name="hueOffset" speed="0.2"/>
+                <paramTime name="hueOffset"/>
             </shader>
             <shader frag="MixPinwheel">
                 <paramTexture name="secondTex" value="channel1"/>
-                <paramWave name="anchorX" shape="sin"/>
-                <paramFloat name="anchorY" value="0.5"/>
-                <paramFloat name="speed" value="0.4"/>
+                <paramFloat name="anchorX" value="0"/>
+                <paramFloat name="anchorY" value="0"/>
             </shader>
         </pipeline>
         <pipeline in="pinwheel" out="out">
             <shader vert="Convolution" frag="Scharr"/>
             <shader frag="MixPinwheel">
                 <paramTexture name="secondTex" value="pinwheel"/>
-                <paramWave name="anchorX" shape="cos"/>
-                <paramWave name="anchorY" shape="sin"/>
-                <paramFloat name="speed" value="0.5"/>
-            </shader>
-            <shader frag="ColorDisplace">
-                <paramFloat name="speed" value="0.5"/>
+                <paramFloat name="anchorX" value="1"/>
+                <paramFloat name="anchorY" value="1"/>
             </shader>
         </pipeline>
    </pipelines>

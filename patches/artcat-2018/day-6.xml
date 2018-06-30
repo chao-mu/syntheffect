@@ -1,0 +1,28 @@
+<patch>
+    <pipelines>
+        <pipeline in="channel1" out="cat-1">
+            <shader frag="MixPinwheel">
+                <paramTexture name="secondTex" value="channel2"/>
+                <paramWave name="anchorX" shape="sin"/>
+                <paramFloat name="anchorY" value="0.5"/>
+                <paramFloat name="speed" value="0.4"/>
+            </shader>
+        </pipeline>
+        <pipeline in="channel3" out="cat-2">
+            <shader frag="MixPinwheel">
+                <paramTexture name="secondTex" value="channel4"/>
+                <paramWave name="anchorX" shape="sin"/>
+                <paramFloat name="anchorY" value="0.5"/>
+                <paramFloat name="speed" value="0.4"/>
+            </shader>
+        </pipeline>
+        <pipeline in="cat-1" out="out">
+            <shader frag="MixPinwheel">
+                <paramTexture name="secondTex" value="cat-2"/>
+                <paramWave name="anchorX" shape="cos"/>
+                <paramWave name="anchorY" shape="sin"/>
+                <paramFloat name="speed" value="0.5"/>
+            </shader>
+        </pipeline>
+   </pipelines>
+</patch>

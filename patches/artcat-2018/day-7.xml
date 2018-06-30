@@ -1,0 +1,74 @@
+<patch>
+    <pipelines>
+        <pipeline in="channel1" out="cat-1">
+            <shader frag="MixPinwheel">
+                <paramTexture name="secondTex" value="channel2"/>
+                <paramWave name="anchorX" shape="sin"/>
+                <paramFloat name="anchorY" value="0.5"/>
+                <paramFloat name="speed" value="0.4"/>
+            </shader>
+        </pipeline>
+        <pipeline in="channel3" out="cat-2">
+            <shader frag="MixPinwheel">
+                <paramTexture name="secondTex" value="channel4"/>
+                <paramWave name="anchorX" shape="sin"/>
+                <paramFloat name="anchorY" value="0.5"/>
+                <paramFloat name="speed" value="0.4"/>
+            </shader>
+        </pipeline>
+        <pipeline in="cat-1" out="cat-mix">
+            <shader frag="MixPinwheel">
+                <paramTexture name="secondTex" value="cat-2"/>
+                <paramWave name="anchorX" shape="cos"/>
+                <paramWave name="anchorY" shape="sin"/>
+                <paramFloat name="speed" value="0.5"/>
+            </shader>
+        </pipeline>
+        <pipeline in="cat-mix" out="effect-1">
+            <shader frag="Huerific"/>
+            <shader frag="HSVOffset">
+                <paramTime name="hueOffset" speed="0.5"/>
+            </shader>
+            <shader vert="Convolution" frag="Scharr">
+                <paramBool name="inversionEnabled" value="true"/>
+            </shader>
+            <shader frag="MixPinwheel">
+                <paramTexture name="secondTex" value="cat-mix"/>
+                <paramFloat name="spokes" value="12"/>
+                <paramFloat name="anchorX" value="0"/>
+                <paramFloat name="anchorY" value="0"/>
+            </shader>
+        </pipeline>
+        <pipeline in="cat-mix" out="mix-1">
+            <shader frag="Huerific"/>
+            <shader frag="HSVOffset">
+                <paramTime name="hueOffset" speed="0.5"/>
+            </shader>
+            <shader vert="Convolution" frag="Scharr"/>
+            <shader frag="MixPinwheel">
+                <paramTexture name="secondTex" value="effect-1"/>
+                <paramFloat name="spokes" value="12"/>
+                <paramFloat name="anchorX" value="1"/>
+                <paramFloat name="anchorY" value="1"/>
+            </shader>
+        </pipeline>
+        <pipeline in="mix-1" out="mix-2">
+            <shader frag="Spin"/>
+            <shader frag="MixPinwheel">
+                <paramTexture name="secondTex" value="mix-1"/>
+                <paramFloat name="spokes" value="12"/>
+                <paramFloat name="anchorX" value="0"/>
+                <paramFloat name="anchorY" value="1"/>
+            </shader>
+        </pipeline>
+        <pipeline in="mix-2" out="out">
+            <shader frag="Zoom"/>
+            <shader frag="MixPinwheel">
+                <paramTexture name="secondTex" value="mix-1"/>
+                <paramFloat name="spokes" value="12"/>
+                <paramFloat name="anchorX" value="1"/>
+                <paramFloat name="anchorY" value="0"/>
+            </shader>
+        </pipeline>
+   </pipelines>
+</patch>

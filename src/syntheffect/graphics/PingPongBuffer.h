@@ -1,6 +1,10 @@
 #pragma once
 
+#include <memory>
+
 #include "ofFbo.h"
+
+#include "syntheffect/graphics/Drawable.h"
 
 namespace syntheffect {
     namespace graphics {
