@@ -2,6 +2,8 @@
 
 #include <cmath>
 
+#include "ofMath.h"
+
 #include "syntheffect/graphics/Shader.h"
 
 #define DEFAULT_FRAG "Passthrough"
@@ -123,20 +125,24 @@ namespace syntheffect {
                     offset_y = xml.getAttribute("offset-y").getFloatValue();
                 }
 
-                std::function<float(float)> wave;
+                std::function<float()> f;
                 std::string shape = xml.getAttribute("shape").getValue();
                 if (shape == "cos") {
-                    wave = cosf;
+                    f = [shift, amplitude, freq, offset_y]() {
+                        return offset_y + ((1.0 + cos((ofGetElapsedTimef() * freq) + shift) ) * 0.5 * amplitude);
+                    };
                 } else if (shape == "sin") {
-                    wave = sinf;
+                    f = [shift, amplitude, freq, offset_y]() {
+                        return offset_y + ((1.0 + sin((ofGetElapsedTimef() * freq) + shift) ) * 0.5 * amplitude);
+                    };
+                } else if (shape == "perlin") {
+                    f = [shift, amplitude, freq, offset_y]() {
+                        return offset_y + (ofNoise((ofGetElapsedTimef() * freq) + shift)) * amplitude;
+                    };
                 } else {
                     ofLogError("PatchBuilder", "Unspecified or invalid shape attribute: %s", shape.c_str());
                     return false;
                 }
-
-                std::function<float()> f = [wave, shift, amplitude, freq, offset_y]() {
-                    return offset_y + ((1.0 + wave((ofGetElapsedTimef() * freq) + shift) ) * 0.5 * amplitude);
-                };
 
                 parent->params.float_func_params[param_name] = f;
             } else {

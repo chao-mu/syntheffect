@@ -35,7 +35,7 @@ namespace syntheffect {
                 ofHideCursor();
             #endif
 
-                /* Commening out old code that will only work on Mac, keeping in case of wanting  to be cross platform
+            /* Commening out old code that will only work on Mac, keeping in case of wanting  to be cross platform
             std::vector<ofSoundDevice> sound_devices = sound_stream_.getMatchingDevices("ma++ ingalls for Cycling '74: Soundflower", 2, 2);
             if (sound_devices.size() < 1) {
                 ofLogWarning() << "Soundflower device not found, sound features not enabled";
@@ -95,6 +95,7 @@ namespace syntheffect {
         }
 
         void Live::update() {
+            float t = ofGetElapsedTimef();
             beat_->update(ofGetElapsedTimeMillis());
 
 
@@ -103,7 +104,7 @@ namespace syntheffect {
             effect_params->float_params["snare"] = beat_->snare();
             effect_params->float_params["hihat"] = beat_->hihat();
 
-            if (!renderer_->update(effect_params, ofGetElapsedTimef())) {
+            if (!renderer_->update(effect_params, t)) {
                 safeExit();
             }
         }

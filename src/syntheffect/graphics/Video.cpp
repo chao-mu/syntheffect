@@ -14,6 +14,7 @@ namespace syntheffect {
             if (!video_.load(path_)) {
                 throw std::runtime_error("Error loading video with path " + path_);
             }
+            video_.setVolume(0);
             video_.play();
         }
 
