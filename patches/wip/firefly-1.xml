@@ -1,0 +1,21 @@
+<patch>
+    <pipelines>
+        <pipeline in="channel1" out="soft-scharr">
+            <shader vert="Convolution" frag="Blur"/>
+            <shader vert="Convolution" frag="Blur"/>
+            <shader vert="Convolution" frag="Scharr"/>
+            <shader frag="Huerific">
+                <paramWave name="amount" shape="perlin" shift="100" amplitude="0.5"/>
+            </shader>
+        </pipeline>
+        <pipeline in="channel1" out="out">
+            <shader frag="Mix">
+                <paramWave name="amount" shape="perlin"/>
+                <paramTexture name="secondTex" value="soft-scharr"/>
+            </shader>
+            <shader frag="HSVOffset">
+                <paramTime name="hueOffset" speed="0.2"/>
+            </shader>
+        </pipeline>
+   </pipelines>
+</patch>
