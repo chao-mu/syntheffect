@@ -1,0 +1,11 @@
+<patch>
+    <pipelines>
+        <pipeline in="channel1" out="out">
+	<shader vert="Convolution" frag="Scharr"/>
+		<shader frag="Mix">
+			<paramTexture name="secondTex" value="last-out"/>
+			<paramFloat name="amount" value="0.8"/>
+		</shader>
+        </pipeline>
+   </pipelines>
+</patch>
