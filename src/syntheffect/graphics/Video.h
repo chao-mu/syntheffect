@@ -8,7 +8,7 @@ namespace syntheffect {
     namespace graphics {
         class Video : public Drawable {
             public:
-                Video(std::string path);
+                Video(std::string path, float volume);
                 void setup() override;
                 bool update(std::shared_ptr<graphics::Params> params, float t) override;
                 void draw(float x, float y, float width, float height) override;
@@ -18,6 +18,7 @@ namespace syntheffect {
 
             private:
                 std::string path_;
+                float volume_;
                 ofVideoPlayer video_;
         };
     }

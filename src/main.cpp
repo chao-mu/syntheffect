@@ -6,6 +6,7 @@
 #include "ofFileUtils.h"
 
 #include "syntheffect/app/Live.h"
+#include "syntheffect/app/LiveSettings.h"
 #include "syntheffect/app/Renderer.h"
 #include "syntheffect/patch/PatchBuilder.h"
 #include "syntheffect/graphics/Drawable.h"
@@ -47,10 +48,11 @@ int main(int argc, const char *argv[]){
     TCLAP::CmdLine cmd("Syntheffect - Magical magic magic");
 
     TCLAP::MultiArg<std::string> input_args("i", "input", "Input for a channel chosen by the number of times flag specified previously.", true, "string", cmd);
-    TCLAP::ValueArg<std::string> outputArg("o", "output", "Output video", false, "", "string", cmd);
+    TCLAP::ValueArg<std::string> outArg("o", "out", "Output video", false, "", "string", cmd);
     TCLAP::ValueArg<std::string> patchArg("p", "patch", "patch file", false, "patches/default.xml", "string", cmd);
     TCLAP::ValueArg<int> widthArg("w", "width", "width of video", false, DEFAULT_WIDTH, "int", cmd);
     TCLAP::ValueArg<int> heightArg("l", "height", "height of video", false, DEFAULT_HEIGHT, "int", cmd);
+    TCLAP::ValueArg<float> volumeArg("v", "volume", "volume between 0 and 1", false, 0, "float", cmd);
     TCLAP::SwitchArg fsArg("f", "fullscreen", "set window to fullscreen", cmd);
 
     try {
@@ -62,20 +64,20 @@ int main(int argc, const char *argv[]){
 
     std::string patch_path = ofFilePath::getAbsolutePath(patchArg.getValue(), false);
 
-    std::string output_path = "";
-    if (outputArg.getValue() != "") {
-        output_path = ofFilePath::getAbsolutePath(outputArg.getValue(), false);
+    std::string out_path = "";
+    if (outArg.getValue() != "") {
+        out_path = ofFilePath::getAbsolutePath(outArg.getValue(), false);
     }
 
-    ofGLFWWindowSettings settings;
-    settings.setGLVersion(3, 3); // OpenGL 3,3 #version 330
-    settings.setPosition(ofVec2f(0,0));
-    settings.setSize(1280, 720);
+    ofGLFWWindowSettings win_settings;
+    win_settings.setGLVersion(3, 3); // OpenGL 3,3 #version 330
+    win_settings.setPosition(ofVec2f(0,0));
+    win_settings.setSize(1280, 720);
     if (fsArg.getValue()) {
-        settings.windowMode = OF_FULLSCREEN;
+        win_settings.windowMode = OF_FULLSCREEN;
     }
 
-    ofCreateWindow(settings);
+    ofCreateWindow(win_settings);
 
     std::vector<std::shared_ptr<syntheffect::graphics::Drawable>> drawables;
     for (std::string path : input_args.getValue()) {
@@ -92,12 +94,19 @@ int main(int argc, const char *argv[]){
         if (is_image(path)) {
             drawables.push_back(make_shared<syntheffect::graphics::Image>(path));
         } else {
-            drawables.push_back(make_shared<syntheffect::graphics::Video>(path));
+            drawables.push_back(make_shared<syntheffect::graphics::Video>(path, volumeArg.getValue()));
         }
     }
 
 
-    auto app = make_shared<syntheffect::app::Live>(widthArg.getValue(), heightArg.getValue(), patch_path, drawables, output_path);
+    auto settings = std::make_shared<syntheffect::app::LiveSettings>();
+    settings->patch_path = patch_path;
+    settings->out_path = out_path;
+    settings->recording_height = heightArg.getValue();
+    settings->recording_width = widthArg.getValue();
+    settings->drawables = drawables;
+
+    auto app = make_shared<syntheffect::app::Live>(settings);
     try {
         ofRunApp(app);
     } catch (std::runtime_error& err) {

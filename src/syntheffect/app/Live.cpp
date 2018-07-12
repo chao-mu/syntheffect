@@ -12,15 +12,11 @@
 
 namespace syntheffect {
     namespace app {
-            Live::Live(int recording_width, int recording_height, std::string patch_path, std::vector<std::shared_ptr<graphics::Drawable>> drawables, std::string out_path)
+            Live::Live(std::shared_ptr<LiveSettings> settings)
                 : ofBaseApp(),
-                renderer_(std::make_shared<Renderer>(patch_path, drawables)) {
+                renderer_(std::make_shared<Renderer>(settings->patch_path, settings->drawables)) {
             beat_ = std::make_shared<ofxBeat>();
-            patch_path_ = patch_path;
-            out_path_ = out_path;
-
-            recording_width_ = recording_width;
-            recording_height_ = recording_height;
+            settings_ = settings;
         }
 
         void Live::setup() {
@@ -57,14 +53,14 @@ namespace syntheffect {
 
             renderer_->setup();
 
-            recording_buf_.allocate(recording_width_, recording_height_, GL_RGBA);
+            recording_buf_.allocate(settings_->recording_width, settings_->recording_height, GL_RGBA);
 
-            if (out_path_ != "") {
+            if (settings_->out_path != "") {
                 recorder_.setVideoCodec("libx265");
                 recorder_.setVideoBitrate("8000k");
 
                 recorder_.setup(
-                    out_path_,
+                    settings_->out_path,
                     renderer_->getWidth(),
                     renderer_->getHeight(),
                     FPS

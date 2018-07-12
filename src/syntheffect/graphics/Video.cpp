@@ -4,8 +4,9 @@
 
 namespace syntheffect {
     namespace graphics {
-        Video::Video(std::string path) : Drawable() {
+        Video::Video(std::string path, float volume) : Drawable() {
             path_ = path;
+            volume_ = volume;
         }
 
         void Video::setup() {
@@ -14,7 +15,7 @@ namespace syntheffect {
             if (!video_.load(path_)) {
                 throw std::runtime_error("Error loading video with path " + path_);
             }
-            video_.setVolume(0);
+            video_.setVolume(volume_);
             video_.play();
         }
 

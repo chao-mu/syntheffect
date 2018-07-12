@@ -11,17 +11,18 @@
 #include "ofxBeat.h"
 
 #include "syntheffect/patch/Patch.h"
-#include "syntheffect/midi/CmdMicro.h"
 #include "syntheffect/graphics/Display.h"
 #include "syntheffect/graphics/PingPongBufferMap.h"
 #include "syntheffect/graphics/Drawable.h"
 #include "syntheffect/app/Renderer.h"
 
+#include "syntheffect/app/LiveSettings.h"
+
 namespace syntheffect {
     namespace app {
-        class Live : public ofBaseApp, midi::CmdMicro {
+        class Live : public ofBaseApp {
             public:
-                Live(int recording_width, int recording_height, std::string patch_path, std::vector<std::shared_ptr<graphics::Drawable>> drawables, std::string out_path);
+                Live(shared_ptr<LiveSettings> settings);
                 void setup();
                 void update();
                 void draw();
@@ -42,17 +43,14 @@ namespace syntheffect {
                 std::shared_ptr<app::Renderer> renderer_;
                 ofxVideoRecorder recorder_;
 
-                std::string patch_path_;
-                std::string out_path_;
-
                 void setupDrawSize();
 
                 bool should_draw_;
                 bool recording_;
 
-                int recording_width_;
-                int recording_height_;
                 ofFbo recording_buf_;
+
+                std::shared_ptr<LiveSettings> settings_;
         };
     }
 }
