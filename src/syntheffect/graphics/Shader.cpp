@@ -9,8 +9,8 @@ namespace syntheffect {
 
         bool Shader::load(std::string frag, std::string vert) {
             return shader_.load(
-                "shadersGL3/shaders/vert/" + vert + ".vert",
-                "shadersGL3/shaders/frag/" + frag + ".frag"
+                "shaders/vert/" + vert + ".vert",
+                "shaders/frag/" + frag + ".frag"
             );
         }
 
