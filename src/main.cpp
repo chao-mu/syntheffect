@@ -52,7 +52,7 @@ int main(int argc, const char *argv[]){
     TCLAP::ValueArg<std::string> patchArg("p", "patch", "patch file", false, "patches/default.xml", "string", cmd);
     TCLAP::ValueArg<int> widthArg("w", "width", "width of video", false, DEFAULT_WIDTH, "int", cmd);
     TCLAP::ValueArg<int> heightArg("l", "height", "height of video", false, DEFAULT_HEIGHT, "int", cmd);
-    TCLAP::ValueArg<float> volumeArg("v", "volume", "volume between 0 and 1", false, 0, "float", cmd);
+    TCLAP::ValueArg<float> volumeArg("s", "volume", "volume between 0 and 1", false, 0, "float", cmd);
     TCLAP::SwitchArg fsArg("f", "fullscreen", "set window to fullscreen", cmd);
 
     try {

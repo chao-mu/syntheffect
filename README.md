@@ -30,3 +30,17 @@ https://www.shadertoy.com/
 http://developer.download.nvidia.com/shaderlibrary/webpages/shader_library.html (HLSL)
 http://glslsandbox.com/
 https://github.com/mfargo/ofxFilterLibrary
+
+## Recording
+
+### YouTube
+
+```
+ffmpeg -f rawvideo -pixel_format rgb24 -video_size 1280x720 -framerate 30 -i output.rgb24 -c:v libx264 -preset ultrafast -vf scale=iw*4:-1:flags=neighbor+bitexact+accurate_rnd+full_chroma_int+full_chroma_inp+print_info output.mp4
+```
+
+### Facebook
+
+```
+ffmpeg -f rawvideo -pixel_format rgb24 -video_size 1280x720 -framerate 30 -i output.rgb24 -c:v libx264 -crf 18 -preset slow -c:a copy output.mp4
+```

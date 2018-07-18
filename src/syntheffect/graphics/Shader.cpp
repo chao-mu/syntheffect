@@ -45,7 +45,7 @@ namespace syntheffect {
             }
         }
 
-        void Shader::drawTo(std::shared_ptr<graphics::PingPongBuffer> ping_pong, float t) {
+        void Shader::drawTo(std::shared_ptr<graphics::PingPongBuffer> ping_pong) {
             if (!isActive()) {
                 return;
             }
@@ -55,7 +55,6 @@ namespace syntheffect {
             ofClear(0);
 
             shader_.setUniform2f("resolution", ping_pong->getWidth(), ping_pong->getHeight());
-            shader_.setUniform1f("time", t);
 
             setUniforms();
 

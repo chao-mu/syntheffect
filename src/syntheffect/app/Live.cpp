@@ -1,8 +1,10 @@
 #include "syntheffect/app/Live.h"
 
-#include "RtMidi.h"
+#include "GLFW/glfw3.h"
 
 #include "ofMain.h"
+
+#include "ofxTimeMeasurements.h"
 
 #include "syntheffect/midi/MidiMessage.h"
 #include "syntheffect/patch/PatchBuilder.h"
@@ -10,11 +12,17 @@
 #define DISPLAY_KEYS {CHANNEL_OUT}
 #define FPS 30
 
+
+void setup() {
+    TIME_SAMPLE_SET_FRAMERATE(FPS);
+}
+
 namespace syntheffect {
     namespace app {
             Live::Live(std::shared_ptr<LiveSettings> settings)
                 : ofBaseApp(),
-                renderer_(std::make_shared<Renderer>(settings->patch_path, settings->drawables)) {
+                renderer_(std::make_shared<Renderer>(settings->patch_path, settings->drawables)),
+                joystick_(GLFW_JOYSTICK_1) {
             beat_ = std::make_shared<ofxBeat>();
             settings_ = settings;
         }
@@ -24,6 +32,10 @@ namespace syntheffect {
 
             ofSetBackgroundColor(0, 0, 0);
             ofSetBackgroundAuto(true);
+
+            if (joystick_.isPresent()) {
+                ofLogNotice() << "Joystick connected: " << joystick_.getName();
+            }
 
             #ifdef __APPLE__
                 CGDisplayHideCursor(0);
@@ -53,24 +65,10 @@ namespace syntheffect {
 
             renderer_->setup();
 
-            recording_buf_.allocate(settings_->recording_width, settings_->recording_height, GL_RGBA);
-
             if (settings_->out_path != "") {
-                recorder_.setVideoCodec("libx265");
-                recorder_.setVideoBitrate("8000k");
-
-                recorder_.setup(
-                    settings_->out_path,
-                    renderer_->getWidth(),
-                    renderer_->getHeight(),
-                    FPS
-                );
-
-                recorder_.start();
-
-                ofAddListener(recorder_.outputFileCompleteEvent, this, &Live::recordingComplete);
-
                 recording_ = true;
+                recorder_.setup(settings_->out_path, settings_->recording_width, settings_->recording_height);
+                recorder_.startThread();
             } else {
                 recording_ = false;
             }
@@ -78,8 +76,8 @@ namespace syntheffect {
             display_.load(renderer_->getWidth(), renderer_->getHeight(), ofGetWindowWidth(), ofGetWindowHeight());
         }
 
-        void Live::recordingComplete(ofxVideoRecorderOutputFileCompleteEventArgs& args) {
-            recording_ = false;
+        void Live::exit() {
+            recorder_.waitForThread();
         }
 
         void Live::audioIn(ofSoundBuffer& buf) {
@@ -92,16 +90,21 @@ namespace syntheffect {
 
         void Live::update() {
             float t = ofGetElapsedTimef();
-            beat_->update(ofGetElapsedTimeMillis());
-
 
             auto effect_params = std::make_shared<graphics::Params>();
+            effect_params->float_params["time"] = ofGetElapsedTimef();
+
+            beat_->update(ofGetElapsedTimeMillis());
             effect_params->float_params["kick"] = beat_->kick();
             effect_params->float_params["snare"] = beat_->snare();
             effect_params->float_params["hihat"] = beat_->hihat();
 
+            joystick_.update();
+            effect_params->set(joystick_.getParams());
+
+
             if (!renderer_->update(effect_params, t)) {
-                safeExit();
+                ofExit();
             }
         }
 
@@ -119,17 +122,18 @@ namespace syntheffect {
             display_.draw(renderer_->channels, DISPLAY_KEYS);
 
             if (recording_) {
-                recording_buf_.begin();
-                ofClear(0);
-                renderer_->drawScaleCenter(recording_buf_.getWidth(), recording_buf_.getHeight());
-                recording_buf_.end();
-
-                ofPixels pixels;
-                recording_buf_.readToPixels(pixels);
-                recorder_.addFrame(pixels);
+                recordFrame();
             }
 
             ofSetWindowTitle("fps: " + std::to_string(ofGetFrameRate()));
+        }
+
+        void Live::recordFrame() {
+            recorder_.fboBegin();
+            ofClear(0);
+            renderer_->drawScaleCenter(recorder_.getWidth(), recorder_.getHeight());
+            recorder_.fboEnd();
+            recorder_.push();
         }
 
         void Live::screenshot() {
@@ -148,26 +152,16 @@ namespace syntheffect {
             image.save("out-" + ofGetTimestampString() + ".png");
         }
 
-        void Live::safeExit() {
-            if (recording_) {
-                recorder_.close();
-            }
-
-            while (recording_) {
-                usleep(10 * 1000);
-            }
-            ofExit();
-        }
-
         void Live::keyPressed(int c) {
             if (c == 'p') {
                 screenshot();
             } else if (c == 'q') {
-                safeExit();
+                ofExit();
             }
         }
     }
 }
+
 #undef DISPLAY_KEYS
 #undef SEEK_FRAMES
 #undef FPS

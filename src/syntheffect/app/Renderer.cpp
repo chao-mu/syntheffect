@@ -92,7 +92,7 @@ namespace syntheffect {
             }
 
             // Apply effects/write to channels
-            patch_->drawTo(channels, t);
+            patch_->drawTo(channels);
 
             // Write out channel to last-out channel
             channels->get(CHANNEL_OUT)->drawTo(channels->get(CHANNEL_LAST_OUT));

@@ -12,7 +12,7 @@ namespace syntheffect {
         class Shader : public Effect {
             public:
                 Shader();
-                void drawTo(std::shared_ptr<graphics::PingPongBuffer> ping_pong, float t) override;
+                void drawTo(std::shared_ptr<graphics::PingPongBuffer> ping_pong) override;
                 bool load(std::string frag, std::string vert);
                 void setUniforms();
 

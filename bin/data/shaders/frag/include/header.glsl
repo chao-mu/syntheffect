@@ -7,6 +7,8 @@ uniform sampler2DRect tex0;
 uniform float time;
 uniform vec2 resolution;
 
+uniform bool enabled = true;
+
 uniform bool greyscaleEnabled = false;
 
 uniform bool inversionEnabled = false;

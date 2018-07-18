@@ -9,7 +9,7 @@ namespace syntheffect {
             public:
                 Pipeline(std::string in, std::string out);
 
-                void drawTo(std::shared_ptr<graphics::PingPongBufferMap> channels, float t);
+                void drawTo(std::shared_ptr<graphics::PingPongBufferMap> channels);
 
                 void addEffect(std::shared_ptr<graphics::Effect> pipeline_effect);
 

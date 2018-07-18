@@ -5,7 +5,7 @@
 
 namespace syntheffect {
     namespace patch {
-        void Pipeline::drawTo(std::shared_ptr<graphics::PingPongBufferMap> channels, float t) {
+        void Pipeline::drawTo(std::shared_ptr<graphics::PingPongBufferMap> channels) {
             std::shared_ptr<graphics::PingPongBuffer> buf_out = channels->get(out_);
 
             if (out_ != in_) {
@@ -19,7 +19,7 @@ namespace syntheffect {
 
             for (auto effect : effects_) {
                 if (effect->isActive()) {
-                    effect->drawTo(buf_out, t);
+                    effect->drawTo(buf_out);
                 }
             }
         }

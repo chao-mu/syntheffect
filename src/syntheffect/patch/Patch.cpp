@@ -23,9 +23,9 @@ namespace syntheffect {
             }
         }
 
-        void Patch::drawTo(std::shared_ptr<graphics::PingPongBufferMap> channels, float t) {
+        void Patch::drawTo(std::shared_ptr<graphics::PingPongBufferMap> channels) {
             for (auto pipeline : pipelines_) {
-                pipeline->drawTo(channels, t);
+                pipeline->drawTo(channels);
             }
         }
     }

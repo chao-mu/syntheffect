@@ -15,8 +15,9 @@
 #include "syntheffect/graphics/PingPongBufferMap.h"
 #include "syntheffect/graphics/Drawable.h"
 #include "syntheffect/app/Renderer.h"
-
+#include "syntheffect/app/RecordingThread.h"
 #include "syntheffect/app/LiveSettings.h"
+#include "syntheffect/controller/Joystick.h"
 
 namespace syntheffect {
     namespace app {
@@ -27,8 +28,7 @@ namespace syntheffect {
                 void update();
                 void draw();
                 void audioIn(ofSoundBuffer& buf);
-                void safeExit();
-                void recordingComplete(ofxVideoRecorderOutputFileCompleteEventArgs& args);
+                void exit();
 
             protected:
                 void windowResized(int w, int h);
@@ -41,16 +41,17 @@ namespace syntheffect {
                 std::shared_ptr<RtMidiIn> midi_in_;
                 graphics::Display display_;
                 std::shared_ptr<app::Renderer> renderer_;
-                ofxVideoRecorder recorder_;
 
                 void setupDrawSize();
+                void recordFrame();
 
                 bool should_draw_;
                 bool recording_;
 
-                ofFbo recording_buf_;
-
                 std::shared_ptr<LiveSettings> settings_;
+                RecordingThread recorder_;
+
+                controller::Joystick joystick_;
         };
     }
 }
