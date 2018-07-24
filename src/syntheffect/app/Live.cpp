@@ -91,7 +91,7 @@ namespace syntheffect {
         void Live::update() {
             float t = ofGetElapsedTimef();
 
-            auto effect_params = std::make_shared<graphics::Params>();
+            auto effect_params = std::make_shared<param::Params>();
             effect_params->float_params["time"] = ofGetElapsedTimef();
 
             beat_->update(ofGetElapsedTimeMillis());

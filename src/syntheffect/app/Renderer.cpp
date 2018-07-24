@@ -65,7 +65,7 @@ namespace syntheffect {
             return ready_;
         }
 
-        bool Renderer::update(std::shared_ptr<graphics::Params> params, float t) {
+        bool Renderer::update(std::shared_ptr<param::Params> params, float t) {
             for (const auto drawable : drawables_) {
                 drawable->update(params, t);
                 if (!drawable->isReady()) {

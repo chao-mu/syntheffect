@@ -1,6 +1,13 @@
 <patch>
     <pipelines>
         <pipeline in="channel1" out="out">
+            <shader frag="MixPinwheel">
+                <paramButton name="enabled" which="xbox_button_middle_left"/>
+                <paramTexture name="secondTex" value="channel2"/>
+                <paramWave name="anchorX" shape="sin"/>
+                <paramFloat name="anchorY" value="0.5"/>
+                <paramFloat name="speed" value="0.4"/>
+            </shader>
             <shader vert="Convolution" frag="Blur">
                 <paramButton name="enabled" which="xbox_button_b"/>
                 <paramInt name="scale" value="3"/>

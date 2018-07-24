@@ -15,7 +15,7 @@ namespace syntheffect {
             pipelines_.push_back(pipeline);
         }
 
-        void Patch::setEffectParams(std::shared_ptr<graphics::Params> params) {
+        void Patch::setEffectParams(std::shared_ptr<param::Params> params) {
             for (auto pipeline : pipelines_) {
                 for (auto effect : pipeline->getEffects()) {
                     effect->params.set(params);

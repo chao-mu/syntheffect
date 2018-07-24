@@ -3,7 +3,7 @@
 #include "ofTexture.h"
 
 #include "syntheffect/graphics/PingPongBuffer.h"
-#include "syntheffect/graphics/Params.h"
+#include "syntheffect/param/Params.h"
 
 namespace syntheffect {
     namespace graphics {
@@ -16,7 +16,7 @@ namespace syntheffect {
                 void start();
                 void stop();
                 bool isActive();
-                graphics::Params params;
+                param::Params params;
 
             private:
                 bool active_;

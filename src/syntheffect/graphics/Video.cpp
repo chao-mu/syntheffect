@@ -19,7 +19,7 @@ namespace syntheffect {
             video_.play();
         }
 
-        bool Video::update(std::shared_ptr<graphics::Params> params, float t) {
+        bool Video::update(std::shared_ptr<param::Params> params, float t) {
             video_.update();
             return true;
         }

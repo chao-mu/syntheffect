@@ -11,8 +11,6 @@
 #define PIPELINES_PATH "//patch/pipelines"
 #define CONTROLS_PATH "//patch/controls"
 
-#define XBOX_DEADZONE 0.1
-
 namespace syntheffect {
     namespace patch {
         PatchBuilder::PatchBuilder() : effects_by_id_() {
@@ -79,103 +77,32 @@ namespace syntheffect {
             std::string param_el = xml.getName();
             std::string param_name = xml.getAttribute("name").getValue();
 
-            if (param_el == "paramButton" || param_el == "paramButtonTime") {
+            if (param_el == "paramButton") {
                 std::string which = xml.getAttribute("which").getValue();
 
-                if (param_el == "paramButton") {
-                    if (which == "xbox_dir_pad_left") {
-                        parent->params.bool_func_params[param_name] = [parent]() {
-                            return parent->params.float_params["axis_6"] > 0.5;
-                        };
+                parent->params.setParamButton(param_name, which);
+            } else if (param_el == "paramButtonTime") {
+                std::string which = xml.getAttribute("which").getValue();
 
-                        return true;
-                    } else if (which == "xbox_dir_pad_right") {
-                        parent->params.bool_func_params[param_name] = [parent]() {
-                            return parent->params.float_params["axis_6"] < -0.5;
-                        };
-
-                        return true;
-                    } else if (which == "xbox_dir_pad_up") {
-                        parent->params.bool_func_params[param_name] = [parent]() {
-                            return parent->params.float_params["axis_7"] < -0.5;
-                        };
-
-                        return true;
-                    } else if (which == "xbox_dir_pad_down") {
-                        parent->params.bool_func_params[param_name] = [parent]() {
-                            return parent->params.float_params["axis_7"] > 0.5;
-                        };
-
-                        return true;
-                    }
+                float offset = 0;
+                if (xml.getAttribute("offset").getValue() != "") {
+                    offset = xml.getAttribute("offset").getFloatValue();
                 }
 
-                std::string button_name;
-                if (which == "xbox_button_x") {
-                    button_name = "button_2";
-                } else if (which == "xbox_button_y") {
-                    button_name = "button_3";
-                } else if (which == "xbox_button_b") {
-                    button_name = "button_1";
-                } else if (which == "xbox_button_a") {
-                    button_name = "button_0";
-                } else if (which == "xbox_button_b") {
-                    button_name = "button_1";
-                } else if (which == "xbox_button_top_left") {
-                    button_name = "button_4";
-                } else if (which == "xbox_button_top_right") {
-                    button_name = "button_5";
-                } else {
-                    ofLogError("PatchBuilder", "paramButton of name '%s' is missing valid 'which' attribute", param_name.c_str());
-                    return false;
-                }
+                parent->params.setParamButtonTime(param_name, which, offset);
+            } else if (param_el ==  "paramAxisNegative") {
+                std::string which = xml.getAttribute("which").getValue();
 
-                if (param_el == "paramButtonTime") {
-                    float offset = 0;
-                    if (xml.getAttribute("offset").getValue() != "") {
-                        offset = xml.getAttribute("offset").getFloatValue();
-                    }
+                parent->params.setParamAxisNegative(param_name, which);
+            } else if (param_el ==  "paramAxisPositive") {
+                std::string which = xml.getAttribute("which").getValue();
 
-                    parent->params.float_func_params[param_name] = [parent, button_name, offset]() {
-                        return ofGetElapsedTimef() - parent->params.float_params[button_name + "_pressed_at"] + offset;
-                    };
-                } else {
-                    parent->params.bool_func_params[param_name] = [parent, button_name]() {
-                        return parent->params.bool_params[button_name];
-                    };
-                }
+                parent->params.setParamAxisPositive(param_name, which);
             }  else if (param_el == "paramAxis") {
                 std::string which = xml.getAttribute("which").getValue();
                 bool absolute = false;
                 if (xml.getAttribute("abs").getValue() == "") {
                     absolute = xml.getAttribute("abs").getFloatValue();
-                }
-
-                std::string axis_name;
-                float deadzone = 0;
-                if (which == "xbox_left_stick_x") {
-                    axis_name = "axis_0";
-                    deadzone = XBOX_DEADZONE;
-                } else if (which == "xbox_left_stick_y") {
-                    axis_name = "axis_1";
-                    deadzone = XBOX_DEADZONE;
-                } else if (which == "xbox_right_stick_x") {
-                    axis_name = "axis_3";
-                    deadzone = XBOX_DEADZONE;
-                } else if (which == "xbox_right_stick_y") {
-                    axis_name = "axis_4";
-                    deadzone = XBOX_DEADZONE;
-                } else if (which == "xbox_dir_pad_x") {
-                    axis_name = "axis_6";
-                } else if (which == "xbox_dir_pad_y") {
-                    axis_name = "axis_7";
-                } else if (which == "xbox_left_trigger") {
-                    axis_name = "axis_2";
-                } else if (which == "xbox_right_trigger") {
-                    axis_name = "axis_5";
-                } else {
-                    ofLogError("PatchBuilder", "paramAxis of name '%s' is missing valid 'which' attribute", param_name.c_str());
-                    return false;
                 }
 
                 float low = -1;
@@ -188,19 +115,7 @@ namespace syntheffect {
                     high = xml.getAttribute("high").getFloatValue();
                 }
 
-                parent->params.float_func_params[param_name] = [parent, axis_name, low, high, deadzone, absolute]() {
-                    float v = parent->params.float_params[axis_name];
-                    if (v < deadzone && v > -deadzone) {
-                        v = 0;
-                    }
-
-                    v = ofMap(v, -1, 1, low, high);
-                    if (absolute) {
-                        v = fabs(v);
-                    }
-
-                    return v;
-                };
+                parent->params.setParamAxis(param_name, which, absolute, low, high);
             }  else if (param_el == "paramInt") {
                 int v = xml.getAttribute("value").getIntValue();
                 parent->params.int_params[param_name] = v;
@@ -249,26 +164,17 @@ namespace syntheffect {
                     offset_y = xml.getAttribute("offset-y").getFloatValue();
                 }
 
-                std::function<float()> f;
                 std::string shape = xml.getAttribute("shape").getValue();
                 if (shape == "cos") {
-                    f = [shift, amplitude, freq, offset_y]() {
-                        return offset_y + ((1.0 + cos((ofGetElapsedTimef() * freq) + shift) ) * 0.5 * amplitude);
-                    };
+                    parent->params.setParamWaveCos(param_name, shift, amplitude, freq, offset_y);
                 } else if (shape == "sin") {
-                    f = [shift, amplitude, freq, offset_y]() {
-                        return offset_y + ((1.0 + sin((ofGetElapsedTimef() * freq) + shift) ) * 0.5 * amplitude);
-                    };
+                    parent->params.setParamWaveSin(param_name, shift, amplitude, freq, offset_y);
                 } else if (shape == "perlin") {
-                    f = [shift, amplitude, freq, offset_y]() {
-                        return offset_y + (ofNoise((ofGetElapsedTimef() * freq) + shift)) * amplitude;
-                    };
+                    parent->params.setParamWavePerlin(param_name, shift, amplitude, freq, offset_y);
                 } else {
                     ofLogError("PatchBuilder", "Unspecified or invalid shape attribute: %s", shape.c_str());
                     return false;
                 }
-
-                parent->params.float_func_params[param_name] = f;
             } else {
                 ofLogError("PatchBuilder", "Unrecognized element %s", param_el.c_str());
                 return false;

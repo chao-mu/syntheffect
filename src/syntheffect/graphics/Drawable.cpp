@@ -6,7 +6,7 @@ namespace syntheffect {
             return true;
         }
 
-        bool Drawable::update(std::shared_ptr<Params> params, float t) {
+        bool Drawable::update(std::shared_ptr<param::Params> params, float t) {
             return true;
         }
 

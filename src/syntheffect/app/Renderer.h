@@ -17,7 +17,7 @@ namespace syntheffect {
                 Renderer(std::string patch_path, std::vector<std::shared_ptr<graphics::Drawable>> drawables);
                 void setup();
 
-                bool update(std::shared_ptr<graphics::Params> effect_params, float time);
+                bool update(std::shared_ptr<param::Params> effect_params, float time);
                 bool isReady();
                 void seek(int relative_frames);
 

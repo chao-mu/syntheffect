@@ -17,7 +17,7 @@ namespace syntheffect {
                 Patch();
                 void drawTo(std::shared_ptr<graphics::PingPongBufferMap> channels);
                 void addPipeline(std::shared_ptr<Pipeline> pipeline);
-                void setEffectParams(std::shared_ptr<graphics::Params> params);
+                void setEffectParams(std::shared_ptr<param::Params> params);
 
             private:
                 std::vector<std::shared_ptr<Pipeline>> pipelines_;

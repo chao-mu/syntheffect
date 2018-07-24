@@ -17,7 +17,7 @@
 #include "syntheffect/app/Renderer.h"
 #include "syntheffect/app/RecordingThread.h"
 #include "syntheffect/app/LiveSettings.h"
-#include "syntheffect/controller/Joystick.h"
+#include "syntheffect/controller/XBoxController.h"
 
 namespace syntheffect {
     namespace app {
@@ -51,7 +51,7 @@ namespace syntheffect {
                 std::shared_ptr<LiveSettings> settings_;
                 RecordingThread recorder_;
 
-                controller::Joystick joystick_;
+                controller::XBoxController joystick_;
         };
     }
 }

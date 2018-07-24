@@ -10,7 +10,7 @@ namespace syntheffect {
             public:
                 Video(std::string path, float volume);
                 void setup() override;
-                bool update(std::shared_ptr<graphics::Params> params, float t) override;
+                bool update(std::shared_ptr<param::Params> params, float t) override;
                 void draw(float x, float y, float width, float height) override;
                 float getWidth() override;
                 float getHeight() override;

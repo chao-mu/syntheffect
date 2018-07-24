@@ -10,7 +10,7 @@
 
 namespace syntheffect {
     namespace controller {
-        Joystick::Joystick(int joystick_id) : params_(std::make_shared<graphics::Params>()) {
+        Joystick::Joystick(int joystick_id) : params_(std::make_shared<param::Params>()) {
             id_ = joystick_id;
         }
 
@@ -24,7 +24,13 @@ namespace syntheffect {
                 const float* axes = glfwGetJoystickAxes(id_, &axes_count);
                 for (int i=0; i < axes_count; i++) {
                     std::string name = getAxisName(i);
-                    params_->float_params[name] = axes[i];
+                    float v = axes[i];
+                    if (v < -getDeadzone() || v > getDeadzone()) {
+                        params_->float_params[name] = v;
+                    } else {
+                        params_->float_params[name] = 0;
+                    }
+
                     if (LOG_JOYSTICK_AXES) {
                         ofLog() << name << " " << axes[i];
                     }
@@ -36,7 +42,6 @@ namespace syntheffect {
                     std::string name = getButtonName(i);
 
                     bool pressed = buttons[i] == GLFW_PRESS;
-                    //
                     // If pressed for the first time
                     bool previouslyPressed = params_->bool_params[name];
                     if (pressed && !previouslyPressed) {
@@ -56,20 +61,16 @@ namespace syntheffect {
             return glfwGetJoystickName(id_);
         }
 
-        std::shared_ptr<graphics::Params> Joystick::getParams() {
+        std::shared_ptr<param::Params> Joystick::getParams() {
             return params_;
         }
 
-        std::string Joystick::getAxisName(int i) {
-            return "axis_" + std::to_string(i);
-        }
-
         std::string Joystick::getButtonNameLastPressed(int i) {
-            return "button_" + std::to_string(i) + "_pressed_at";
+            return getButtonName(i) + "_pressed_at";
         }
 
-        std::string Joystick::getButtonName(int i) {
-            return "button_" + std::to_string(i);
+        float Joystick::getDeadzone() {
+            return 0;
         }
     }
 }
