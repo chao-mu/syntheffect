@@ -1,6 +1,6 @@
 #pragma include "include/header.glsl"
 
-float distance = 0.05; 
+float d = 0.05; 
 uniform float speed = 1.;
 
 uniform bool displaceRed = true;
@@ -15,15 +15,15 @@ vec4 getNormalized(vec2 uv) {
 
 float noiseyChannel(vec3 base, vec2 uv, int channel) {
     float t = speed * time;
-    uv.x += mix(-distance, distance, noise(t + ((channel + 1) * 5)));
-    uv.y += mix(-distance, distance, noise(t + ((channel + 1) * 7)));
+    uv.x += mix(-d, d, noise(t + ((channel + 1) * 5)));
+    uv.y += mix(-d, d, noise(t + ((channel + 1) * 7)));
     return mix(base[channel], getNormalized(uv)[channel], 0.5);
 }
 
 vec3 noiseyInverse(vec3 color, vec2 uv) {
     float t = speed * time;
-    uv.x += mix(-distance, distance, noise(t + (4 * 5)));
-    uv.y += mix(-distance, distance, noise(t + (4 * 7)));
+    uv.x += mix(-d, d, noise(t + (4 * 5)));
+    uv.y += mix(-d, d, noise(t + (4 * 7)));
 
     return mix(color, vec3(1.) - getNormalized(uv).rgb, 0.5);
 }

@@ -149,28 +149,28 @@ namespace syntheffect {
                     shift = xml.getAttribute("shift").getFloatValue();
                 }
 
-                float amplitude = 1;
-                if (xml.getAttribute("amp").getValue() != "") {
-                    amplitude = xml.getAttribute("amp").getFloatValue();
-                }
-
                 float freq = 1;
                 if (xml.getAttribute("freq").getValue() != "") {
                     freq = xml.getAttribute("freq").getFloatValue();
                 }
 
-                float offset_y = 0;
-                if (xml.getAttribute("offset-y").getValue() != "") {
-                    offset_y = xml.getAttribute("offset-y").getFloatValue();
+                float low = 0;
+                if (xml.getAttribute("low").getValue() != "") {
+                    low = xml.getAttribute("low").getFloatValue();
+                }
+
+                float high = 1;
+                if (xml.getAttribute("high").getValue() != "") {
+                    high = xml.getAttribute("high").getFloatValue();
                 }
 
                 std::string shape = xml.getAttribute("shape").getValue();
                 if (shape == "cos") {
-                    parent->params.setParamWaveCos(param_name, shift, amplitude, freq, offset_y);
+                    parent->params.setParamWaveCos(param_name, shift, freq, low, high);
                 } else if (shape == "sin") {
-                    parent->params.setParamWaveSin(param_name, shift, amplitude, freq, offset_y);
+                    parent->params.setParamWaveSin(param_name, shift, freq, low, high);
                 } else if (shape == "perlin") {
-                    parent->params.setParamWavePerlin(param_name, shift, amplitude, freq, offset_y);
+                    parent->params.setParamWavePerlin(param_name, shift, freq, low, high);
                 } else {
                     ofLogError("PatchBuilder", "Unspecified or invalid shape attribute: %s", shape.c_str());
                     return false;

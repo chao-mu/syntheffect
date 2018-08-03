@@ -56,21 +56,24 @@ namespace syntheffect {
             };
         }
 
-        void Params::setParamWaveCos(std::string name, float shift, float amp, float freq, float offset_y) {
-            float_func_params[name] = [shift, amp, freq, offset_y]() {
-                return offset_y + ((1.0 + cos((ofGetElapsedTimef() * freq) + shift) ) * 0.5 * amp);
+        void Params::setParamWaveCos(std::string name, float shift, float freq, float low, float high) {
+            float_func_params[name] = [shift, freq, low, high]() {
+                float v = cos(ofGetElapsedTimef() * freq + shift);
+                return ofMap(v, -1, 1, low, high);
             };
         }
 
-        void Params::setParamWaveSin(std::string name, float shift, float amp, float freq, float offset_y) {
-            float_func_params[name] = [shift, amp, freq, offset_y]() {
-                return offset_y + ((1.0 + sin((ofGetElapsedTimef() * freq) + shift) ) * 0.5 * amp);
+        void Params::setParamWaveSin(std::string name, float shift, float freq, float low, float high) {
+            float_func_params[name] = [shift, freq, low, high]() {
+                float v = sin(ofGetElapsedTimef() * freq + shift);
+                return ofMap(v, -1, 1, low, high);
             };
         }
 
-        void Params::setParamWavePerlin(std::string name, float shift, float amp, float freq, float offset_y) {
-            float_func_params[name] = [shift, amp, freq, offset_y]() {
-                return offset_y + (ofNoise((ofGetElapsedTimef() * freq) + shift)) * amp;
+        void Params::setParamWavePerlin(std::string name, float shift, float freq, float low, float high) {
+            float_func_params[name] = [shift, freq, low, high]() {
+                float v = ofNoise(ofGetElapsedTimef() * freq + shift);
+                return ofMap(v, 0, 1, low, high);
             };
         }
 

@@ -23,9 +23,9 @@ namespace syntheffect {
                 void setParamAxis(std::string name, std::string which, bool absolute, float low, float high);
                 void setParamAxisPositive(std::string which, std::string name);
                 void setParamAxisNegative(std::string which, std::string name);
-                void setParamWaveCos(std::string name, float shift, float amp, float freq, float offset_y);
-                void setParamWavePerlin(std::string name, float shift, float amp, float freq, float offset_y);
-                void setParamWaveSin(std::string name, float shift, float amp, float freq, float offset_y);
+                void setParamWaveCos(std::string name, float shift, float freq, float low, float high);
+                void setParamWavePerlin(std::string name, float shift, float freq, float low, float high);
+                void setParamWaveSin(std::string name, float shift, float freq, float low, float hight);
 
                 void set(std::shared_ptr<Params> p);
         };

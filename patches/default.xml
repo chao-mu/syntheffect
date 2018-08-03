@@ -1,51 +1,10 @@
 <patch>
     <pipelines>
         <pipeline in="channel1" out="out">
-            <shader vert="Convolution" frag="Blur">
-                <paramButton name="enabled" which="xbox_button_b"/>
-                <paramInt name="scale" value="3"/>
-            </shader>
-            <shader frag="Huerific">
-                <paramButton name="enabled" which="xbox_button_a"/>
-            </shader>
-            <shader frag="HSVOffset">
-                <paramButton name="enabled" which="xbox_button_a"/>
-                <paramTime name="hueOffset" speed="0.2"/>
-            </shader>
-            <shader vert="Convolution" frag="Scharr">
-                <paramAxis name="mixture" which="xbox_left_trigger" low="0" high="1"/>
-            </shader>
-            <shader frag="SpinZoom">
-                <paramButton name="enabled" which="xbox_button_x"/>
-            </shader>
-            <shader frag="ColorDisplace">
-                <paramButton name="displaceRed" which="xbox_dir_pad_left"/>
-                <paramButton name="displaceBlue" which="xbox_dir_pad_right"/>
-                <paramButton name="displaceGreen" which="xbox_dir_pad_down"/>
-                <paramButton name="displaceRGB" which="xbox_dir_pad_up"/>
-            </shader>
-            <shader>
-                <paramButton name="enabled" which="xbox_button_y"/>
-                <paramBool name="inversionEnabled" value="true"/>
-            </shader>
-            <shader frag="Repeat">
-                <paramAxis name="xCount" which="xbox_left_stick_x" low="-50" high="50"/>
-                <paramAxis name="yCount" which="xbox_left_stick_y" low="-50" high="50"/>
-            </shader>
-            <shader frag="Zoom">
-                <paramButton name="enabled" which="xbox_button_top_right" />
-                <paramButtonTime name="factor" which="xbox_button_top_right" offset="1" />
-            </shader>
-            <shader frag="OilPainting">
-                <paramButton name="enabled" which="xbox_button_top_left" />
-            </shader>
-            <shader vert="Skew" frag="Skew">
-                <paramAxis name="xSkew" which="xbox_right_stick_y" low="0.5" high="-0.5" />
-                <paramAxis name="ySkew" which="xbox_right_stick_x" low="0.5" high="-0.5" />
-            </shader>
-            <shader frag="Mix">
-                <paramTexture name="secondTex" value="last-out"/>
-                <paramAxis name="amount" which="xbox_right_trigger" low="0" high="0.9"/>
+            <shader frag="MixMaskLumin">
+                <paramTexture name="secondTex" value="channel2"/>
+                <paramTexture name="mask" value="channel1"/>
+                <paramFloat name="threshold" value="0.5"/>
             </shader>
        </pipeline>
    </pipelines>
