@@ -6,10 +6,8 @@
 
 #include "ofxTimeMeasurements.h"
 
-#include "syntheffect/midi/MidiMessage.h"
-#include "syntheffect/patch/PatchBuilder.h"
+#include "syntheffect/xml/Parser.h"
 
-#define DISPLAY_KEYS {CHANNEL_OUT}
 #define FPS 30
 
 
@@ -19,11 +17,10 @@ void setup() {
 
 namespace syntheffect {
     namespace app {
-            Live::Live(std::shared_ptr<LiveSettings> settings)
-                : ofBaseApp(),
-                renderer_(std::make_shared<Renderer>(settings->patch_path, settings->drawables)),
-                joystick_(GLFW_JOYSTICK_1) {
+            Live::Live(std::shared_ptr<LiveSettings> settings) : ofBaseApp(), joystick_(GLFW_JOYSTICK_1) {
             beat_ = std::make_shared<ofxBeat>();
+            manager_ = std::make_shared<manager::Manager>();
+
             settings_ = settings;
         }
 
@@ -42,6 +39,7 @@ namespace syntheffect {
             #else
                 ofHideCursor();
             #endif
+
 
             /* Commening out old code that will only work on Mac, keeping in case of wanting  to be cross platform
             std::vector<ofSoundDevice> sound_devices = sound_stream_.getMatchingDevices("ma++ ingalls for Cycling '74: Soundflower", 2, 2);
@@ -63,7 +61,15 @@ namespace syntheffect {
             }
             */
 
-            renderer_->setup();
+            // Setup drawables
+            for (const auto& drawable : settings_->drawables) {
+                drawable->setup();
+            }
+            manager_->setDrawables(settings_->drawables);
+
+            // Load from patch file
+            auto parser = std::make_unique<syntheffect::xml::Parser>();
+            parser->parse(settings_->patch_path, manager_);
 
             if (settings_->out_path != "") {
                 recording_ = true;
@@ -72,8 +78,6 @@ namespace syntheffect {
             } else {
                 recording_ = false;
             }
-
-            display_.load(renderer_->getWidth(), renderer_->getHeight(), ofGetWindowWidth(), ofGetWindowHeight());
         }
 
         void Live::exit() {
@@ -91,47 +95,55 @@ namespace syntheffect {
         void Live::update() {
             float t = ofGetElapsedTimef();
 
-            auto effect_params = std::make_shared<param::Params>();
-            effect_params->float_params["time"] = ofGetElapsedTimef();
-
-            beat_->update(ofGetElapsedTimeMillis());
-            effect_params->float_params["kick"] = beat_->kick();
-            effect_params->float_params["snare"] = beat_->snare();
-            effect_params->float_params["hihat"] = beat_->hihat();
-
-            joystick_.update();
-            effect_params->set(joystick_.getParams());
-
-
-            if (!renderer_->update(effect_params, t)) {
+            manager_->update(t);
+            if (manager_->isFinished()) {
                 ofExit();
             }
-        }
 
-        void Live::windowResized(int w, int h) {
-            display_.windowResized(w, h);
-        }
-
-
-        void Live::draw() {
-            if (!renderer_->isReady()) {
+            if (!manager_->isReady()) {
                 return;
             }
 
-            // Draw to display
-            display_.draw(renderer_->channels, DISPLAY_KEYS);
 
-            if (recording_) {
-                recordFrame();
+            param::Params effect_params;
+            effect_params.set("time", t);
+
+            joystick_.update(t);
+            joystick_.copyTo(effect_params);
+
+
+            /*
+            beat_->update(ofGetElapsedTimeMillis());
+            effect_params->float_params["time"] = ofGetElapsedTimef();
+
+            effect_params->float_params["kick"] = beat_->kick();
+            effect_params->float_params["snare"] = beat_->snare();
+            effect_params->float_params["hihat"] = beat_->hihat();
+            */
+
+            manager_->setGlobalEffectParams(effect_params);
+
+            out_ = manager_->render();
+        }
+
+        void Live::draw() {
+            if (!out_) {
+                return;
             }
+
+            out_->drawScaleCenter(ofGetWindowWidth(), ofGetWindowHeight());
 
             ofSetWindowTitle("fps: " + std::to_string(ofGetFrameRate()));
         }
 
         void Live::recordFrame() {
+            if (!out_) {
+                return;
+            }
+
             recorder_.fboBegin();
             ofClear(0);
-            renderer_->drawScaleCenter(recorder_.getWidth(), recorder_.getHeight());
+            out_->drawScaleCenter(recorder_.getWidth(), recorder_.getHeight());
             recorder_.fboEnd();
             recorder_.push();
         }
@@ -141,7 +153,7 @@ namespace syntheffect {
             fbo.allocate(ofGetWindowWidth(), ofGetWindowHeight(), GL_RGBA);
 
             fbo.begin();
-            display_.draw(renderer_->channels, DISPLAY_KEYS);
+            out_->drawScaleCenter(manager_->getWidth(), manager_->getHeight());
             fbo.end();
 
             ofPixels pixels;
@@ -162,6 +174,4 @@ namespace syntheffect {
     }
 }
 
-#undef DISPLAY_KEYS
-#undef SEEK_FRAMES
 #undef FPS

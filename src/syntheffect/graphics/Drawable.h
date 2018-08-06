@@ -9,12 +9,13 @@ namespace syntheffect {
     namespace graphics {
         class Drawable {
             public:
-                virtual void setup() = 0;
-                virtual bool update(std::shared_ptr<param::Params> params, float t);
+                virtual void setup();
+                virtual void update(std::shared_ptr<param::Params> params, float t);
                 virtual void draw(float x, float y, float width, float height) = 0;
                 virtual float getWidth() = 0;
                 virtual float getHeight() = 0;
                 virtual bool isReady();
+                virtual bool isFinished();
 
                 void drawScaleCenter(float dest_w, float dest_h);
         };

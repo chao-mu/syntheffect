@@ -1,5 +1,2 @@
-ofxVideoRecorder
 ofxBeat
-ofxM3U
-ofxPoco
 ofxTimeMeasurements

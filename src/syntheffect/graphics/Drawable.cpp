@@ -6,8 +6,15 @@ namespace syntheffect {
             return true;
         }
 
-        bool Drawable::update(std::shared_ptr<param::Params> params, float t) {
-            return true;
+        bool Drawable::isFinished() {
+            return false;
+        }
+
+        void Drawable::setup() {
+
+        }
+
+        void Drawable::update(std::shared_ptr<param::Params> params, float t) {
         }
 
         void Drawable::drawScaleCenter(float dest_width, float dest_height) {

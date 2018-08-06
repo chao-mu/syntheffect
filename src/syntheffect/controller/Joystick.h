@@ -10,19 +10,20 @@ namespace syntheffect {
 
                 bool isPresent();
 
-                void update();
+                void update(float t);
 
-                std::shared_ptr<param::Params> getParams();
+                void copyTo(param::Params& p);
 
                 std::string getName();
 
             private:
                 int id_;
-                std::shared_ptr<param::Params> params_;
+                param::Params params_;
 
                 virtual std::string getAxisName(int i) = 0;
                 virtual std::string getButtonName(int i) = 0;
                 std::string getButtonNameLastPressed(int i);
+                std::string getAxisNameLastPressed(int i);
 
                 virtual float getDeadzone();
         };

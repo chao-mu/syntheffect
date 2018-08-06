@@ -7,7 +7,7 @@ namespace syntheffect {
         }
 
         float XBoxController::getDeadzone() {
-            return 0.15f;
+            return 0.12f;
         }
 
         std::string XBoxController::getAxisName(int i) {

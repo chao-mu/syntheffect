@@ -1,0 +1,49 @@
+<patch>
+    <pipelines>
+        <pipeline in="channel1" out="out">
+            <shader vert="Skew" frag="Skew">
+                <paramAxis name="xSkew" which="xbox_right_stick_y" low="0.5" high="-0.5" />
+                <paramAxis name="ySkew" which="xbox_right_stick_x" low="0.5" high="-0.5" />
+            </shader>
+            <shader vert="Convolution" frag="Blur">
+                <paramButton name="enabled" which="xbox_button_b"/>
+                <paramInt name="scale" value="3"/>
+            </shader>
+            <shader frag="Huerific">
+                <paramButton name="enabled" which="xbox_button_a"/>
+            </shader>
+            <shader frag="HSVOffset">
+                <paramButton name="enabled" which="xbox_button_a"/>
+                <paramTime name="hueOffset" speed="0.2"/>
+            </shader>
+            <shader vert="Convolution" frag="Scharr">
+                <paramAxis name="mixture" which="xbox_left_trigger" low="0" high="1"/>
+            </shader>
+            <shader frag="SpinZoom">
+                <paramButton name="enabled" which="xbox_button_x"/>
+            </shader>
+            <shader frag="ColorDisplace">
+                <paramAxisPositive name="displaceRed" which="xbox_dir_pad_x"/>
+                <paramAxisNegative name="displaceBlue" which="xbox_dir_pad_x"/>
+                <paramAxisPositive name="displaceGreen" which="xbox_dir_pad_y"/>
+                <paramAxisNegative name="displaceRGB" which="xbox_dir_pad_y"/>
+                <paramFloat name="d" value="0.02"/>
+            </shader>
+            <shader>
+                <paramButton name="enabled" which="xbox_button_y"/>
+                <paramBool name="inversionEnabled" value="true"/>
+            </shader>
+            <shader frag="Repeat">
+                <paramAxis name="xCount" which="xbox_left_stick_x" low="-50" high="50"/>
+                <paramAxis name="yCount" which="xbox_left_stick_y" low="-50" high="50"/>
+            </shader>
+            <shader frag="OilPainting">
+                <paramButton name="enabled" which="xbox_button_top_left" />
+            </shader>
+            <shader frag="Mix">
+                <paramTexture name="secondTex" value="last-out"/>
+                <paramAxis name="amount" which="xbox_right_trigger" low="0" high="0.9"/>
+            </shader>
+       </pipeline>
+   </pipelines>
+</patch>

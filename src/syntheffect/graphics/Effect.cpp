@@ -4,7 +4,7 @@
 
 namespace syntheffect {
     namespace graphics {
-        Effect::Effect() : params() {
+        Effect::Effect() {
             active_ = true;
         }
 

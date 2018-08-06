@@ -7,41 +7,32 @@ namespace syntheffect {
         Shader::Shader() : Effect(), shader_() {
         }
 
-        bool Shader::load(std::string frag, std::string vert) {
-            return shader_.load(
-                "shaders/vert/" + vert + ".vert",
-                "shaders/frag/" + frag + ".frag"
-            );
+        void Shader::load(std::string frag, std::string vert) {
+            std::string vert_path = "shaders/vert/" + vert + ".vert";
+            std::string frag_path = "shaders/frag/" + frag + ".frag";
+            bool loaded = shader_.load(vert_path, frag_path);
+
+            if (!loaded) {
+                throw std::runtime_error("Unable to load shader with paths " + vert_path + " and " + frag_path);
+            }
         }
 
         void Shader::setUniforms() {
-            for (const auto& kv : params.float_params) {
+            for (const auto& kv : params.getFloats()) {
                 shader_.setUniform1f(kv.first, kv.second);
             }
 
-            for (const auto& kv : params.int_params) {
+            for (const auto& kv : params.getInts()) {
                 shader_.setUniform1i(kv.first, kv.second);
             }
 
-            for (const auto& kv : params.bool_params) {
+            for (const auto& kv : params.getBools()) {
                 shader_.setUniform1i(kv.first, kv.second ? 1 : 0);
             }
 
             int tex_count = 1;
-            for (const auto& kv : params.float_func_params) {
-                shader_.setUniform1f(kv.first, kv.second());
-            }
-
-            for (const auto& kv : params.int_func_params) {
-                shader_.setUniform1i(kv.first, kv.second());
-            }
-
-            for (const auto& kv : params.bool_func_params) {
-                shader_.setUniform1i(kv.first, kv.second() ? 1 : 0);
-            }
-
-            for (const auto& kv : params.texture_func_params) {
-                shader_.setUniformTexture(kv.first, kv.second(), tex_count++);
+            for (const auto& kv : params.getTextures()) {
+                shader_.setUniformTexture(kv.first, kv.second, tex_count++);
             }
         }
 

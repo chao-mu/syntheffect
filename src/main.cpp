@@ -7,8 +7,6 @@
 
 #include "syntheffect/app/Live.h"
 #include "syntheffect/app/LiveSettings.h"
-#include "syntheffect/app/Renderer.h"
-#include "syntheffect/patch/PatchBuilder.h"
 #include "syntheffect/graphics/Drawable.h"
 #include "syntheffect/graphics/Video.h"
 #include "syntheffect/graphics/Image.h"
