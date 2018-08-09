@@ -3,9 +3,9 @@
 #include <cmath>
 #include <string>
 
-#include "ofMath.h"
+#include "boost/lexical_cast.hpp"
 
-#include "syntheffect/graphics/Shader.h"
+#include "ofMath.h"
 
 #define DEFAULT_FRAG "Passthrough"
 #define DEFAULT_VERT "Passthrough"
@@ -35,18 +35,21 @@ namespace syntheffect {
         }
 
         void Parser::addPipelines(const ofXml& xml, std::shared_ptr<manager::Manager> m) {
+            settings::ProjectSettings project;
             // Iterate over pipeline
             for (const auto& child : xml.getChildren()) {
                std::string param_el = child.getName();
                 if (param_el == "pipeline") {
-                  addPipeline(child, m);
+                  addPipeline(child, project);
                 } else {
                     throw std::runtime_error("Expecting pipeline, got <" + param_el + ">");
                 }
             }
+
+            m->setProject(project);
          }
 
-        void Parser::addPipeline(const ofXml& xml, std::shared_ptr<manager::Manager> m) {
+        void Parser::addPipeline(const ofXml& xml, settings::ProjectSettings& project) {
             std::string in = xml.getAttribute("in").getValue();
             if (in.empty()) {
                 throw std::runtime_error("Missing 'in' attribute in pipeline element");
@@ -54,26 +57,28 @@ namespace syntheffect {
 
             std::string out = xml.getAttribute("out").getValue();
             if (out.empty()) {
-                throw std::runtime_error("Missing 'in' attribute in pipeline element");
+                throw std::runtime_error("Missing 'out' attribute in pipeline element");
             }
 
-            int pipeline_id = m->addPipeline();
-            m->connectPipelineOut(pipeline_id, out);
-            m->connectPipelineIn(pipeline_id, in);
+            settings::PipelineSettings pipeline;
+            pipeline.in = in;
+            pipeline.out = out;
 
             // Iterate over pipeline
             for (const auto& child : xml.getChildren()) {
                 std::string el_name = child.getName();
 
                 if (el_name == "shader") {
-                    addShader(child, m, pipeline_id);
+                    addShader(child, pipeline);
                 } else {
                     throw std::runtime_error("Expected <shader>, got <" + el_name + ">");
                 }
             }
+
+            project.pipelines.push_back(pipeline);
         }
 
-        void Parser::addShader(const ofXml& xml, std::shared_ptr<manager::Manager> m, int pipeline_id) {
+        void Parser::addShader(const ofXml& xml, settings::PipelineSettings& pipeline) {
             std::string frag = xml.getAttribute("frag").getValue();
             if (frag.empty()) {
                 frag = DEFAULT_FRAG;
@@ -84,125 +89,92 @@ namespace syntheffect {
                 vert = DEFAULT_VERT;
             }
 
-            int effect_index = m->appendShaderEffect(pipeline_id, frag, vert);
+            settings::ShaderSettings shader;
+            shader.frag = frag;
+            shader.vert = vert;
 
             for (const auto& child : xml.find("*")) {
-                addShaderParam(child, m, pipeline_id, effect_index);
+                addShaderParam(child, shader);
             }
+
+            pipeline.shaders.push_back(shader);
         }
 
-        void Parser::addShaderParam(const ofXml& xml, std::shared_ptr<manager::Manager> m, int pipeline_id, int effect_index) {
-            param::Params params;
-
+        void Parser::addShaderParam(const ofXml& xml, settings::ShaderSettings& shader) {
             std::string param_el = xml.getName();
-            std::string param_name = xml.getAttribute("name").getValue();
 
-            if (param_el == "paramButton" || param_el == "paramPressed") {
-                std::string which = xml.getAttribute("which").getValue();
+            if (param_el == "paramTexture") {
+                std::string name = xml.getAttribute("name").getValue();
+                std::string value = xml.getAttribute("value").getValue();
 
-                params.setParamPressed(param_name, which);
-            } else if (param_el == "paramButtonTime" || param_el == "paramAxisTime" || param_el == "paramPressedTime") {
-                std::string which = xml.getAttribute("which").getValue();
-
-                float offset = 0;
-                if (xml.getAttribute("offset").getValue() != "") {
-                    offset = xml.getAttribute("offset").getFloatValue();
-                }
-
-                float speed = 1;
-                if (xml.getAttribute("speed").getValue() != "") {
-                    speed = xml.getAttribute("speed").getFloatValue();
-                }
-
-                params.setParamPressedTime(param_name, which, offset, speed);
-            } else if (param_el ==  "paramAxisNegative") {
-                std::string which = xml.getAttribute("which").getValue();
-
-                params.setParamAxisNegative(param_name, which);
-            } else if (param_el ==  "paramAxisPositive") {
-                std::string which = xml.getAttribute("which").getValue();
-
-                params.setParamAxisPositive(param_name, which);
-            }  else if (param_el == "paramAxis") {
-                std::string which = xml.getAttribute("which").getValue();
-                bool absolute = false;
-                if (xml.getAttribute("abs").getValue() == "") {
-                    absolute = xml.getAttribute("abs").getFloatValue();
-                }
-
-                float low = -1;
-                if (xml.getAttribute("low").getValue() != "") {
-                    low = xml.getAttribute("low").getFloatValue();
-                }
-
-                float high = 1;
-                if (xml.getAttribute("high").getValue() != "") {
-                    high = xml.getAttribute("high").getFloatValue();
-                }
-
-                params.setParamAxis(param_name, which, absolute, low, high);
-            }  else if (param_el == "paramInt") {
-                int v = xml.getAttribute("value").getIntValue();
-                params.set(param_name, v);
-            } else if (param_el == "paramTime") {
-                float speed = 1;
-                if (xml.getAttribute("speed").getValue() != "") {
-                    speed = xml.getAttribute("speed").getFloatValue();
-                }
-
-                std::function<float(param::ParamAccessors&)> f = [speed](param::ParamAccessors&) {
-                    return ofGetElapsedTimef() * speed;
-                };
-
-                params.set(param_name, f);
-            } else if (param_el == "paramFloat") {
-                float v = xml.getAttribute("value").getFloatValue();
-                params.set(param_name, v);
-            } else if (param_el == "paramTexture") {
-                std::string v = xml.getAttribute("value").getValue();
-                params.set(param_name,  [v](param::ParamAccessors& p) {
-                    return p.getTexture(v);
-                });
-            } else if (param_el == "paramBool") {
-                std::string raw = xml.getAttribute("value").getValue();
-                bool v = raw == "true" || raw == "on" || raw == "1";
-                params.set(param_name, v);
-            } else if (param_el == "paramWave") {
-                float shift = 0;
-                if (xml.getAttribute("shift").getValue() != "") {
-                    shift = xml.getAttribute("shift").getFloatValue();
-                }
-
-                float freq = 1;
-                if (xml.getAttribute("freq").getValue() != "") {
-                    freq = xml.getAttribute("freq").getFloatValue();
-                }
-
-                float low = 0;
-                if (xml.getAttribute("low").getValue() != "") {
-                    low = xml.getAttribute("low").getFloatValue();
-                }
-
-                float high = 1;
-                if (xml.getAttribute("high").getValue() != "") {
-                    high = xml.getAttribute("high").getFloatValue();
-                }
-
-                std::string shape = xml.getAttribute("shape").getValue();
-                if (shape == "cos") {
-                    params.setParamWaveCos(param_name, shift, freq, low, high);
-                } else if (shape == "sin") {
-                    params.setParamWaveSin(param_name, shift, freq, low, high);
-                } else if (shape == "perlin") {
-                    params.setParamWavePerlin(param_name, shift, freq, low, high);
-                } else {
-                    throw std::runtime_error("Unspecified or invalid shape attribute: " + shape);
-                }
-            } else {
-                throw std::runtime_error("Unrecognized element " + param_el);
+                shader.texture_params[name] = value;
+                return;
+            } else if (param_el != "param") {
+                throw std::runtime_error("Expected <param>, got <" + param_el + ">");
             }
 
-            m->setEffectParams(pipeline_id, effect_index, params);
+            std::string name = xml.getAttribute("name").getValue();
+            if (name == "") {
+                throw std::runtime_error("name attribute missing from <param>");
+            }
+
+            settings::ParamSettings p;
+            p.name = name;
+
+            std::string value = xml.getAttribute("value").getValue();
+            try {
+                p.value = boost::lexical_cast<float>(value);
+            } catch (const boost::bad_lexical_cast &e) {
+                p.variable_value = value;
+            }
+
+            std::string cast = xml.getAttribute("cast").getValue();
+            if (cast == "round-int") {
+                p.cast = settings::RoundIntCast;
+            } else if (cast == "negative-is-true") {
+                p.cast = settings::NegativeIsTrueCast;
+            } else if (cast == "positive-is-true") {
+                p.cast = settings::PositiveIsTrueCast;
+            } else if (cast == "") {
+                p.cast = settings::NoCast;
+            } else {
+                throw std::runtime_error("cast attribute missing or invalid in <param>");
+            }
+
+            std::string func = xml.getAttribute("func").getValue();
+            if (func == "identity" || func == "") {
+                p.func = settings::IdentityFunc;
+            } else if (func == "noise") {
+                p.func = settings::NoiseFunc;
+            } else if (func == "cos") {
+                p.func = settings::CosFunc;
+            } else if (func == "sin") {
+                p.func = settings::SinFunc;
+            } else {
+                throw std::runtime_error("type attribute missing or invalid in <param>");
+            }
+
+            std::string low = xml.getAttribute("low").getValue();
+            if (low != "") {
+                p.low = xml.getAttribute("low").getFloatValue();
+            }
+
+            std::string high = xml.getAttribute("high").getValue();
+            if (high != "") {
+                p.high = xml.getAttribute("high").getFloatValue();
+            }
+
+            std::string freq = xml.getAttribute("freq").getValue();
+            if (freq != "") {
+                p.freq = xml.getAttribute("freq").getFloatValue();
+            }
+
+            std::string shift = xml.getAttribute("shift").getValue();
+            if (shift != "") {
+                p.shift = xml.getAttribute("shift").getFloatValue();
+            }
+
+            shader.params.push_back(p);
         }
     }
 }

@@ -8,6 +8,9 @@
 
 #define LOG_JOYSTICK false
 
+#define AXIS_LOW -1
+#define AXIS_HIGH 1
+
 namespace syntheffect {
     namespace controller {
         Joystick::Joystick(int joystick_id) {
@@ -30,24 +33,36 @@ namespace syntheffect {
 
                     float v = axes[i];
                     float deadzone = getDeadzone();
-                    float last_press = ofGetElapsedTimef();
-                    if (v < -deadzone) {
+                    float neutral = getAxisNeutral(i);
+                    float adjusted_low = -1 + deadzone;
+                    float adjusted_high = 1 - deadzone;
+                    bool pressed = true;
+                    if (v - neutral < -deadzone) {
                         v += deadzone;
-                    } else if (v > deadzone) {
+                        if (v > adjusted_high) {
+                            v = adjusted_high;
+                        }
+                    } else if (v - neutral > deadzone) {
                         v -= deadzone;
+                        if (v < adjusted_low) {
+                            v = adjusted_low;
+                        }
+
                     } else {
-                        v = 0;
-                        last_press = 0;
+                        v = neutral;
+                        pressed = false;
                     }
 
                     // Remap to -1 to 1
-                    v = ofMap(v, -1 + deadzone, 1 - deadzone, -1, 1);
+                    if (pressed) {
+                        v = ofMap(v, adjusted_low, adjusted_high, AXIS_LOW, AXIS_HIGH);
+                    }
 
-                    params_.set(name, v);
-                    params_.set(getAxisNameLastPressed(i), last_press);
+                    params_.set(settings::ParamSettings::floatValue(name, v, AXIS_LOW, AXIS_HIGH));
+                    setPressed(name, pressed, t);
 
                     if (LOG_JOYSTICK) {
-                        ofLogNotice("Joystick", "axis=%d name=%s raw=%f processed=%f", i, name.c_str(), axes[i], v);
+                        ofLogNotice("Joystick", "axis=%d name=%s raw=%f translated=%f pressed=%i", i, name.c_str(), axes[i], v, pressed);
                     }
                 }
 
@@ -60,19 +75,34 @@ namespace syntheffect {
                     }
 
                     bool pressed = buttons[i] == GLFW_PRESS;
-                    // If pressed for the first time
-                    bool previouslyPressed = params_.getBool(name, false);
-                    if (pressed && !previouslyPressed) {
-                        params_.set(getButtonNameLastPressed(i), ofGetElapsedTimef());
-                    }
-
-                    params_.set(name, pressed);
+                    setPressed(name, pressed, t);
+                    params_.set(settings::ParamSettings::boolValue(name, pressed));
 
                     if (LOG_JOYSTICK) {
-                        ofLogNotice("Joystick", "button=%d name=%s pressed=%i previous=%i", i, name.c_str(), pressed, previouslyPressed);
+                        ofLogNotice("Joystick", "button=%d name=%s pressed=%i", i, name.c_str(), pressed);
                     }
                 }
             }
+        }
+
+        void Joystick::setPressed(std::string name, bool pressed, float t) {
+            std::string pressed_name = getNamePressed(name);
+            std::string pressed_at_name = getNamePressedAt(name);
+            std::string pressed_time_name = getNamePressedTime(name);
+
+            // If pressed for the first time
+            if (pressed) {
+                bool previouslyPressed = params_.exists(pressed_name) ? params_.getBool(pressed_name) : false;
+                if (!previouslyPressed) {
+                    params_.set(settings::ParamSettings::floatValue(pressed_at_name, t));
+                }
+
+                params_.set(settings::ParamSettings::floatValue(pressed_time_name, t - params_.getFloat(pressed_at_name)));
+            } else {
+                params_.set(settings::ParamSettings::floatValue(pressed_time_name, 0));
+            }
+
+            params_.set(settings::ParamSettings::boolValue(pressed_name, pressed));
         }
 
         std::string Joystick::getName() {
@@ -83,13 +113,18 @@ namespace syntheffect {
             params_.copyTo(p);
         }
 
-        std::string Joystick::getButtonNameLastPressed(int i) {
-            return getButtonName(i) + "_pressed_at";
+        std::string Joystick::getNamePressedAt(std::string name) {
+            return name + "_pressed_at";
         }
 
-        std::string Joystick::getAxisNameLastPressed(int i) {
-            return getAxisName(i) + "_pressed_at";
+        std::string Joystick::getNamePressedTime(std::string name) {
+            return name + "_pressed_time";
         }
+
+        std::string Joystick::getNamePressed(std::string name) {
+            return name + "_pressed";
+        }
+
 
         float Joystick::getDeadzone() {
             return 0;
@@ -98,3 +133,5 @@ namespace syntheffect {
 }
 
 #undef LOG_JOYSTICK
+#undef AXIS_LOW
+#undef AXIS_HIGH

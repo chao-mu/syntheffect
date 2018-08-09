@@ -9,6 +9,7 @@ namespace syntheffect {
             public:
                 XBoxController(int joystick_id);
 
+                float getAxisNeutral(int i) override;
                 std::string getAxisName(int i) override;
                 std::string getButtonName(int i) override;
                 float getDeadzone() override;

@@ -6,6 +6,15 @@ namespace syntheffect {
 
         }
 
+        float XBoxController::getAxisNeutral(int i) {
+            switch (i) {
+                case 2: return -1;
+                case 5: return -1;
+            }
+            return 0;
+        }
+
+
         float XBoxController::getDeadzone() {
             return 0.12f;
         }

@@ -7,6 +7,7 @@
 #include "ofxTimeMeasurements.h"
 
 #include "syntheffect/xml/Parser.h"
+#include "syntheffect/settings/ParamSettings.h"
 
 #define FPS 30
 
@@ -106,7 +107,7 @@ namespace syntheffect {
 
 
             param::Params effect_params;
-            effect_params.set("time", t);
+            effect_params.set(settings::ParamSettings::floatValue("time", t));
 
             joystick_.update(t);
             joystick_.copyTo(effect_params);

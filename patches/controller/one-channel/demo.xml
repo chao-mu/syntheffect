@@ -1,51 +1,51 @@
 <patch>
     <pipelines>
         <pipeline in="channel1" out="out">
-            <shader vert="Convolution" frag="Blur">
-                <paramButton name="enabled" which="xbox_button_b"/>
-                <paramInt name="scale" value="3"/>
+            <shader frag="Blur">
+                <param name="enabled" value="xbox_button_b"/>
+                <param name="scale" value="3" cast="round-int"/>
             </shader>
             <shader frag="Huerific">
-                <paramButton name="enabled" which="xbox_button_a"/>
+                <param name="enabled" value="xbox_button_a"/>
             </shader>
             <shader frag="HSVOffset">
-                <paramButton name="enabled" which="xbox_button_a"/>
-                <paramTime name="hueOffset" speed="0.2"/>
+                <param name="enabled" value="xbox_button_a"/>
+                <param name="hueOffset" value="time" freq="0.2"/>
             </shader>
-            <shader vert="Convolution" frag="Scharr">
-                <paramAxis name="mixture" which="xbox_left_trigger" low="0" high="1"/>
+            <shader  frag="Scharr">
+                <param name="mixture" value="xbox_left_trigger" low="0" high="1"/>
             </shader>
             <shader frag="SpinZoom">
-                <paramButton name="enabled" which="xbox_button_x"/>
+                <param name="enabled" value="xbox_button_x"/>
             </shader>
             <shader frag="ColorDisplace">
-                <paramAxisPositive name="displaceRed" which="xbox_dir_pad_x"/>
-                <paramAxisNegative name="displaceBlue" which="xbox_dir_pad_x"/>
-                <paramAxisPositive name="displaceGreen" which="xbox_dir_pad_y"/>
-                <paramAxisNegative name="displaceRGB" which="xbox_dir_pad_y"/>
+                <param name="displaceRed" value="xbox_dir_pad_x" cast="positive-is-true"/>
+                <param name="displaceBlue" value="xbox_dir_pad_x" cast="negative-is-true"/>
+                <param name="displaceGreen" value="xbox_dir_pad_y" cast="positive-is-true"/>
+                <param name="displaceRGB" value="xbox_dir_pad_y" cast="negative-is-true"/>
             </shader>
             <shader>
-                <paramButton name="enabled" which="xbox_button_y"/>
-                <paramBool name="inversionEnabled" value="true"/>
+                <param name="enabled" value="xbox_button_y"/>
+                <param name="inversionEnabled" value="-1" cast="negative-is-true"/>
             </shader>
             <shader frag="Repeat">
-                <paramAxis name="xCount" which="xbox_left_stick_x" low="-50" high="50"/>
-                <paramAxis name="yCount" which="xbox_left_stick_y" low="-50" high="50"/>
+                <param name="xCount" value="xbox_left_stick_x" low="-50" high="50"/>
+                <param name="yCount" value="xbox_left_stick_y" low="-50" high="50"/>
             </shader>
             <shader frag="Zoom">
-                <paramButton name="enabled" which="xbox_button_top_right" />
-                <paramButtonTime name="factor" which="xbox_button_top_right" offset="1" />
+                <param name="enabled" value="xbox_button_top_right" />
+                <param name="factor" value="xbox_button_top_right_pressed_time" shift="1" />
             </shader>
             <shader frag="OilPainting">
-                <paramButton name="enabled" which="xbox_button_top_left" />
+                <param name="enabled" value="xbox_button_top_left" />
             </shader>
             <shader vert="Skew" frag="Skew">
-                <paramAxis name="xSkew" which="xbox_right_stick_y" low="0.5" high="-0.5" />
-                <paramAxis name="ySkew" which="xbox_right_stick_x" low="0.5" high="-0.5" />
+                <param name="xSkew" value="xbox_right_stick_y" low="0.5" high="-0.5" />
+                <param name="ySkew" value="xbox_right_stick_x" low="0.5" high="-0.5" />
             </shader>
             <shader frag="Mix">
                 <paramTexture name="secondTex" value="last-out"/>
-                <paramAxis name="amount" which="xbox_right_trigger" low="0" high="0.9"/>
+                <param name="amount" value="xbox_right_trigger" low="0" high="0.9"/>
             </shader>
        </pipeline>
    </pipelines>

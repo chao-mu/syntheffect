@@ -6,6 +6,11 @@
 
 #include "syntheffect/manager/Manager.h"
 
+#include "syntheffect/settings/ShaderSettings.h"
+#include "syntheffect/settings/ParamSettings.h"
+#include "syntheffect/settings/PipelineSettings.h"
+#include "syntheffect/settings/ProjectSettings.h"
+
 namespace syntheffect {
     namespace xml {
         class Parser {
@@ -14,9 +19,9 @@ namespace syntheffect {
 
             private:
                 void addPipelines(const ofXml& xml, std::shared_ptr<manager::Manager> m);
-                void addPipeline(const ofXml& xml, std::shared_ptr<manager::Manager> m);
-                void addShader(const ofXml& xml, std::shared_ptr<manager::Manager> m, int pipeline_id);
-                void addShaderParam(const ofXml& xml, std::shared_ptr<manager::Manager> m, int pipeline_id, int effect_index);
+                void addPipeline(const ofXml& xml, settings::ProjectSettings& project);
+                void addShader(const ofXml& xml, settings::PipelineSettings& pipeline);
+                void addShaderParam(const ofXml& xml, settings::ShaderSettings& shader);
         };
     }
 }

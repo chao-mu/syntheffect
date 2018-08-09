@@ -10,10 +10,32 @@
 namespace syntheffect {
     namespace manager {
         Manager::Manager() {
-            current_id_ = 0;
             channels_ = buildChannels();
         }
 
+        void Manager::setProject(const settings::ProjectSettings& project) {
+            for (const auto& pipeline_settings : project.pipelines) {
+                std::string out = pipeline_settings.out;
+
+                pipelines_[out] = graphics::Pipeline();
+                pipeline_ins_[out] = pipeline_settings.in;
+
+                for (const auto& shader_settings : pipeline_settings.shaders) {
+                    auto shader = std::make_shared<graphics::Shader>();
+                    shader->load(shader_settings.frag, shader_settings.vert);
+
+                    for (const auto& param_settings : shader_settings.params) {
+                        shader->params.set(param_settings);
+                    }
+
+                    for (const auto& kv : shader_settings.texture_params) {
+                        shader->params.setTexture(kv.first, kv.second);
+                    }
+
+                    pipelines_[out].addEffect(shader);
+                }
+            }
+        }
 
         void Manager::setDrawables(std::vector<std::shared_ptr<graphics::Drawable>> drawables) {
             drawables_ = drawables;
@@ -67,25 +89,6 @@ namespace syntheffect {
         }
 
 
-        int Manager::nextID() {
-            return current_id_++;
-        }
-
-        int Manager::addPipeline() {
-            int id = nextID();
-            pipelines_[id] = graphics::Pipeline();
-
-            return id;
-        }
-
-        void Manager::connectPipelineOut(int pipeline_id, std::string out) {
-            pipeline_outs_[pipeline_id] = out;
-        }
-
-        void Manager::connectPipelineIn(int pipeline_id, std::string in) {
-            pipeline_ins_[pipeline_id] = in;
-        }
-
         bool Manager::isReady() {
             for (const auto drawable : drawables_) {
                 if (!drawable->isReady()) {
@@ -118,17 +121,17 @@ namespace syntheffect {
                 for (auto& id_and_pipeline : pipelines_) {
                     for (auto& effect : id_and_pipeline.second.getEffects()) {
                         std::shared_ptr<graphics::PingPongBuffer> buf = channels_->get(key);
-                        effect->params.set(key, [buf](param::ParamAccessors&) { return buf->drawable()->getTexture(); });
+                        effect->params.setTexture(key, [buf]() { return buf->drawable()->getTexture(); });
                     }
                 }
             }
 
             // Apply effects and produce output
-            for (auto& id_and_pipeline : pipelines_) {
-                int id = id_and_pipeline.first;
-                graphics::Pipeline& pipeline = id_and_pipeline.second;
-                std::shared_ptr<graphics::PingPongBuffer> in = channels_->get(pipeline_ins_.at(id));
-                std::shared_ptr<graphics::PingPongBuffer> out = channels_->get_or_allocate(pipeline_outs_.at(id));
+            for (auto& out_and_pipeline : pipelines_) {
+                std::string out_name = out_and_pipeline.first;
+                graphics::Pipeline& pipeline = out_and_pipeline.second;
+                std::shared_ptr<graphics::PingPongBuffer> in = channels_->get(pipeline_ins_.at(out_name));
+                std::shared_ptr<graphics::PingPongBuffer> out = channels_->get_or_allocate(out_name);
 
                 pipeline.drawTo(in, out);
             }
@@ -138,18 +141,6 @@ namespace syntheffect {
             out->drawTo(channels_->get(CHANNEL_LAST_OUT));
 
             return std::make_shared<graphics::PingPongChannel>(out);
-        }
-
-        int Manager::appendShaderEffect(int pipeline_id, std::string frag, std::string vert) {
-            std::shared_ptr<graphics::Shader> effect = std::make_shared<graphics::Shader>();
-
-            effect->load(frag, vert);
-
-            return pipelines_.at(pipeline_id).addEffect(effect);
-        }
-
-        void Manager::setEffectParams(int pipeline_id, int effects_index, param::Params& params) {
-            params.copyTo(pipelines_.at(pipeline_id).getEffects().at(effects_index)->params);
         }
 
         void Manager::setGlobalEffectParams(param::Params& params) {
