@@ -6,117 +6,83 @@
 #include "boost/lexical_cast.hpp"
 
 #include "ofMath.h"
+#include "ofFileUtils.h"
+
+#include "syntheffect/xml/Util.h"
 
 #define DEFAULT_FRAG "Passthrough"
 #define DEFAULT_VERT "Passthrough"
-#define PIPELINES_PATH "//patch/pipelines"
-#define CONTROLS_PATH "//patch/controls"
 
 namespace syntheffect {
     namespace xml {
-        void Parser::parse(std::string path, std::shared_ptr<manager::Manager> m) {
+         std::vector<settings::AssetGroupSettings> Parser::parseAssets(std::string path) {
             ofXml xml;
 
             if (!xml.load(path)) {
                throw std::runtime_error("Unable to load xml file " + path);
             }
 
-            ofXml::Search pipelines_search = xml.find(PIPELINES_PATH);
-            if (pipelines_search.empty()) {
-                throw std::runtime_error(path + " is missing <pipelines> section");
+            ofXml::Search assets_search = xml.find("//assets");
+            if (assets_search.empty()) {
+                throw std::runtime_error(path + " is missing <assets> section");
             }
 
-            if (pipelines_search.size() > 1) {
-                throw std::runtime_error(path + "has more than one <pipelines> section");
-            }
-
-            ofXml pipeleines_section = pipelines_search.getFirst();
-            addPipelines(pipeleines_section, m);
-        }
-
-        void Parser::addPipelines(const ofXml& xml, std::shared_ptr<manager::Manager> m) {
-            settings::ProjectSettings project;
+            std::vector<settings::AssetGroupSettings> asset_groups;
             // Iterate over pipeline
-            for (const auto& child : xml.getChildren()) {
+            for (const auto& child : assets_search.getFirst().getChildren()) {
                std::string param_el = child.getName();
-                if (param_el == "pipeline") {
-                  addPipeline(child, project);
+                if (param_el == "assetGroup") {
+                  addAssetGroup(child, path, asset_groups);
                 } else {
-                    throw std::runtime_error("Expecting pipeline, got <" + param_el + ">");
+                    throw std::runtime_error("Expecting assetGroup, got <" + param_el + ">");
                 }
             }
 
-            m->setProject(project);
+            return asset_groups;
          }
 
-        void Parser::addPipeline(const ofXml& xml, settings::ProjectSettings& project) {
-            std::string in = xml.getAttribute("in").getValue();
-            if (in.empty()) {
-                throw std::runtime_error("Missing 'in' attribute in pipeline element");
-            }
+         void Parser::addAssetGroup(const ofXml& xml, std::string path, std::vector<settings::AssetGroupSettings>& asset_groups) {
+             settings::AssetGroupSettings group;
 
-            std::string out = xml.getAttribute("out").getValue();
-            if (out.empty()) {
-                throw std::runtime_error("Missing 'out' attribute in pipeline element");
-            }
+             group.name = Util::getAttribute<std::string>(xml, "name", true, "");
 
-            settings::PipelineSettings pipeline;
-            pipeline.in = in;
-            pipeline.out = out;
-
-            // Iterate over pipeline
-            for (const auto& child : xml.getChildren()) {
+             for (const auto& child : xml.getChildren()) {
                 std::string el_name = child.getName();
 
-                if (el_name == "shader") {
-                    addShader(child, pipeline);
+                if (el_name == "asset") {
+                    addAsset(child, path, group);
+                } else if (el_name == "trigger") {
+                    group.trigger = parseParam(child, false);
                 } else {
-                    throw std::runtime_error("Expected <shader>, got <" + el_name + ">");
+                    throw std::runtime_error("Expected <asset> or <trigger>, got <" + el_name + ">");
                 }
             }
 
-            project.pipelines.push_back(pipeline);
-        }
+             asset_groups.push_back(group);
+         }
 
-        void Parser::addShader(const ofXml& xml, settings::PipelineSettings& pipeline) {
-            std::string frag = xml.getAttribute("frag").getValue();
-            if (frag.empty()) {
-                frag = DEFAULT_FRAG;
-            }
+         void Parser::addAsset(const ofXml& xml, std::string path, settings::AssetGroupSettings& group) {
+             settings::AssetSettings asset;
 
-            std::string vert = xml.getAttribute("vert").getValue();
-            if (vert.empty()) {
-                vert = DEFAULT_VERT;
-            }
+             asset.name = Util::getAttribute<std::string>(xml, "name", true, "");
+             asset.path = ofFilePath::join(
+                     ofFilePath::getEnclosingDirectory(path),
+                     Util::getAttribute<std::string>(xml, "path", true, ""));
 
-            settings::ShaderSettings shader;
-            shader.frag = frag;
-            shader.vert = vert;
+             std::string type_raw = Util::getAttribute<std::string>(xml, "type", true, "");
+             if (type_raw == "image") {
+                 asset.type = settings::ImageType;
+             } else if (type_raw == "video") {
+                 asset.type = settings::VideoType;
+             } else {
+                 throw std::runtime_error("invalid asset type of '" + type_raw + "' specified");
+             }
 
-            for (const auto& child : xml.find("*")) {
-                addShaderParam(child, shader);
-            }
+             group.assets.push_back(asset);
+         }
 
-            pipeline.shaders.push_back(shader);
-        }
-
-        void Parser::addShaderParam(const ofXml& xml, settings::ShaderSettings& shader) {
-            std::string param_el = xml.getName();
-
-            if (param_el == "paramTexture") {
-                std::string name = xml.getAttribute("name").getValue();
-                std::string value = xml.getAttribute("value").getValue();
-
-                shader.texture_params[name] = value;
-                return;
-            } else if (param_el != "param") {
-                throw std::runtime_error("Expected <param>, got <" + param_el + ">");
-            }
-
-            std::string name = xml.getAttribute("name").getValue();
-            if (name == "") {
-                throw std::runtime_error("name attribute missing from <param>");
-            }
+         settings::ParamSettings Parser::parseParam(const ofXml& xml, bool require_name) {
+            std::string name = Util::getAttribute<std::string>(xml, "name", require_name, "");
 
             settings::ParamSettings p;
             p.name = name;
@@ -174,7 +140,100 @@ namespace syntheffect {
                 p.shift = xml.getAttribute("shift").getFloatValue();
             }
 
-            shader.params.push_back(p);
+            return p;
+         }
+
+         std::vector<settings::PipelineSettings> Parser::parsePipelines(std::string path) {
+            ofXml xml;
+
+            if (!xml.load(path)) {
+               throw std::runtime_error("Unable to load xml file " + path);
+            }
+
+            ofXml::Search pipelines_search = xml.find("//pipelines");
+            if (pipelines_search.empty()) {
+                throw std::runtime_error(path + " is missing <pipelines> section");
+            }
+
+            std::vector<settings::PipelineSettings> pipelines;
+            // Iterate over pipeline
+            for (const auto& child : pipelines_search.getFirst().getChildren()) {
+               std::string param_el = child.getName();
+                if (param_el == "pipeline") {
+                  addPipeline(child, pipelines);
+                } else {
+                    throw std::runtime_error("Expecting pipeline, got <" + param_el + ">");
+                }
+            }
+
+            return pipelines;
+         }
+
+        void Parser::addPipeline(const ofXml& xml, std::vector<settings::PipelineSettings>& pipelines) {
+            std::string in = xml.getAttribute("in").getValue();
+            if (in.empty()) {
+                throw std::runtime_error("Missing 'in' attribute in pipeline element");
+            }
+
+            std::string out = xml.getAttribute("out").getValue();
+            if (out.empty()) {
+                throw std::runtime_error("Missing 'out' attribute in pipeline element");
+            }
+
+            settings::PipelineSettings pipeline;
+            pipeline.in = in;
+            pipeline.out = out;
+
+            // Iterate over pipeline
+            for (const auto& child : xml.getChildren()) {
+                std::string el_name = child.getName();
+
+                if (el_name == "shader") {
+                    addShader(child, pipeline);
+                } else {
+                    throw std::runtime_error("Expected <shader>, got <" + el_name + ">");
+                }
+            }
+
+            pipelines.push_back(pipeline);
+        }
+
+        void Parser::addShader(const ofXml& xml, settings::PipelineSettings& pipeline) {
+            std::string frag = xml.getAttribute("frag").getValue();
+            if (frag.empty()) {
+                frag = DEFAULT_FRAG;
+            }
+
+            std::string vert = xml.getAttribute("vert").getValue();
+            if (vert.empty()) {
+                vert = DEFAULT_VERT;
+            }
+
+            settings::ShaderSettings shader;
+            shader.frag = frag;
+            shader.vert = vert;
+
+            for (const auto& child : xml.find("*")) {
+                addShaderParam(child, shader);
+            }
+
+            pipeline.shaders.push_back(shader);
+        }
+
+        void Parser::addShaderParam(const ofXml& xml, settings::ShaderSettings& shader) {
+            std::string param_el = xml.getName();
+
+            if (param_el == "paramTexture") {
+                std::string name = xml.getAttribute("name").getValue();
+                std::string value = xml.getAttribute("value").getValue();
+
+                shader.texture_params[name] = value;
+                return;
+            } else if (param_el != "param") {
+                throw std::runtime_error("Expected <param>, got <" + param_el + ">");
+            }
+
+            shader.params.push_back(parseParam(xml));
         }
     }
 }

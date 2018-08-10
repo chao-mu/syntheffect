@@ -23,12 +23,15 @@ namespace syntheffect {
                 virtual std::string getAxisName(int i) = 0;
                 virtual float getAxisNeutral(int i) = 0;
                 virtual std::string getButtonName(int i) = 0;
+                virtual int getDeadzoneSibling(int i) = 0;
 
                 std::string getNamePressedAt(std::string name);
                 std::string getNamePressedTime(std::string name);
                 std::string getNamePressed(std::string name);
 
                 void setPressed(std::string name, bool pressed, float t);
+
+                bool isAxisPressed(const float* axes, int i, int sibling=-1);
 
                 virtual float getDeadzone();
         };

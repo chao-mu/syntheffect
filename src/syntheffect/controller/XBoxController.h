@@ -13,6 +13,7 @@ namespace syntheffect {
                 std::string getAxisName(int i) override;
                 std::string getButtonName(int i) override;
                 float getDeadzone() override;
+                int getDeadzoneSibling(int i) override;
         };
     }
 }

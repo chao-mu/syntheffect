@@ -19,6 +19,16 @@ namespace syntheffect {
             return 0.12f;
         }
 
+        int XBoxController::getDeadzoneSibling(int i) {
+            switch (i) {
+                case 0:  return 1;
+                case 1: return 0;
+                case 3: return 4;
+                case 4: return 3;
+                default: return -1;
+            }
+        }
+
         std::string XBoxController::getAxisName(int i) {
             switch (i) {
                 case 0: return "xbox_left_stick_x";

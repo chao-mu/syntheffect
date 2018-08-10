@@ -21,6 +21,19 @@ namespace syntheffect {
             return glfwJoystickPresent(id_) == GLFW_TRUE;
         }
 
+        bool Joystick::isAxisPressed(const float* axes, int i, int sibling) {
+            float v = axes[i];
+            float deadzone = getDeadzone();
+            float neutral = getAxisNeutral(i);
+
+            bool pressed = (v - neutral < -deadzone) || (v - neutral > deadzone);
+            if (sibling >= 0) {
+                pressed |= isAxisPressed(axes, sibling);
+            }
+
+            return pressed;
+        }
+
         void Joystick::update(float t) {
             if (isPresent()) {
                 int axes_count;
@@ -36,33 +49,37 @@ namespace syntheffect {
                     float neutral = getAxisNeutral(i);
                     float adjusted_low = -1 + deadzone;
                     float adjusted_high = 1 - deadzone;
-                    bool pressed = true;
-                    if (v - neutral < -deadzone) {
-                        v += deadzone;
-                        if (v > adjusted_high) {
-                            v = adjusted_high;
-                        }
-                    } else if (v - neutral > deadzone) {
-                        v -= deadzone;
-                        if (v < adjusted_low) {
-                            v = adjusted_low;
-                        }
-
-                    } else {
-                        v = neutral;
-                        pressed = false;
-                    }
-
-                    // Remap to -1 to 1
+                    bool adjusted = false;
+                    bool pressed = isAxisPressed(axes, i, getDeadzoneSibling(i));
                     if (pressed) {
-                        v = ofMap(v, adjusted_low, adjusted_high, AXIS_LOW, AXIS_HIGH);
+                        if (v - neutral < -deadzone) {
+                            v += deadzone;
+                            if (v > adjusted_high) {
+                                v = adjusted_high;
+                            }
+
+                            adjusted = true;
+                        } else if (v - neutral > deadzone) {
+                            v -= deadzone;
+                            if (v < adjusted_low) {
+                                v = adjusted_low;
+                            }
+
+                            adjusted = true;
+                        } else {
+                            v = neutral;
+                        }
+                        // Remap to -1 to 1
+                        if (adjusted) {
+                            v = ofMap(v, adjusted_low, adjusted_high, AXIS_LOW, AXIS_HIGH);
+                        }
                     }
 
                     params_.set(settings::ParamSettings::floatValue(name, v, AXIS_LOW, AXIS_HIGH));
                     setPressed(name, pressed, t);
 
                     if (LOG_JOYSTICK) {
-                        ofLogNotice("Joystick", "axis=%d name=%s raw=%f translated=%f pressed=%i", i, name.c_str(), axes[i], v, pressed);
+                        ofLogNotice("Joystick", "axis=%d name=%s raw=%f translated=%f adjusted=%i", i, name.c_str(), axes[i], v, adjusted);
                     }
                 }
 
@@ -114,15 +131,15 @@ namespace syntheffect {
         }
 
         std::string Joystick::getNamePressedAt(std::string name) {
-            return name + "_pressed_at";
+            return name + "-pressed_at";
         }
 
         std::string Joystick::getNamePressedTime(std::string name) {
-            return name + "_pressed_time";
+            return name + "-pressed_time";
         }
 
         std::string Joystick::getNamePressed(std::string name) {
-            return name + "_pressed";
+            return name + "-pressed";
         }
 
 

@@ -1,0 +1,13 @@
+<assets>
+    <assetGroup name="dancing">
+        <trigger value="xbox_button_middle_left"/>
+        
+        <asset name="splash" type="image" path="assets/cat.jpg"/>
+        <asset name="primary" type="video" path="assets/dancing_fire_monster.mp4"/>
+    </assetGroup>
+    <assetGroup name="calendar">
+        <trigger value="xbox_button_middle_right"/>
+
+        <asset name="primary" type="video" path="assets/calendar-montage.mkv"/>
+    </assetGroup>
+</assets>

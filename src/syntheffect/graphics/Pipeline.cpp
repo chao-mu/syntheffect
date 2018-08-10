@@ -1,15 +1,19 @@
+#include "syntheffect/graphics/Pipeline.h"
+
 #include "ofGraphics.h"
 
-#include "syntheffect/graphics/Pipeline.h"
+#include "ofLog.h"
 
 namespace syntheffect {
     namespace graphics {
         void Pipeline::drawTo(std::shared_ptr<graphics::PingPongBuffer> buf_in, std::shared_ptr<graphics::PingPongBuffer> buf_out) {
+            // Replace buf out with the contents of buf in so we can apply effects
             buf_out->begin();
             ofClear(0);
             buf_in->drawable()->draw(0, 0);
             buf_out->end();
 
+            // Apply effects to buf out (which starts as buf in)
             for (auto effect : effects_) {
                 if (effect->isActive()) {
                     effect->drawTo(buf_out);

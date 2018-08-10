@@ -10,13 +10,12 @@ namespace syntheffect {
     namespace app {
         class LiveSettings {
             public:
-                std::string patch_path;
+                std::string pipelines_path;
+                std::string assets_path;
                 std::string out_path;
 
                 int recording_width;
                 int recording_height;
-
-                std::vector<std::shared_ptr<graphics::Drawable>> drawables;
         };
     }
 }

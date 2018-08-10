@@ -4,7 +4,6 @@
 
 #include "syntheffect/settings/AssetSettings.h"
 #include "syntheffect/settings/PipelineSettings.h"
-#include "syntheffect/settings/InputSettings.h"
 
 namespace syntheffect {
     namespace settings {

@@ -8,6 +8,7 @@
 
 #include "syntheffect/xml/Parser.h"
 #include "syntheffect/settings/ParamSettings.h"
+#include "syntheffect/settings/AssetGroupSettings.h"
 
 #define FPS 30
 
@@ -62,15 +63,14 @@ namespace syntheffect {
             }
             */
 
-            // Setup drawables
-            for (const auto& drawable : settings_->drawables) {
-                drawable->setup();
-            }
-            manager_->setDrawables(settings_->drawables);
-
             // Load from patch file
             auto parser = std::make_unique<syntheffect::xml::Parser>();
-            parser->parse(settings_->patch_path, manager_);
+
+            std::vector<settings::PipelineSettings> pipelines = parser->parsePipelines(settings_->pipelines_path);
+            manager_->setPipelines(pipelines);
+
+            std::vector<settings::AssetGroupSettings> assets = parser->parseAssets(settings_->assets_path);
+            manager_->setAssets(assets);
 
             if (settings_->out_path != "") {
                 recording_ = true;
@@ -96,22 +96,11 @@ namespace syntheffect {
         void Live::update() {
             float t = ofGetElapsedTimef();
 
-            manager_->update(t);
-            if (manager_->isFinished()) {
-                ofExit();
-            }
-
-            if (!manager_->isReady()) {
-                return;
-            }
-
-
             param::Params effect_params;
             effect_params.set(settings::ParamSettings::floatValue("time", t));
 
             joystick_.update(t);
             joystick_.copyTo(effect_params);
-
 
             /*
             beat_->update(ofGetElapsedTimeMillis());
@@ -122,9 +111,17 @@ namespace syntheffect {
             effect_params->float_params["hihat"] = beat_->hihat();
             */
 
-            manager_->setGlobalEffectParams(effect_params);
+            manager_->setGlobalParams(effect_params);
 
-            out_ = manager_->render();
+            manager_->update(t);
+            if (manager_->isFinished()) {
+                ofExit();
+            }
+
+
+            if (manager_->isReady()) {
+                out_ = manager_->render();
+            }
         }
 
         void Live::draw() {

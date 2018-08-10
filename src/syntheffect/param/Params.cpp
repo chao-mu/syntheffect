@@ -66,17 +66,15 @@ namespace syntheffect {
 
         bool Params::getBool(std::string name) {
             settings::ParamSettings p = params_.at(name);
-            float v = resolveValue(p);
 
-            // Inherit casting if not specified
-            settings::ParamCast cast = p.cast;
             if (p.isVariable() && p.cast == settings::NoCast) {
-                cast = resolveVariable(p).cast;
+                return getBool(p.variable_value);
             }
 
-            if (cast == settings::NegativeIsTrueCast) {
+            float v = resolveValue(p);
+            if (p.cast == settings::NegativeIsTrueCast) {
                 return v < 0;
-            } else if (cast == settings::PositiveIsTrueCast) {
+            } else if (p.cast == settings::PositiveIsTrueCast) {
                 return v > 0;
             } else {
                 throw std::runtime_error("bool not appropriate for given cast for parameter " + p.name);
@@ -103,8 +101,6 @@ namespace syntheffect {
             settings::ParamSettings p = params_.at(name);
             float v = resolveValue(p);
 
-            //ofLogNotice("Params", "name=%s value=%f variable_value=%s low=%f high=%f", p.name.c_str(), p.value, p.variable_value.c_str(), p.low, p.high);
-
             if (p.cast == settings::NoCast) {
                 return v;
             } else {
@@ -114,10 +110,10 @@ namespace syntheffect {
 
         ofTexture Params::getTexture(std::string name) {
             if (texture_params_.count(name) > 0) {
-                name = texture_params_[name];
+                name = texture_params_.at(name);
             }
 
-            return textures_[name]();
+            return textures_.at(name)();
         }
 
         bool Params::exists(std::string name) {
@@ -195,6 +191,10 @@ namespace syntheffect {
         void Params::copyTo(Params& p) {
             for (const auto kv : params_) {
                 p.set(kv.second);
+            }
+
+            for (const auto& kv : textures_) {
+                p.setTexture(kv.first, kv.second);
             }
         }
     }
