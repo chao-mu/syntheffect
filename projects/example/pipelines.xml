@@ -1,5 +1,12 @@
 <pipelines>
     <pipeline in="primary" out="out">
+        <shader frag="MixPinwheel">
+            <param name="enabled" value="xbox_right_stick_x-pressed"/>
+            <paramTexture name="secondTex" value="splash"/>
+            <param name="anchorX" func="sin"/>
+            <param name="anchorY" value="0.5"/>
+            <param name="speed" value="0.4"/>
+        </shader>
         <shader frag="Blur">
             <param name="enabled" value="xbox_button_b"/>
             <param name="scale" value="3" cast="round-int"/>
@@ -33,7 +40,7 @@
         </shader>
         <shader frag="Zoom">
             <param name="enabled" value="xbox_button_top_right" />
-            <param name="factor" value="xbox_button_top_right_pressed_time" shift="1" />
+            <param name="factor" value="xbox_button_top_right-pressed_time" shift="1" />
         </shader>
         <shader frag="OilPainting">
             <param name="enabled" value="xbox_button_top_left" />
