@@ -188,7 +188,7 @@ namespace syntheffect {
             return textures;
         }
 
-        void Params::copyTo(Params& p) {
+        void Params::copyTo(Params& p) const {
             for (const auto kv : params_) {
                 p.set(kv.second);
             }

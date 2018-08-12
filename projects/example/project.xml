@@ -1,0 +1,6 @@
+<project assets="assets.xml" pipelines="pipelines.xml">
+    <joysticks>
+        <joystick settings="xbox">
+        </joystick>
+    </joysticks>
+</project>

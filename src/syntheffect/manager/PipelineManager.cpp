@@ -1,4 +1,4 @@
-#include "syntheffect/manager/Manager.h"
+#include "syntheffect/manager/PipelineManager.h"
 
 #include <boost/algorithm/string.hpp>
 
@@ -15,12 +15,12 @@
 
 namespace syntheffect {
     namespace manager {
-        Manager::Manager() {
+        PipelineManager::PipelineManager() {
             active_asset_group_  = "";
             channels_ = buildChannels();
         }
 
-        void Manager::setPipelines(const std::vector<settings::PipelineSettings>& pipelines) {
+        void PipelineManager::setPipelines(const std::vector<settings::PipelineSettings>& pipelines) {
             for (const auto& pipeline_settings : pipelines) {
                 std::string out = pipeline_settings.out;
 
@@ -44,7 +44,7 @@ namespace syntheffect {
             }
         }
 
-        void Manager::setAssets(const std::vector<settings::AssetGroupSettings>& asset_groups) {
+        void PipelineManager::setAssets(const std::vector<settings::AssetGroupSettings>& asset_groups) {
             for (const auto& asset_group : asset_groups) {
                 if (active_asset_group_ == "") {
                     active_asset_group_ = asset_group.name;
@@ -74,12 +74,12 @@ namespace syntheffect {
         }
 
 
-        bool Manager::isFinished() {
+        bool PipelineManager::isFinished() {
             // TODO: Find a way to implement this meaningfully
            return false;
         }
 
-        std::map<std::string, std::shared_ptr<graphics::Drawable>> Manager::getDrawables() {
+        std::map<std::string, std::shared_ptr<graphics::Drawable>> PipelineManager::getDrawables() {
             std::map<std::string, std::shared_ptr<graphics::Drawable>> drawables;
 
             for (const auto& kv : asset_groups_) {
@@ -95,7 +95,7 @@ namespace syntheffect {
             return drawables;
         }
 
-        std::shared_ptr<syntheffect::graphics::PingPongBufferMap> Manager::buildChannels() {
+        std::shared_ptr<syntheffect::graphics::PingPongBufferMap> PipelineManager::buildChannels() {
             int width = 4;
             for (const auto& name_and_drawables : asset_groups_) {
                 for (const auto& drawable : name_and_drawables.second) {
@@ -128,7 +128,7 @@ namespace syntheffect {
         }
 
 
-        bool Manager::isReady() {
+        bool PipelineManager::isReady() {
             for (const auto name_and_drawable : getDrawables()) {
                 if (!name_and_drawable.second->isReady()) {
                     return false;
@@ -138,7 +138,7 @@ namespace syntheffect {
             return true;
         }
 
-        void Manager::update(float t) {
+        void PipelineManager::update(float t) {
             // Select active group
             for (const auto& kv : asset_groups_) {
                 const std::string& group_name = kv.first;
@@ -154,7 +154,7 @@ namespace syntheffect {
             }
         }
 
-        std::shared_ptr<graphics::Drawable> Manager::render() {
+        std::shared_ptr<graphics::Drawable> PipelineManager::render() {
             // Determine current asset group
 
             // Save previous buffers
@@ -213,23 +213,23 @@ namespace syntheffect {
             return std::make_shared<graphics::PingPongChannel>(out);
         }
 
-        void Manager::setGlobalParams(param::Params& params) {
+        void PipelineManager::setGlobalParams(param::Params& params) {
             params.copyTo(global_params_);
         }
 
-        int Manager::getHeight() {
+        int PipelineManager::getHeight() {
             return channels_->getHeight();
         }
 
-        int Manager::getWidth() {
+        int PipelineManager::getWidth() {
             return channels_->getWidth();
         }
 
-        std::string Manager::getTriggerName(std::string name) {
+        std::string PipelineManager::getTriggerName(std::string name) {
             return name + "-trigger";
         }
 
-        std::string Manager::getLastName(std::string buf_name) {
+        std::string PipelineManager::getLastName(std::string buf_name) {
             return buf_name + LAST_NAME_SUFFIX;
         }
     }

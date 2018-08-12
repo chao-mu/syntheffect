@@ -77,7 +77,7 @@
 # add a runtime path to search for those shared libraries, since they aren't 
 # incorporated directly into the final executable application binary.
 # TODO: should this be a default setting?
- PROJECT_LDFLAGS= `pkg-config --libs rtmidi` -L/usr/local/opt/openssl/lib
+ PROJECT_LDFLAGS= `pkg-config --libs yaml-cpp` -L/usr/local/opt/openssl/lib
 #
 ################################################################################
 # PROJECT DEFINES
@@ -105,7 +105,7 @@
 #
 #   Note: Leave a leading space when adding list items with the += operator
 ################################################################################
-PROJECT_CFLAGS = `pkg-config --cflags rtmidi` -I/usr/local/include/rtmidi -I/usr/local/opt/openssl/include
+PROJECT_CFLAGS = `pkg-config --cflags yaml-cpp` -I/usr/local/opt/openssl/include
 
 ################################################################################
 # PROJECT OPTIMIZATION CFLAGS

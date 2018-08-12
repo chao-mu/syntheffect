@@ -35,7 +35,7 @@ namespace syntheffect {
                 std::map<std::string, float> getFloats();
                 std::map<std::string, ofTexture> getTextures();
 
-                void copyTo(Params& p);
+                void copyTo(Params& p) const;
 
                 bool exists(std::string name);
 

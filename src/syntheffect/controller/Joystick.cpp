@@ -6,25 +6,25 @@
 #include "ofUtils.h"
 #include "ofMath.h"
 
-#define LOG_JOYSTICK false
+#define LOG_JOYSTICK true
 
 #define AXIS_LOW -1
 #define AXIS_HIGH 1
 
 namespace syntheffect {
     namespace controller {
-        Joystick::Joystick(int joystick_id) {
-            id_ = joystick_id;
+        Joystick::Joystick(settings::JoystickSettings settings) {
+            settings_ = settings;
         }
 
-        bool Joystick::isPresent() {
-            return glfwJoystickPresent(id_) == GLFW_TRUE;
+        bool Joystick::isCompatible(int glfw_id) {
+            return std::string(glfwGetJoystickName(glfw_id)).find(settings_.device) != std::string::npos;
         }
 
         bool Joystick::isAxisPressed(const float* axes, int i, int sibling) {
             float v = axes[i];
-            float deadzone = getDeadzone();
-            float neutral = getAxisNeutral(i);
+            float deadzone = settings_.deadzone;
+            float neutral = settings_.getAxisNeutral(i);
 
             bool pressed = (v - neutral < -deadzone) || (v - neutral > deadzone);
             if (sibling >= 0) {
@@ -34,78 +34,87 @@ namespace syntheffect {
             return pressed;
         }
 
-        void Joystick::update(float t) {
-            if (isPresent()) {
-                int axes_count;
-                const float* axes = glfwGetJoystickAxes(id_, &axes_count);
-                for (int i=0; i < axes_count; i++) {
-                    std::string name = getAxisName(i);
-                    if (name == "") {
-                        continue;
-                    }
+        int Joystick::getStickSibling(int i) {
+            if (settings_.stick_siblings.count(i) > 0) {
+                return settings_.stick_siblings.at(i);
+            }
 
-                    float v = axes[i];
-                    float deadzone = getDeadzone();
-                    float neutral = getAxisNeutral(i);
-                    float adjusted_low = -1 + deadzone;
-                    float adjusted_high = 1 - deadzone;
-                    bool adjusted = false;
-                    bool pressed = isAxisPressed(axes, i, getDeadzoneSibling(i));
-                    if (pressed) {
-                        if (v - neutral < -deadzone) {
-                            v += deadzone;
-                            if (v > adjusted_high) {
-                                v = adjusted_high;
-                            }
+            return -1;
+        }
 
-                            adjusted = true;
-                        } else if (v - neutral > deadzone) {
-                            v -= deadzone;
-                            if (v < adjusted_low) {
-                                v = adjusted_low;
-                            }
+        void Joystick::update(float t, int id) {
+            for (auto& kv : settings_.button_names) {
+                ofLogNotice("Joystick", "%i=%s", kv.first, kv.second.c_str());
+            }
+            int axes_count;
+            const float* axes = glfwGetJoystickAxes(id, &axes_count);
+            for (int i=0; i < axes_count; i++) {
+                std::string name = settings_.getAxisName(i);
+                if (name == "") {
+                    continue;
+                }
 
-                            adjusted = true;
-                        } else {
-                            v = neutral;
+                float v = axes[i];
+                float deadzone = settings_.deadzone;
+                float neutral = settings_.getAxisNeutral(i);
+                float adjusted_low = -1 + deadzone;
+                float adjusted_high = 1 - deadzone;
+                bool adjusted = false;
+                bool pressed = isAxisPressed(axes, i, getStickSibling(i));
+                if (pressed) {
+                    if (v - neutral < -deadzone) {
+                        v += deadzone;
+                        if (v > adjusted_high) {
+                            v = adjusted_high;
                         }
-                        // Remap to -1 to 1
-                        if (adjusted) {
-                            v = ofMap(v, adjusted_low, adjusted_high, AXIS_LOW, AXIS_HIGH);
+
+                        adjusted = true;
+                    } else if (v - neutral > deadzone) {
+                        v -= deadzone;
+                        if (v < adjusted_low) {
+                            v = adjusted_low;
                         }
+
+                        adjusted = true;
+                    } else {
+                        v = neutral;
                     }
-
-                    params_.set(settings::ParamSettings::floatValue(name, v, AXIS_LOW, AXIS_HIGH));
-                    setPressed(name, pressed, t);
-
-                    if (LOG_JOYSTICK) {
-                        ofLogNotice("Joystick", "axis=%d name=%s raw=%f translated=%f adjusted=%i", i, name.c_str(), axes[i], v, adjusted);
+                    // Remap to -1 to 1
+                    if (adjusted) {
+                        v = ofMap(v, adjusted_low, adjusted_high, AXIS_LOW, AXIS_HIGH);
                     }
                 }
 
-                int button_count;
-                const unsigned char* buttons = glfwGetJoystickButtons(id_, &button_count);
-                for (int i=0; i < button_count; i++) {
-                    std::string name = getButtonName(i);
-                    if (name == "") {
-                        continue;
-                    }
+                params_.set(settings::ParamSettings::floatValue(name, v, AXIS_LOW, AXIS_HIGH));
+                setPressed(name, pressed, t);
 
-                    bool pressed = buttons[i] == GLFW_PRESS;
-                    setPressed(name, pressed, t);
-                    params_.set(settings::ParamSettings::boolValue(name, pressed));
+                if (LOG_JOYSTICK) {
+                    ofLogNotice("Joystick", "axis=%d name=%s raw=%f translated=%f adjusted=%i", i, name.c_str(), axes[i], v, adjusted);
+                }
+            }
 
-                    if (LOG_JOYSTICK) {
-                        ofLogNotice("Joystick", "button=%d name=%s pressed=%i", i, name.c_str(), pressed);
-                    }
+            int button_count;
+            const unsigned char* buttons = glfwGetJoystickButtons(id, &button_count);
+            for (int i=0; i < button_count; i++) {
+                std::string name = settings_.getButtonName(i);
+                if (name == "") {
+                    continue;
+                }
+
+                bool pressed = buttons[i] == GLFW_PRESS;
+                setPressed(name, pressed, t);
+                params_.set(settings::ParamSettings::boolValue(name, pressed));
+
+                if (LOG_JOYSTICK) {
+                    ofLogNotice("Joystick", "button=%d name=%s pressed=%i", i, name.c_str(), pressed);
                 }
             }
         }
 
         void Joystick::setPressed(std::string name, bool pressed, float t) {
-            std::string pressed_name = getNamePressed(name);
-            std::string pressed_at_name = getNamePressedAt(name);
-            std::string pressed_time_name = getNamePressedTime(name);
+            std::string pressed_name = settings_.getNamePressed(name);
+            std::string pressed_at_name = settings_.getNamePressedAt(name);
+            std::string pressed_time_name = settings_.getNamePressedTime(name);
 
             // If pressed for the first time
             if (pressed) {
@@ -122,29 +131,8 @@ namespace syntheffect {
             params_.set(settings::ParamSettings::boolValue(pressed_name, pressed));
         }
 
-        std::string Joystick::getName() {
-            return glfwGetJoystickName(id_);
-        }
-
-        void Joystick::copyTo(param::Params& p) {
+        void Joystick::copyTo(param::Params& p) const {
             params_.copyTo(p);
-        }
-
-        std::string Joystick::getNamePressedAt(std::string name) {
-            return name + "-pressed_at";
-        }
-
-        std::string Joystick::getNamePressedTime(std::string name) {
-            return name + "-pressed_time";
-        }
-
-        std::string Joystick::getNamePressed(std::string name) {
-            return name + "-pressed";
-        }
-
-
-        float Joystick::getDeadzone() {
-            return 0;
         }
     }
 }

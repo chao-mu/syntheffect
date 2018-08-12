@@ -14,9 +14,9 @@
 
 namespace syntheffect {
     namespace manager {
-        class Manager {
+        class PipelineManager {
             public:
-                Manager();
+                PipelineManager();
 
                 void setGlobalParams(param::Params& params);
 

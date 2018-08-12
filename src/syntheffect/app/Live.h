@@ -7,17 +7,17 @@
 
 #include "ofxBeat.h"
 
+#include "syntheffect/manager/PipelineManager.h"
+#include "syntheffect/manager/JoystickManager.h"
 #include "syntheffect/graphics/Drawable.h"
-#include "syntheffect/manager/Manager.h"
 #include "syntheffect/app/RecordingThread.h"
-#include "syntheffect/app/LiveSettings.h"
-#include "syntheffect/controller/XBoxController.h"
+#include "syntheffect/settings/ProjectSettings.h"
 
 namespace syntheffect {
     namespace app {
         class Live : public ofBaseApp {
             public:
-                Live(shared_ptr<LiveSettings> settings);
+                Live(settings::ProjectSettings settings);
                 void setup();
                 void update();
                 void draw();
@@ -30,13 +30,13 @@ namespace syntheffect {
 
             private:
                 std::shared_ptr<ofxBeat> beat_;
-                std::shared_ptr<manager::Manager> manager_;
-                std::shared_ptr<LiveSettings> settings_;
+                manager::PipelineManager pipeline_manager_;
+                manager::JoystickManager joystick_manager_;
                 std::shared_ptr<graphics::Drawable> out_;
+                settings::ProjectSettings settings_;
 
                 ofSoundStream sound_stream_;
                 RecordingThread recorder_;
-                controller::XBoxController joystick_;
 
                 void setupDrawSize();
                 void recordFrame();

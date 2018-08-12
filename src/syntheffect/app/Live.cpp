@@ -6,9 +6,8 @@
 
 #include "ofxTimeMeasurements.h"
 
-#include "syntheffect/xml/Parser.h"
 #include "syntheffect/settings/ParamSettings.h"
-#include "syntheffect/settings/AssetGroupSettings.h"
+#include "syntheffect/settings/ProjectSettings.h"
 
 #define FPS 30
 
@@ -19,9 +18,8 @@ void setup() {
 
 namespace syntheffect {
     namespace app {
-            Live::Live(std::shared_ptr<LiveSettings> settings) : ofBaseApp(), joystick_(GLFW_JOYSTICK_1) {
+            Live::Live(settings::ProjectSettings settings) : ofBaseApp() {
             beat_ = std::make_shared<ofxBeat>();
-            manager_ = std::make_shared<manager::Manager>();
 
             settings_ = settings;
         }
@@ -32,16 +30,11 @@ namespace syntheffect {
             ofSetBackgroundColor(0, 0, 0);
             ofSetBackgroundAuto(true);
 
-            if (joystick_.isPresent()) {
-                ofLogNotice() << "Joystick connected: " << joystick_.getName();
-            }
-
             #ifdef __APPLE__
                 CGDisplayHideCursor(0);
             #else
                 ofHideCursor();
             #endif
-
 
             /* Commening out old code that will only work on Mac, keeping in case of wanting  to be cross platform
             std::vector<ofSoundDevice> sound_devices = sound_stream_.getMatchingDevices("ma++ ingalls for Cycling '74: Soundflower", 2, 2);
@@ -63,18 +56,15 @@ namespace syntheffect {
             }
             */
 
-            // Load from patch file
-            auto parser = std::make_unique<syntheffect::xml::Parser>();
+            pipeline_manager_.setPipelines(settings_.pipelines);
+            pipeline_manager_.setAssets(settings_.asset_groups);
+            for (auto js : settings_.joysticks) {
+                joystick_manager_.addJoystick(js);
+            }
 
-            std::vector<settings::PipelineSettings> pipelines = parser->parsePipelines(settings_->pipelines_path);
-            manager_->setPipelines(pipelines);
-
-            std::vector<settings::AssetGroupSettings> assets = parser->parseAssets(settings_->assets_path);
-            manager_->setAssets(assets);
-
-            if (settings_->out_path != "") {
+            if (settings_.out_path != "") {
                 recording_ = true;
-                recorder_.setup(settings_->out_path, settings_->recording_width, settings_->recording_height);
+                recorder_.setup(settings_.out_path, settings_.recording_width, settings_.recording_height);
                 recorder_.startThread();
             } else {
                 recording_ = false;
@@ -96,11 +86,11 @@ namespace syntheffect {
         void Live::update() {
             float t = ofGetElapsedTimef();
 
-            param::Params effect_params;
-            effect_params.set(settings::ParamSettings::floatValue("time", t));
+            param::Params params;
+            params.set(settings::ParamSettings::floatValue("time", t));
 
-            joystick_.update(t);
-            joystick_.copyTo(effect_params);
+            joystick_manager_.update(t);
+            joystick_manager_.copyTo(params);
 
             /*
             beat_->update(ofGetElapsedTimeMillis());
@@ -111,16 +101,15 @@ namespace syntheffect {
             effect_params->float_params["hihat"] = beat_->hihat();
             */
 
-            manager_->setGlobalParams(effect_params);
+            pipeline_manager_.setGlobalParams(params);
 
-            manager_->update(t);
-            if (manager_->isFinished()) {
+            pipeline_manager_.update(t);
+            if (pipeline_manager_.isFinished()) {
                 ofExit();
             }
 
-
-            if (manager_->isReady()) {
-                out_ = manager_->render();
+            if (pipeline_manager_.isReady()) {
+                out_ = pipeline_manager_.render();
             }
         }
 
@@ -151,7 +140,7 @@ namespace syntheffect {
             fbo.allocate(ofGetWindowWidth(), ofGetWindowHeight(), GL_RGBA);
 
             fbo.begin();
-            out_->drawScaleCenter(manager_->getWidth(), manager_->getHeight());
+            out_->drawScaleCenter(pipeline_manager_.getWidth(), pipeline_manager_.getHeight());
             fbo.end();
 
             ofPixels pixels;

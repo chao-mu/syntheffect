@@ -3,6 +3,7 @@
 #include <cmath>
 #include <string>
 
+#include "yaml-cpp/yaml.h"
 #include "boost/lexical_cast.hpp"
 
 #include "ofMath.h"
@@ -19,7 +20,7 @@ namespace syntheffect {
             ofXml xml;
 
             if (!xml.load(path)) {
-               throw std::runtime_error("Unable to load xml file " + path);
+               throw std::runtime_error("Unable to load asset settings file " + path);
             }
 
             ofXml::Search assets_search = xml.find("//assets");
@@ -30,15 +31,95 @@ namespace syntheffect {
             std::vector<settings::AssetGroupSettings> asset_groups;
             // Iterate over pipeline
             for (const auto& child : assets_search.getFirst().getChildren()) {
-               std::string param_el = child.getName();
-                if (param_el == "assetGroup") {
+               std::string el_name = child.getName();
+                if (el_name == "assetGroup") {
                   addAssetGroup(child, path, asset_groups);
                 } else {
-                    throw std::runtime_error("Expecting assetGroup, got <" + param_el + ">");
+                    throw std::runtime_error("Expecting assetGroup, got <" + el_name + ">");
                 }
             }
 
             return asset_groups;
+         }
+
+         settings::ProjectSettings Parser::parseProject(std::string path) {
+            ofXml xml;
+
+            if (!xml.load(path)) {
+               throw std::runtime_error("Unable to load project settings file " + path);
+            }
+
+            ofXml::Search search = xml.find("//project");
+            if (search.empty()) {
+                throw std::runtime_error(path + " is missing <project> section");
+            }
+
+            settings::ProjectSettings proj;
+
+            xml = search.getFirst();
+            proj.assets_path = ofFilePath::join(
+                    ofFilePath::getEnclosingDirectory(path),
+                    Util::getAttribute<std::string>(xml, "assets", false, "assets.xml"));
+
+            proj.asset_groups = parseAssets(proj.assets_path);
+
+            proj.pipelines_path = ofFilePath::join(
+                    ofFilePath::getEnclosingDirectory(path),
+                    Util::getAttribute<std::string>(xml, "pipelines", false, "pipelines.xml"));
+
+            proj.pipelines = parsePipelines(proj.pipelines_path);
+
+            for (const auto& child : xml.getChildren()) {
+               std::string el_name = child.getName();
+               if (el_name == "joysticks") {
+                   for (const auto& joysticks_child : child.getChildren()) {
+                       if (joysticks_child.getName() == "joystick") {
+                           addJoystick(joysticks_child, path, proj.joysticks);
+                       } else {
+                           throw std::runtime_error("Expected <joystick> got <" + joysticks_child.getName() + ">");
+                       }
+                   }
+               } else {
+                    throw std::runtime_error("Expected <joysticks> got <" + el_name + ">");
+               }
+            }
+
+            return proj;
+         }
+
+         void Parser::addJoystick(const ofXml& xml, std::string, std::vector<settings::JoystickSettings>& joysticks) {
+             settings::JoystickSettings joystick;
+             joystick.prefix = Util::getAttribute<std::string>(xml, "prefix", false, "");
+
+             std::string settings_path = ofFilePath::getAbsolutePath(
+                     ofFilePath::join("joysticks", Util::getAttribute<std::string>(xml, "settings", true, ""))) + ".yaml";
+
+             ofLogNotice("Parser", settings_path);
+             YAML::Node config = YAML::LoadFile(settings_path);
+
+             joystick.device = config["device"].as<std::string>();
+
+             joystick.deadzone = config["deadzone"].as<float>();
+
+             for(YAML::const_iterator it=config["neutral"].begin(); it != config["neutral"].end(); ++it) {
+                 joystick.axis_neutrals[it->first.as<int>()] = it->second.as<float>();
+             }
+
+             for(YAML::const_iterator it=config["stick_siblings"].begin(); it != config["stick_siblings"].end(); ++it) {
+                 joystick.stick_siblings[it->first.as<int>()] = it->second.as<float>();
+             }
+
+             for(YAML::const_iterator it=config["axes"].begin(); it != config["axes"].end(); ++it) {
+                 ofLogNotice("Parser", "%d=%s", it->first.as<int>(), it->second.as<std::string>().c_str());
+                 joystick.axis_names[it->first.as<int>()] = it->second.as<std::string>();
+             }
+
+             for(YAML::const_iterator it=config["buttons"].begin(); it != config["buttons"].end(); ++it) {
+                 ofLogNotice("Parser", "(button) %d=%s", it->first.as<int>(), it->second.as<std::string>().c_str());
+                 joystick.button_names[it->first.as<int>()] = it->second.as<std::string>();
+             }
+
+             joysticks.push_back(joystick);
          }
 
          void Parser::addAssetGroup(const ofXml& xml, std::string path, std::vector<settings::AssetGroupSettings>& asset_groups) {
@@ -147,7 +228,7 @@ namespace syntheffect {
             ofXml xml;
 
             if (!xml.load(path)) {
-               throw std::runtime_error("Unable to load xml file " + path);
+               throw std::runtime_error("Unable to load pipelines file " + path);
             }
 
             ofXml::Search pipelines_search = xml.find("//pipelines");
@@ -158,11 +239,11 @@ namespace syntheffect {
             std::vector<settings::PipelineSettings> pipelines;
             // Iterate over pipeline
             for (const auto& child : pipelines_search.getFirst().getChildren()) {
-               std::string param_el = child.getName();
-                if (param_el == "pipeline") {
+               std::string el_name = child.getName();
+                if (el_name == "pipeline") {
                   addPipeline(child, pipelines);
                 } else {
-                    throw std::runtime_error("Expecting pipeline, got <" + param_el + ">");
+                    throw std::runtime_error("Expecting pipeline, got <" + el_name + ">");
                 }
             }
 
