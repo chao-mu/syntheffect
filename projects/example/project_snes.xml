@@ -1,0 +1,10 @@
+<project assets="assets.xml" pipelines="pipelines_snes.xml">
+    <joysticks>
+        <joystick settings="innext_snes"/>
+    </joysticks>
+    <params>
+        <!-- Assets -->
+        <param name="trigger_dancing_assets" value="snes_select"/>
+        <param name="trigger_calendar_assets" value="snes_start"/>
+    </params>
+</project>

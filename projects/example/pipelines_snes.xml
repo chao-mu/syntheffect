@@ -1,0 +1,34 @@
+<pipelines>
+    <pipeline in="primary" out="out">
+        <shader frag="mixer/Pinwheel">
+            <param name="enabled" value="snes_l"/>
+            <paramTexture name="secondTex" value="splash"/>
+            <param name="anchorX" func="sin"/>
+            <param name="anchorY" value="0.5"/>
+            <param name="speed" value="0.4"/>
+        </shader>
+        <shader frag="color-adjust/Huerific">
+            <param name="enabled" value="snes_b"/>
+        </shader>
+        <shader frag="color-adjust/HSVOffset">
+            <param name="enabled" value="snes_b"/>
+            <param name="hueOffset" value="time" freq="0.2"/>
+        </shader>
+        <shader>
+            <param name="enabled" value="snes_a"/>
+            <param name="inversionEnabled" value="true" />
+        </shader>
+        <shader frag="transform/Zoom">
+            <param name="enabled" value="snes_y" />
+            <param name="factor" value="snes_y-pressed_time" shift="1" />
+        </shader>
+        <shader frag="filter/OilPainting">
+            <param name="enabled" value="snes_x" />
+        </shader>
+        <shader frag="mixer/Motion">
+            <param name="enabled" value="snes_r"/>
+            <paramTexture name="secondTex" value="out-last"/>
+            <param name="threshold" value="0.3" />
+        </shader>
+    </pipeline>
+</pipelines>

@@ -1,57 +1,57 @@
 <pipelines>
     <pipeline in="primary" out="out">
         <shader frag="mixer/Pinwheel">
-            <param name="enabled" value="xbox_right_stick_x-pressed"/>
+            <param name="enabled" value="enable_pinwheel_splash"/>
             <paramTexture name="secondTex" value="splash"/>
             <param name="anchorX" func="sin"/>
             <param name="anchorY" value="0.5"/>
             <param name="speed" value="0.4"/>
         </shader>
         <shader frag="filter/Blur">
-            <param name="enabled" value="xbox_button_b"/>
+            <param name="enabled" value="enable_blur"/>
             <param name="scale" value="3" cast="round-int"/>
         </shader>
         <shader frag="color-adjust/Huerific">
-            <param name="enabled" value="xbox_button_a"/>
+            <param name="enabled" value="enable_pretty_colors"/>
         </shader>
         <shader frag="color-adjust/HSVOffset">
-            <param name="enabled" value="xbox_button_a"/>
+            <param name="enabled" value="enable_pretty_colors"/>
             <param name="hueOffset" value="time" freq="0.2"/>
         </shader>
         <shader  frag="edge/Scharr">
-            <param name="mixture" value="xbox_left_trigger" low="0" high="1"/>
+            <param name="mixture" value="enable_edge_detection"/>
         </shader>
         <shader frag="transform/SpinZoom">
-            <param name="enabled" value="xbox_button_x"/>
+            <param name="enabled" value="enable_spin_zoom"/>
         </shader>
         <shader frag="displace/ColorDisplace">
-            <param name="displaceRed" value="xbox_dir_pad_x" cast="positive-is-true"/>
-            <param name="displaceBlue" value="xbox_dir_pad_x" cast="negative-is-true"/>
-            <param name="displaceGreen" value="xbox_dir_pad_y" cast="positive-is-true"/>
-            <param name="displaceRGB" value="xbox_dir_pad_y" cast="negative-is-true"/>
+            <param name="displaceRed" value="enable_red_wander"/>
+            <param name="displaceBlue" value="enable_blue_wander"/>
+            <param name="displaceGreen" value="enable_green_wander"/>
+            <param name="displaceRGB" value="enable_rgb_wander"/>
         </shader>
         <shader>
-            <param name="enabled" value="xbox_button_y"/>
-            <param name="inversionEnabled" value="-1" cast="negative-is-true"/>
+            <param name="enabled" value="enable_inversion"/>
+            <param name="inversionEnabled" value="true" />
         </shader>
         <shader frag="filter/Pixelate">
-            <param name="xCount" value="xbox_left_stick_x" low="-50" high="50"/>
-            <param name="yCount" value="xbox_left_stick_y" low="-50" high="50"/>
+            <param name="xCount" value="pixelate_x" />
+            <param name="yCount" value="pixelate_y" />
         </shader>
         <shader frag="transform/Zoom">
-            <param name="enabled" value="xbox_button_top_right" />
-            <param name="factor" value="xbox_button_top_right-pressed_time" shift="1" />
+            <param name="enabled" value="enable_zoom" />
+            <param name="factor" value="zoom_amount" shift="1" />
         </shader>
         <shader frag="filter/OilPainting">
-            <param name="enabled" value="xbox_button_top_left" />
+            <param name="enabled" value="enable_oilpainting" />
         </shader>
         <shader vert="Skew" frag="transform/Skew">
-            <param name="xSkew" value="xbox_right_stick_y" low="0.5" high="-0.5" />
-            <param name="ySkew" value="xbox_right_stick_x" low="0.5" high="-0.5" />
+            <param name="xSkew" value="skew_x" />
+            <param name="ySkew" value="skew_y" />
         </shader>
         <shader frag="mixer/Mix">
             <paramTexture name="secondTex" value="out-last"/>
-            <param name="amount" value="xbox_right_trigger" low="0" high="0.9"/>
+            <param name="amount" value="delay_amount" />
         </shader>
     </pipeline>
 </pipelines>

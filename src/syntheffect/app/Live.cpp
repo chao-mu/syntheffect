@@ -89,6 +89,10 @@ namespace syntheffect {
             param::Params params;
             params.set(settings::ParamSettings::floatValue("time", t));
 
+            for (auto& param : settings_.params) {
+                params.set(param);
+            }
+
             joystick_manager_.update(t);
             joystick_manager_.copyTo(params);
 

@@ -3,6 +3,7 @@
 #include <vector>
 
 #include "syntheffect/settings/AssetGroupSettings.h"
+#include "syntheffect/settings/ParamSettings.h"
 #include "syntheffect/settings/PipelineSettings.h"
 #include "syntheffect/settings/JoystickSettings.h"
 
@@ -19,6 +20,7 @@ namespace syntheffect {
             std::vector<AssetGroupSettings> asset_groups;
             std::vector<PipelineSettings> pipelines;
             std::vector<JoystickSettings> joysticks;
+            std::vector<ParamSettings> params;
         };
     }
 }

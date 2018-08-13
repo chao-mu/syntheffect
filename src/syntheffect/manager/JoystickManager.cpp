@@ -1,7 +1,5 @@
 #include "syntheffect/manager/JoystickManager.h"
 
-#include "syntheffect/safety.h"
-
 #include "GLFW/glfw3.h"
 
 namespace syntheffect {
@@ -49,9 +47,11 @@ namespace syntheffect {
                 JoystickID id = kv.first;
                 std::shared_ptr<controller::Joystick> joy = kv.second;
 
-                int glfw_id = safety::at(glfw_ids_, id, "GLFW ids when updating joysticks");
-                if (glfwJoystickPresent(glfw_id) == GLFW_TRUE) {
-                    joy->update(t, glfw_id);
+                if (glfw_ids_.count(id) > 0) {
+                    int glfw_id = glfw_ids_[id];
+                    if (glfwJoystickPresent(glfw_id) == GLFW_TRUE) {
+                        joy->update(t, glfw_id);
+                    }
                 }
             }
 

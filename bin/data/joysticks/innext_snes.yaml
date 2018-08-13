@@ -1,0 +1,17 @@
+device: "USB Gamepad"
+
+deadzone: 0
+
+axes:
+    0: "snes_dir_x"
+    1: "snes_dir_y"
+
+buttons:
+    0: "snes_x"
+    1: "snes_a"
+    2: "snes_b"
+    3: "snes_y"
+    4: "snes_l"
+    5: "snes_r"
+    8: "snes_select"
+    9: "snes_start"

@@ -7,7 +7,7 @@ namespace syntheffect {
 
             p.name = name;
             p.value = v;
-            p.continuous = true;
+            p.cast = RoundIntCast;
 
             return p;
         }
@@ -17,7 +17,6 @@ namespace syntheffect {
 
             p.name = name;
             p.value = v;
-            p.continuous = true;
 
             return p;
         }
@@ -26,24 +25,15 @@ namespace syntheffect {
             ParamSettings p;
 
             p.name = name;
-            p.low = low;
-            p.high = high;
             p.value = v;
+
+            p.limits.exists = true;
+            p.limits.value.low = low;
+            p.limits.value.high = high;
 
             return p;
         }
 
-        ParamSettings ParamSettings::intValue(std::string name, int v, int low, int high) {
-            ParamSettings p;
-
-            p.name = name;
-            p.low = low;
-            p.high = high;
-            p.value = v;
-            p.cast = RoundIntCast;
-
-            return p;
-        }
 
         ParamSettings ParamSettings::boolValue(std::string name, bool v) {
             ParamSettings p;

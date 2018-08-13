@@ -10,6 +10,7 @@
 #include "ofFileUtils.h"
 
 #include "syntheffect/xml/Util.h"
+#include "syntheffect/settings/Option.h"
 
 #define DEFAULT_FRAG "Passthrough"
 #define DEFAULT_VERT "Passthrough"
@@ -76,11 +77,19 @@ namespace syntheffect {
                        if (joysticks_child.getName() == "joystick") {
                            addJoystick(joysticks_child, path, proj.joysticks);
                        } else {
-                           throw std::runtime_error("Expected <joystick> got <" + joysticks_child.getName() + ">");
+                           throw std::runtime_error("Expected <joystick>, got <" + joysticks_child.getName() + ">");
+                       }
+                   }
+               } else if (el_name == "params") {
+                   for (const auto& params_child : child.getChildren()) {
+                       if (params_child.getName() == "param") {
+                           proj.params.push_back(parseParam(params_child));
+                       } else {
+                           throw std::runtime_error("Expected <param>, got <" + params_child.getName() + ">");
                        }
                    }
                } else {
-                    throw std::runtime_error("Expected <joysticks> got <" + el_name + ">");
+                    throw std::runtime_error("Expected <joysticks> or <params>, got <" + el_name + ">");
                }
             }
 
@@ -94,7 +103,6 @@ namespace syntheffect {
              std::string settings_path = ofFilePath::getAbsolutePath(
                      ofFilePath::join("joysticks", Util::getAttribute<std::string>(xml, "settings", true, ""))) + ".yaml";
 
-             ofLogNotice("Parser", settings_path);
              YAML::Node config = YAML::LoadFile(settings_path);
 
              joystick.device = config["device"].as<std::string>();
@@ -110,12 +118,10 @@ namespace syntheffect {
              }
 
              for(YAML::const_iterator it=config["axes"].begin(); it != config["axes"].end(); ++it) {
-                 ofLogNotice("Parser", "%d=%s", it->first.as<int>(), it->second.as<std::string>().c_str());
                  joystick.axis_names[it->first.as<int>()] = it->second.as<std::string>();
              }
 
              for(YAML::const_iterator it=config["buttons"].begin(); it != config["buttons"].end(); ++it) {
-                 ofLogNotice("Parser", "(button) %d=%s", it->first.as<int>(), it->second.as<std::string>().c_str());
                  joystick.button_names[it->first.as<int>()] = it->second.as<std::string>();
              }
 
@@ -165,10 +171,16 @@ namespace syntheffect {
          settings::ParamSettings Parser::parseParam(const ofXml& xml, bool require_name) {
             std::string name = Util::getAttribute<std::string>(xml, "name", require_name, "");
 
+            std::string value = xml.getAttribute("value").getValue();
+            if (value == "true") {
+                return settings::ParamSettings::boolValue(name, true);
+            } else if (value == "false") {
+                return settings::ParamSettings::boolValue(name, false);
+            }
+
             settings::ParamSettings p;
             p.name = name;
 
-            std::string value = xml.getAttribute("value").getValue();
             try {
                 p.value = boost::lexical_cast<float>(value);
             } catch (const boost::bad_lexical_cast &e) {
@@ -202,13 +214,12 @@ namespace syntheffect {
             }
 
             std::string low = xml.getAttribute("low").getValue();
-            if (low != "") {
-                p.low = xml.getAttribute("low").getFloatValue();
-            }
-
             std::string high = xml.getAttribute("high").getValue();
-            if (high != "") {
-                p.high = xml.getAttribute("high").getFloatValue();
+            if (low != "" && high != "") {
+                settings::ParamLimits limits;
+                limits.low = xml.getAttribute("low").getFloatValue();
+                limits.high = xml.getAttribute("high").getFloatValue();
+                p.limits = settings::Option<settings::ParamLimits>::make(limits);
             }
 
             std::string freq = xml.getAttribute("freq").getValue();

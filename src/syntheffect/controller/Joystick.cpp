@@ -6,7 +6,7 @@
 #include "ofUtils.h"
 #include "ofMath.h"
 
-#define LOG_JOYSTICK true
+#define LOG_JOYSTICK false
 
 #define AXIS_LOW -1
 #define AXIS_HIGH 1
@@ -43,9 +43,6 @@ namespace syntheffect {
         }
 
         void Joystick::update(float t, int id) {
-            for (auto& kv : settings_.button_names) {
-                ofLogNotice("Joystick", "%i=%s", kv.first, kv.second.c_str());
-            }
             int axes_count;
             const float* axes = glfwGetJoystickAxes(id, &axes_count);
             for (int i=0; i < axes_count; i++) {
@@ -89,7 +86,7 @@ namespace syntheffect {
                 setPressed(name, pressed, t);
 
                 if (LOG_JOYSTICK) {
-                    ofLogNotice("Joystick", "axis=%d name=%s raw=%f translated=%f adjusted=%i", i, name.c_str(), axes[i], v, adjusted);
+                    ofLogNotice("Joystick", "axis=%d name=%s raw=%f translated=%f adjusted=%i pressed=%i", i, name.c_str(), axes[i], v, adjusted, pressed);
                 }
             }
 

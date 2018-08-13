@@ -7,40 +7,56 @@
 #include "ofUtils.h"
 #include "ofLog.h"
 
-#define MAX_PARAMS_DEEP 1
+#define MAX_PARAMS_DEEP 100
 
 namespace syntheffect {
     namespace param {
         void Params::set(const settings::ParamSettings p) {
-            //ofLogNotice("Params", "name=%s value=%f variable_value=%s low=%f high=%f", p.name.c_str(), p.value, p.variable_value.c_str(), p.low, p.high);
             params_[p.name] = p;
         }
 
-        settings::ParamSettings Params::resolveVariable(const settings::ParamSettings& original_p) {
-            settings::ParamSettings p = original_p;
-
-            for (int i=MAX_PARAMS_DEEP; i >= 0; i--) {
-                if (p.variable_value == "") {
-                    return p;
-                }
-
-                p = params_[p.variable_value];
+        const settings::ParamSettings& Params::at(std::string name) const {
+            if (params_.count(name) == 0) {
+                throw std::out_of_range("Parameter '" + name + "' not set, but attempted to be retrieved");
             }
 
-            throw std::runtime_error(
-                    "Maximum depth of " +
-                    std::to_string(MAX_PARAMS_DEEP) +
-                    " reached while resolving param " +
-                    original_p.variable_value);
+            return params_.at(name);
+        }
+
+        const settings::ParamCast& Params::resolveCast(const settings::ParamSettings& p, int resolutions) const {
+            if (p.isVariable() && resolutions > MAX_PARAMS_DEEP) {
+                throw std::runtime_error("loop involving parameter '" + p.variable_value  + "' detected");
+            }
+
+            if (p.cast != settings::NoCast || !p.isVariable()) {
+                return p.cast;
+            }
+
+            return resolveCast(resolveParent(p), resolutions + 1);
+        }
+
+        const settings::ParamSettings& Params::resolveParent(const settings::ParamSettings& p) const {
+            if (params_.count(p.variable_value) == 0) {
+                throw std::out_of_range("Parameter '" + p.variable_value + "' not set, required by parameter '" + p.name + "'");
+            }
+
+            return at(p.variable_value);
         }
 
 
-        float Params::resolveValue(const settings::ParamSettings& p) {
-            settings::ParamSettings resolved_p = resolveVariable(p);
+        float Params::resolveValue(const settings::ParamSettings& p, int resolutions) const {
+            if (p.isVariable() && resolutions > MAX_PARAMS_DEEP) {
+                throw std::runtime_error("loop involving  parameter" + p.variable_value  + " detected");
+            }
+
             float v = p.value;
+
             if (p.isVariable()) {
-                v = resolveValue(resolved_p);
-                v = ofMap(v, resolved_p.low, resolved_p.high, p.low, p.high);
+                const settings::ParamSettings& resolved_p = resolveParent(p);
+                v = resolveValue(resolved_p, resolutions + 1);
+                if (resolved_p.limits.exists && p.limits.exists && p.func == settings::IdentityFunc) {
+                    return ofMap(v, resolved_p.limits.value.low, resolved_p.limits.value.high, p.limits.value.low, p.limits.value.high);
+                }
             }
 
             v = (v * p.freq) + p.shift;
@@ -49,47 +65,51 @@ namespace syntheffect {
                 return v;
             }
 
+            float from_low;
+            float from_high;
             if (p.func == settings::NoiseFunc) {
-                return ofMap(ofNoise(v), 0, 1, p.low, p.high);
+                v = ofNoise(v);
+                from_low = 0;
+                from_high = 1;
+            } else if (p.func == settings::SinFunc) {
+                from_low = -1;
+                from_high = 1;
+                v = sin(v);
+            } else if (p.func == settings::CosFunc) {
+                from_low = -1;
+                from_high = 1;
+                v = cos(v);
+            } else {
+                throw std::runtime_error("Unsupported parameter func type");
             }
 
-            if (p.func == settings::SinFunc) {
-                return ofMap(sin(v), -1, 1, p.low, p.high);
+            if (p.limits.exists) {
+                v = ofMap(v, from_low, from_high, p.limits.value.low, p.limits.value.high);
             }
 
-            if (p.func == settings::CosFunc) {
-                return ofMap(cos(v), -1, 1, p.low, p.high);
-            }
-
-            throw std::runtime_error("Unsupported parameter func type");
+            return v;
         }
 
-        bool Params::getBool(std::string name) {
-            settings::ParamSettings p = params_.at(name);
-
-            if (p.isVariable() && p.cast == settings::NoCast) {
-                return getBool(p.variable_value);
-            }
+        bool Params::getBool(std::string name) const {
+            settings::ParamSettings p = at(name);
 
             float v = resolveValue(p);
-            if (p.cast == settings::NegativeIsTrueCast) {
+            settings::ParamCast cast = resolveCast(p);
+
+            if (cast == settings::NegativeIsTrueCast) {
                 return v < 0;
-            } else if (p.cast == settings::PositiveIsTrueCast) {
+            } else if (cast == settings::PositiveIsTrueCast) {
                 return v > 0;
             } else {
                 throw std::runtime_error("bool not appropriate for given cast for parameter " + p.name);
             }
         }
 
-        int Params::getInt(std::string name) {
-            settings::ParamSettings p = params_.at(name);
+        int Params::getInt(std::string name) const {
+            settings::ParamSettings p = at(name);
+
             float v = resolveValue(p);
-
-            settings::ParamCast cast = p.cast;
-            if (p.isVariable() && p.cast == settings::NoCast) {
-                cast = params_.at(p.variable_value).cast;
-            }
-
+            settings::ParamCast cast = resolveCast(p);
             if (cast == settings::RoundIntCast) {
                 return round(v);
             } else {
@@ -97,18 +117,24 @@ namespace syntheffect {
             }
         }
 
-        float Params::getFloat(std::string name) {
-            settings::ParamSettings p = params_.at(name);
-            float v = resolveValue(p);
+        float Params::getFloat(std::string name) const {
+            settings::ParamSettings p = at(name);
 
-            if (p.cast == settings::NoCast) {
+            float v = resolveValue(p);
+            settings::ParamCast cast = resolveCast(p);
+
+            if (name == "zoom_amount" || name == "xbox_button_top_right-pressed_time") {
+                //ofLogNotice("Params", "name=%s value=%f variable_value=%s limits(exists=%i low=%f high=%f) final_value=%f", p.name.c_str(), p.value, p.variable_value.c_str(), p.limits.exists, p.limits.value.low, p.limits.value.high, v);
+            }
+
+            if (cast == settings::NoCast) {
                 return v;
             } else {
                 throw std::runtime_error("float not appropriate for given cast for parameter " + p.name);
             }
         }
 
-        ofTexture Params::getTexture(std::string name) {
+        ofTexture Params::getTexture(std::string name) const {
             if (texture_params_.count(name) > 0) {
                 name = texture_params_.at(name);
             }
@@ -116,7 +142,7 @@ namespace syntheffect {
             return textures_.at(name)();
         }
 
-        bool Params::exists(std::string name) {
+        bool Params::exists(std::string name) const {
             return params_.count(name) > 0 || textures_.count(name) > 0 || texture_params_.count(name) > 0;
         }
 
@@ -128,22 +154,22 @@ namespace syntheffect {
             texture_params_[name] = target;
         }
 
-        bool Params::isFloat(const settings::ParamSettings& p) {
-            return (p.cast == settings::NoCast) ||
-                (p.cast == settings::NoCast && p.isVariable() && isFloat(resolveVariable(p)));
+        bool Params::isFloat(const settings::ParamSettings& p) const {
+            settings::ParamCast cast = resolveCast(p);
+            return cast == settings::NoCast;
         }
 
-        bool Params::isBool(const settings::ParamSettings& p) {
-            return (p.cast == settings::NegativeIsTrueCast || p.cast == settings::PositiveIsTrueCast) ||
-                (p.cast == settings::NoCast && p.isVariable() && isBool(resolveVariable(p)));
+        bool Params::isBool(const settings::ParamSettings& p) const {
+            settings::ParamCast cast = resolveCast(p);
+            return cast == settings::NegativeIsTrueCast || cast == settings::PositiveIsTrueCast;
         }
 
-        bool Params::isInt(const settings::ParamSettings& p) {
-            return (p.cast == settings::RoundIntCast) ||
-                (p.cast == settings::NoCast && p.isVariable() && isInt(resolveVariable(p)));
+        bool Params::isInt(const settings::ParamSettings& p) const {
+            settings::ParamCast cast = resolveCast(p);
+            return cast == settings::RoundIntCast;
         }
 
-        std::map<std::string, bool> Params::getBools() {
+        std::map<std::string, bool> Params::getBools() const {
             std::map<std::string, bool> bools;
             for (auto const& kv : params_) {
                 auto p = kv.second;
@@ -155,7 +181,7 @@ namespace syntheffect {
             return bools;
         }
 
-        std::map<std::string, int> Params::getInts() {
+        std::map<std::string, int> Params::getInts() const {
             std::map<std::string, int> ints;
             for (auto const& kv : params_) {
                 auto p = kv.second;
@@ -167,7 +193,7 @@ namespace syntheffect {
             return ints;
         }
 
-        std::map<std::string, float> Params::getFloats() {
+        std::map<std::string, float> Params::getFloats() const {
             std::map<std::string, float> floats;
             for (auto const& kv : params_) {
                 auto p = kv.second;
@@ -179,7 +205,7 @@ namespace syntheffect {
             return floats;
         }
 
-        std::map<std::string, ofTexture> Params::getTextures() {
+        std::map<std::string, ofTexture> Params::getTextures() const {
             std::map<std::string, ofTexture> textures;
             for (auto const& kv : texture_params_) {
                 textures[kv.first] = getTexture(kv.first);
