@@ -2,8 +2,6 @@
 
 #include "ofGraphics.h"
 
-#include "ofLog.h"
-
 namespace syntheffect {
     namespace graphics {
         void Pipeline::drawTo(std::shared_ptr<graphics::PingPongBuffer> buf_in, std::shared_ptr<graphics::PingPongBuffer> buf_out) {

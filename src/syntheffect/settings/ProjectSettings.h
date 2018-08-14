@@ -14,8 +14,8 @@ namespace syntheffect {
             std::string assets_path;
             std::string out_path;
 
-            int recording_width;
-            int recording_height;
+            int width;
+            int height;
 
             std::vector<AssetGroupSettings> asset_groups;
             std::vector<PipelineSettings> pipelines;

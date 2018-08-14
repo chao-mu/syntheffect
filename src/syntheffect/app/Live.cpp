@@ -9,8 +9,7 @@
 #include "syntheffect/settings/ParamSettings.h"
 #include "syntheffect/settings/ProjectSettings.h"
 
-#define FPS 30
-
+#define FPS 60
 
 void setup() {
     TIME_SAMPLE_SET_FRAMERATE(FPS);
@@ -18,7 +17,7 @@ void setup() {
 
 namespace syntheffect {
     namespace app {
-            Live::Live(settings::ProjectSettings settings) : ofBaseApp() {
+        Live::Live(settings::ProjectSettings settings) : ofBaseApp(),  pipeline_manager_(settings.width, settings.height) {
             beat_ = std::make_shared<ofxBeat>();
 
             settings_ = settings;
@@ -56,6 +55,7 @@ namespace syntheffect {
             }
             */
 
+            pipeline_manager_.setup();
             pipeline_manager_.setPipelines(settings_.pipelines);
             pipeline_manager_.setAssets(settings_.asset_groups);
             for (auto js : settings_.joysticks) {
@@ -64,7 +64,7 @@ namespace syntheffect {
 
             if (settings_.out_path != "") {
                 recording_ = true;
-                recorder_.setup(settings_.out_path, settings_.recording_width, settings_.recording_height);
+                recorder_.setup(settings_.out_path, settings_.width, settings_.height);
                 recorder_.startThread();
             } else {
                 recording_ = false;

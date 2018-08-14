@@ -10,6 +10,7 @@ namespace syntheffect {
         }
 
         void Video::setup() {
+            ofLogNotice("Video", "%s", path_.c_str());
             video_.setUseTexture(true);
             video_.setLoopState(OF_LOOP_NORMAL);
             if (!video_.load(path_)) {

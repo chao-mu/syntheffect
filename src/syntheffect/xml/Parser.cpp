@@ -70,6 +70,9 @@ namespace syntheffect {
 
             proj.pipelines = parsePipelines(proj.pipelines_path);
 
+            proj.width = Util::getAttribute<int>(xml, "width", false, 1280);
+            proj.height = Util::getAttribute<int>(xml, "height", false, 720);
+
             for (const auto& child : xml.getChildren()) {
                std::string el_name = child.getName();
                if (el_name == "joysticks") {
