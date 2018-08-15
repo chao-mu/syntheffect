@@ -9,7 +9,7 @@
 #include "syntheffect/settings/ParamSettings.h"
 #include "syntheffect/settings/ProjectSettings.h"
 
-#define FPS 60
+#define FPS 30
 
 void setup() {
     TIME_SAMPLE_SET_FRAMERATE(FPS);
@@ -17,7 +17,7 @@ void setup() {
 
 namespace syntheffect {
     namespace app {
-        Live::Live(settings::ProjectSettings settings) : ofBaseApp(),  pipeline_manager_(settings.width, settings.height) {
+        Live::Live(settings::ProjectSettings settings) : ofBaseApp(),  asset_manager_(settings.width, settings.height) {
             beat_ = std::make_shared<ofxBeat>();
 
             settings_ = settings;
@@ -54,10 +54,14 @@ namespace syntheffect {
                 ofSoundStreamSetup(sound_settings);
             }
             */
+            // Asset manager
+            asset_manager_.setup();
+            asset_manager_.setAssets(settings_.asset_groups);
 
-            pipeline_manager_.setup();
+            // Pipeline manager
             pipeline_manager_.setPipelines(settings_.pipelines);
-            pipeline_manager_.setAssets(settings_.asset_groups);
+
+            // Joystick manager
             for (auto js : settings_.joysticks) {
                 joystick_manager_.addJoystick(js);
             }
@@ -105,15 +109,13 @@ namespace syntheffect {
             effect_params->float_params["hihat"] = beat_->hihat();
             */
 
-            pipeline_manager_.setGlobalParams(params);
+            asset_manager_.update(t, params);
+            if (asset_manager_.isReady()) {
+                if (asset_manager_.isFinished()) {
+                    ofExit();
+                }
 
-            pipeline_manager_.update(t);
-            if (pipeline_manager_.isFinished()) {
-                ofExit();
-            }
-
-            if (pipeline_manager_.isReady()) {
-                out_ = pipeline_manager_.render();
+                out_ = pipeline_manager_.render(t, params, asset_manager_.getChannels());
             }
         }
 
@@ -144,7 +146,7 @@ namespace syntheffect {
             fbo.allocate(ofGetWindowWidth(), ofGetWindowHeight(), GL_RGBA);
 
             fbo.begin();
-            out_->drawScaleCenter(pipeline_manager_.getWidth(), pipeline_manager_.getHeight());
+            out_->drawScaleCenter(settings_.width, settings_.height);
             fbo.end();
 
             ofPixels pixels;

@@ -10,7 +10,7 @@ namespace syntheffect {
         class Drawable {
             public:
                 virtual void setup();
-                virtual void update(std::shared_ptr<param::Params> params, float t);
+                virtual void update(float t, param::Params& params);
                 virtual void draw(float x, float y, float width, float height) = 0;
                 virtual float getWidth() = 0;
                 virtual float getHeight() = 0;

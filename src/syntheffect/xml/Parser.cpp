@@ -73,27 +73,14 @@ namespace syntheffect {
             proj.width = Util::getAttribute<int>(xml, "width", false, 1280);
             proj.height = Util::getAttribute<int>(xml, "height", false, 720);
 
-            for (const auto& child : xml.getChildren()) {
-               std::string el_name = child.getName();
-               if (el_name == "joysticks") {
-                   for (const auto& joysticks_child : child.getChildren()) {
-                       if (joysticks_child.getName() == "joystick") {
-                           addJoystick(joysticks_child, path, proj.joysticks);
-                       } else {
-                           throw std::runtime_error("Expected <joystick>, got <" + joysticks_child.getName() + ">");
-                       }
-                   }
-               } else if (el_name == "params") {
-                   for (const auto& params_child : child.getChildren()) {
-                       if (params_child.getName() == "param") {
-                           proj.params.push_back(parseParam(params_child));
-                       } else {
-                           throw std::runtime_error("Expected <param>, got <" + params_child.getName() + ">");
-                       }
-                   }
-               } else {
-                    throw std::runtime_error("Expected <joysticks> or <params>, got <" + el_name + ">");
-               }
+            // Add joysticks
+            for (const auto& joysticks_child : xml.find("//project/joysticks/joystick")) {
+                addJoystick(joysticks_child, path, proj.joysticks);
+            }
+
+            // Add joysticks
+            for (const auto& params_child : xml.find("//project/params/param")) {
+                proj.params.push_back(parseParam(params_child));
             }
 
             return proj;
@@ -109,7 +96,6 @@ namespace syntheffect {
              YAML::Node config = YAML::LoadFile(settings_path);
 
              joystick.device = config["device"].as<std::string>();
-
              joystick.deadzone = config["deadzone"].as<float>();
 
              for(YAML::const_iterator it=config["neutral"].begin(); it != config["neutral"].end(); ++it) {
@@ -134,15 +120,14 @@ namespace syntheffect {
          void Parser::addAssetGroup(const ofXml& xml, std::string path, std::vector<settings::AssetGroupSettings>& asset_groups) {
              settings::AssetGroupSettings group;
 
-             group.name = Util::getAttribute<std::string>(xml, "name", true, "");
+             group.name = Util::getAttribute<std::string>(xml, "name", false, "");
+             group.trigger = Util::getAttribute<std::string>(xml, "trigger", false, "");
 
              for (const auto& child : xml.getChildren()) {
                 std::string el_name = child.getName();
 
                 if (el_name == "asset") {
                     addAsset(child, path, group);
-                } else if (el_name == "trigger") {
-                    group.trigger = parseParam(child, false);
                 } else {
                     throw std::runtime_error("Expected <asset> or <trigger>, got <" + el_name + ">");
                 }

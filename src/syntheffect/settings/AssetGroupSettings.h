@@ -10,7 +10,7 @@ namespace syntheffect {
         struct AssetGroupSettings {
             std::string name;
             std::vector<AssetSettings> assets;
-            settings::ParamSettings trigger;
+            std::string trigger;
         };
     }
 }

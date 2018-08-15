@@ -12,7 +12,7 @@ namespace syntheffect {
             }
         }
 
-        void Webcam::update(std::shared_ptr<param::Params> params, float t) {
+        void Webcam::update(float t, param::Params& params) {
             grabber_.update();
         }
 

@@ -14,7 +14,7 @@ namespace syntheffect {
 
         }
 
-        void Drawable::update(std::shared_ptr<param::Params> params, float t) {
+        void Drawable::update(float, param::Params&) {
         }
 
         void Drawable::drawScaleCenter(float dest_width, float dest_height) {

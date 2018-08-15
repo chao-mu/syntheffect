@@ -10,7 +10,7 @@ namespace syntheffect {
         class Webcam : public Drawable {
             public:
                 void setup() override;
-                void update(std::shared_ptr<param::Params> params, float t) override;
+                void update(float t, param::Params& params) override;
                 void draw(float x, float y, float width, float height) override;
                 float getWidth() override;
                 float getHeight() override;

@@ -9,6 +9,7 @@
 
 #include "syntheffect/manager/PipelineManager.h"
 #include "syntheffect/manager/JoystickManager.h"
+#include "syntheffect/manager/AssetManager.h"
 #include "syntheffect/graphics/Drawable.h"
 #include "syntheffect/app/RecordingThread.h"
 #include "syntheffect/settings/ProjectSettings.h"
@@ -30,6 +31,7 @@ namespace syntheffect {
 
             private:
                 std::shared_ptr<ofxBeat> beat_;
+                manager::AssetManager asset_manager_;
                 manager::PipelineManager pipeline_manager_;
                 manager::JoystickManager joystick_manager_;
                 std::shared_ptr<graphics::Drawable> out_;
