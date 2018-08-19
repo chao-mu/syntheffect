@@ -2,6 +2,25 @@
 
 namespace syntheffect {
     namespace settings {
+        ParamSettings ParamSettings::withValue(float v) const {
+            ParamSettings p = *this;
+
+            p.value = v;
+            p.variable_value = "";
+
+            return p;
+        }
+
+        ParamSettings ParamSettings::asDefault() const {
+            ParamSettings p;
+
+            p.name = name;
+            p.cast = cast;
+            p.value = default_value;
+
+            return p;
+        }
+
         ParamSettings ParamSettings::intValue(std::string name, int v) {
             ParamSettings p;
 
@@ -33,7 +52,6 @@ namespace syntheffect {
 
             return p;
         }
-
 
         ParamSettings ParamSettings::boolValue(std::string name, bool v) {
             ParamSettings p;

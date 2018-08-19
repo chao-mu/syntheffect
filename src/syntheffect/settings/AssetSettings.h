@@ -6,7 +6,8 @@ namespace syntheffect {
     namespace settings {
         enum AssetType {
             ImageType,
-            VideoType
+            VideoType,
+            WebcamType,
         };
 
         struct AssetSettings {

@@ -1,8 +1,8 @@
-#include "syntheffect/graphics/PingPongChannel.h"
+#include "syntheffect/asset/PingPongChannel.h"
 
 namespace syntheffect {
-    namespace graphics {
-        PingPongChannel::PingPongChannel(std::shared_ptr<graphics::PingPongBuffer> buf) : Drawable() {
+    namespace asset {
+        PingPongChannel::PingPongChannel(std::string name, std::shared_ptr<graphics::PingPongBuffer> buf) : Asset(name) {
             buf_ = buf;
         }
 

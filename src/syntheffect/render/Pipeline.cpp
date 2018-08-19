@@ -1,9 +1,31 @@
-#include "syntheffect/graphics/Pipeline.h"
+#include "syntheffect/render/Pipeline.h"
 
 #include "ofGraphics.h"
 
 namespace syntheffect {
-    namespace graphics {
+    namespace render {
+        Pipeline::Pipeline(std::string in, std::string out) {
+            in_ = in;
+            out_ = out;
+        }
+
+        std::string Pipeline::getIn() {
+            return in_;
+        }
+
+        void Pipeline::setIn(std::string in) {
+            in_ = in;
+        }
+
+        std::string Pipeline::getOut() {
+            return out_;
+        }
+
+        void Pipeline::setOut(std::string out) {
+            out_ = out;
+        }
+
+
         void Pipeline::drawTo(std::shared_ptr<graphics::PingPongBuffer> buf_in, std::shared_ptr<graphics::PingPongBuffer> buf_out) {
             // Replace buf out with the contents of buf in so we can apply effects
             buf_out->begin();

@@ -5,15 +5,13 @@
 
 #include "ofTexture.h"
 
-#include "syntheffect/param/ParamAccessors.h"
-
 #include "syntheffect/settings/ParamSettings.h"
 
 namespace syntheffect {
     namespace param {
         class Params {
             public:
-                void set(settings::ParamSettings p);
+                void set(const settings::ParamSettings p);
                 void setTexture(std::string name, std::function<ofTexture()> v);
                 void setTexture(std::string name, std::string target);
 

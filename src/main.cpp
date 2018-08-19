@@ -56,12 +56,7 @@ int main(int argc, const char *argv[]){
     settings.out_path = out_path;
 
     auto app = make_shared<syntheffect::app::Live>(settings);
-    try {
-        ofRunApp(app);
-    } catch (std::runtime_error& err) {
-        ofLogFatalError() << err.what();
-        return 1;
-    }
+    ofRunApp(app);
 
     return 0;
 }

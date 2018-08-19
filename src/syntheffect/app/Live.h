@@ -7,10 +7,11 @@
 
 #include "ofxBeat.h"
 
-#include "syntheffect/manager/PipelineManager.h"
-#include "syntheffect/manager/JoystickManager.h"
-#include "syntheffect/manager/AssetManager.h"
-#include "syntheffect/graphics/Drawable.h"
+#include "syntheffect/render/Renderer.h"
+#include "syntheffect/asset/AssetManager.h"
+
+#include "syntheffect/input/InputManager.h"
+
 #include "syntheffect/app/RecordingThread.h"
 #include "syntheffect/settings/ProjectSettings.h"
 
@@ -19,32 +20,35 @@ namespace syntheffect {
         class Live : public ofBaseApp {
             public:
                 Live(settings::ProjectSettings settings);
+
                 void setup();
                 void update();
                 void draw();
-                void audioIn(ofSoundBuffer& buf);
                 void exit();
+                void audioIn(ofSoundBuffer& buf);
 
             protected:
                 void keyPressed(int c);
-                void screenshot();
+
+                void assetGroupTriggered(std::string& name);
+                void paramSetTriggered(const settings::ParamSettings& p);
 
             private:
-                std::shared_ptr<ofxBeat> beat_;
-                manager::AssetManager asset_manager_;
-                manager::PipelineManager pipeline_manager_;
-                manager::JoystickManager joystick_manager_;
-                std::shared_ptr<graphics::Drawable> out_;
+                void recordFrame();
+
+                asset::AssetManager asset_manager_;
+                render::Renderer renderer_;
+                input::InputManager input_manager_;
+
                 settings::ProjectSettings settings_;
+                std::shared_ptr<ofxBeat> beat_;
 
                 ofSoundStream sound_stream_;
                 RecordingThread recorder_;
 
-                void setupDrawSize();
-                void recordFrame();
-
-                bool should_draw_;
                 bool recording_;
+
+                param::Params params_;
         };
     }
 }

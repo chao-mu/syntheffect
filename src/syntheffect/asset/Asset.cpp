@@ -1,23 +1,30 @@
-#include "syntheffect/graphics/Drawable.h"
+#include "syntheffect/asset/Asset.h"
 
 namespace syntheffect {
-    namespace graphics {
-        bool Drawable::isReady() {
+    namespace asset {
+        Asset::Asset(std::string name) {
+            name_ = name;
+        }
+
+        std::string Asset::getName() {
+            return name_;
+        }
+
+        bool Asset::isReady() {
             return true;
         }
 
-        bool Drawable::isFinished() {
+        bool Asset::isFinished() {
             return false;
         }
 
-        void Drawable::setup() {
-
+        void Asset::setup() {
         }
 
-        void Drawable::update(float, param::Params&) {
+        void Asset::update(float) {
         }
 
-        void Drawable::drawScaleCenter(float dest_width, float dest_height) {
+        void Asset::drawScaleCenter(float dest_width, float dest_height) {
             float w = getWidth();
             float h = getHeight();
 

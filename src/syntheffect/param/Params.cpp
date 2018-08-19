@@ -11,7 +11,7 @@
 
 namespace syntheffect {
     namespace param {
-        void Params::set(const settings::ParamSettings p) {
+        void Params::set(settings::ParamSettings p) {
             params_[p.name] = p;
         }
 
@@ -122,10 +122,6 @@ namespace syntheffect {
 
             float v = resolveValue(p);
             settings::ParamCast cast = resolveCast(p);
-
-            if (name == "zoom_amount" || name == "xbox_button_top_right-pressed_time") {
-                //ofLogNotice("Params", "name=%s value=%f variable_value=%s limits(exists=%i low=%f high=%f) final_value=%f", p.name.c_str(), p.value, p.variable_value.c_str(), p.limits.exists, p.limits.value.low, p.limits.value.high, v);
-            }
 
             if (cast == settings::NoCast) {
                 return v;

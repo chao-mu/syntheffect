@@ -4,8 +4,6 @@
 
 #include "ofFbo.h"
 
-#include "syntheffect/graphics/Drawable.h"
-
 namespace syntheffect {
     namespace graphics {
         class PingPongBuffer {

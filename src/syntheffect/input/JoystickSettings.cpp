@@ -1,7 +1,7 @@
-#include "syntheffect/settings/JoystickSettings.h"
+#include "syntheffect/input/JoystickSettings.h"
 
 namespace syntheffect {
-    namespace settings {
+    namespace input {
         float JoystickSettings::getAxisNeutral(int i) {
             if (axis_neutrals.count(i) > 0) {
                 return axis_neutrals.at(i);

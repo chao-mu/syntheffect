@@ -1,9 +1,12 @@
-#include "syntheffect/graphics/Webcam.h"
+#include "syntheffect/asset/Webcam.h"
 
 #include <stdexcept>
 
 namespace syntheffect {
-    namespace graphics {
+    namespace asset {
+        Webcam::Webcam(std::string path) : Asset(path) {
+        }
+
         void Webcam::setup() {
             grabber_.setUseTexture(true);
 
@@ -12,7 +15,7 @@ namespace syntheffect {
             }
         }
 
-        void Webcam::update(float t, param::Params& params) {
+        void Webcam::update(float t) {
             grabber_.update();
         }
 

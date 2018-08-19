@@ -1,6 +1,7 @@
 #include "syntheffect/graphics/Shader.h"
 
 #include "ofGraphics.h"
+#include "ofLog.h"
 
 namespace syntheffect {
     namespace graphics {

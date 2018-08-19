@@ -1,22 +1,23 @@
 #pragma once
 
-#include "ofImage.h"
+#include "ofVideoGrabber.h"
 
-#include "syntheffect/graphics/Drawable.h"
+#include "syntheffect/asset/Asset.h"
 
 namespace syntheffect {
-    namespace graphics {
-        class Image : public Drawable {
+    namespace asset {
+        class Webcam : public Asset {
             public:
-                Image(std::string path);
+                Webcam(std::string path);
                 void setup() override;
+                void update(float t) override;
                 void draw(float x, float y, float width, float height) override;
                 float getWidth() override;
                 float getHeight() override;
+                bool isReady() override;
 
             private:
-                std::string path_;
-                ofImage image_;
+                ofVideoGrabber grabber_;
         };
     }
 }

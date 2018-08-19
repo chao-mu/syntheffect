@@ -9,6 +9,9 @@
 #include "syntheffect/settings/ParamSettings.h"
 #include "syntheffect/settings/ProjectSettings.h"
 
+#include "syntheffect/asset/Parser.h"
+#include "syntheffect/input/Parser.h"
+
 #define FPS 30
 
 void setup() {
@@ -17,7 +20,7 @@ void setup() {
 
 namespace syntheffect {
     namespace app {
-        Live::Live(settings::ProjectSettings settings) : ofBaseApp(),  asset_manager_(settings.width, settings.height) {
+        Live::Live(settings::ProjectSettings settings) : ofBaseApp(),  renderer_(settings.width, settings.height) {
             beat_ = std::make_shared<ofxBeat>();
 
             settings_ = settings;
@@ -54,17 +57,18 @@ namespace syntheffect {
                 ofSoundStreamSetup(sound_settings);
             }
             */
+
+            // Input manager
+            input::Parser::addInputs(input_manager_, settings_.inputs_path);
+            ofAddListener(input_manager_.asset_trigger_events, this, &Live::assetGroupTriggered);
+            ofAddListener(input_manager_.param_trigger_events, this, &Live::paramSetTriggered);
+
             // Asset manager
-            asset_manager_.setup();
-            asset_manager_.setAssets(settings_.asset_groups);
+            asset_manager_.setAssets(asset::Parser::parseAssets(settings_.assets_path));
 
-            // Pipeline manager
-            pipeline_manager_.setPipelines(settings_.pipelines);
-
-            // Joystick manager
-            for (auto js : settings_.joysticks) {
-                joystick_manager_.addJoystick(js);
-            }
+            // Renderer
+            renderer_.setup();
+            renderer_.setPipelines(settings_.pipelines);
 
             if (settings_.out_path != "") {
                 recording_ = true;
@@ -73,6 +77,14 @@ namespace syntheffect {
             } else {
                 recording_ = false;
             }
+        }
+
+        void Live::paramSetTriggered(const settings::ParamSettings& p) {
+            params_.set(p);
+        }
+
+        void Live::assetGroupTriggered(std::string& name) {
+            asset_manager_.triggerAssetGroup(name);
         }
 
         void Live::exit() {
@@ -90,15 +102,13 @@ namespace syntheffect {
         void Live::update() {
             float t = ofGetElapsedTimef();
 
-            param::Params params;
-            params.set(settings::ParamSettings::floatValue("time", t));
+            params_.set(settings::ParamSettings::floatValue("time", t));
 
             for (auto& param : settings_.params) {
-                params.set(param);
+                params_.set(param);
             }
 
-            joystick_manager_.update(t);
-            joystick_manager_.copyTo(params);
+            input_manager_.update(t);
 
             /*
             beat_->update(ofGetElapsedTimeMillis());
@@ -109,27 +119,24 @@ namespace syntheffect {
             effect_params->float_params["hihat"] = beat_->hihat();
             */
 
-            asset_manager_.update(t, params);
+            asset_manager_.update(t);
             if (asset_manager_.isReady()) {
                 if (asset_manager_.isFinished()) {
                     ofExit();
                 }
 
-                out_ = pipeline_manager_.render(t, params, asset_manager_.getChannels());
+                renderer_.update(params_, asset_manager_.getActiveAssets());
             }
         }
 
         void Live::draw() {
-            if (!out_) {
-                return;
-            }
-
-            out_->drawScaleCenter(ofGetWindowWidth(), ofGetWindowHeight());
+            renderer_.draw(ofGetWindowWidth(), ofGetWindowHeight());
 
             ofSetWindowTitle("fps: " + std::to_string(ofGetFrameRate()));
         }
 
         void Live::recordFrame() {
+            /*
             if (!out_) {
                 return;
             }
@@ -139,27 +146,12 @@ namespace syntheffect {
             out_->drawScaleCenter(recorder_.getWidth(), recorder_.getHeight());
             recorder_.fboEnd();
             recorder_.push();
-        }
-
-        void Live::screenshot() {
-            ofFbo fbo;
-            fbo.allocate(ofGetWindowWidth(), ofGetWindowHeight(), GL_RGBA);
-
-            fbo.begin();
-            out_->drawScaleCenter(settings_.width, settings_.height);
-            fbo.end();
-
-            ofPixels pixels;
-            fbo.readToPixels(pixels);
-
-            ofImage image;
-            image.setFromPixels(pixels);
-            image.save("out-" + ofGetTimestampString() + ".png");
+            */
         }
 
         void Live::keyPressed(int c) {
             if (c == 'p') {
-                screenshot();
+                renderer_.saveImage("out-" + ofGetTimestampString() + ".png");
             } else if (c == 'q') {
                 ofExit();
             }

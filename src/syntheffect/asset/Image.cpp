@@ -1,10 +1,10 @@
-#include "syntheffect/graphics/Image.h"
+#include "syntheffect/asset/Image.h"
 
 #include <stdexcept>
 
 namespace syntheffect {
-    namespace graphics {
-        Image::Image(std::string path) : Drawable() {
+    namespace asset {
+        Image::Image(std::string name, std::string path) : Asset(name) {
             path_ = path;
         }
 

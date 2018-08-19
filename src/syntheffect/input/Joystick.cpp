@@ -1,4 +1,4 @@
-#include "syntheffect/controller/Joystick.h"
+#include "syntheffect/input/Joystick.h"
 
 #include "GLFW/glfw3.h"
 
@@ -12,8 +12,8 @@
 #define AXIS_HIGH 1
 
 namespace syntheffect {
-    namespace controller {
-        Joystick::Joystick(settings::JoystickSettings settings) {
+    namespace input {
+        Joystick::Joystick(JoystickSettings settings) {
             settings_ = settings;
         }
 
@@ -42,7 +42,9 @@ namespace syntheffect {
             return -1;
         }
 
-        void Joystick::update(float t, int id) {
+        std::map<std::string, JoystickPress> Joystick::getPresses(float t, int id) {
+            std::map<std::string, JoystickPress> presses;
+
             int axes_count;
             const float* axes = glfwGetJoystickAxes(id, &axes_count);
             for (int i=0; i < axes_count; i++) {
@@ -82,8 +84,11 @@ namespace syntheffect {
                     }
                 }
 
-                params_.set(settings::ParamSettings::floatValue(name, v, AXIS_LOW, AXIS_HIGH));
-                setPressed(name, pressed, t);
+                if (pressed) {
+                    presses[name] = makePress(name, t);
+                } else {
+                    press_start_.erase(name);
+                }
 
                 if (LOG_JOYSTICK) {
                     ofLogNotice("Joystick", "axis=%d name=%s raw=%f translated=%f adjusted=%i pressed=%i", i, name.c_str(), axes[i], v, adjusted, pressed);
@@ -99,37 +104,32 @@ namespace syntheffect {
                 }
 
                 bool pressed = buttons[i] == GLFW_PRESS;
-                setPressed(name, pressed, t);
-                params_.set(settings::ParamSettings::boolValue(name, pressed));
+                if (pressed) {
+                    presses[name] = makePress(name, t);
+                } else {
+                    press_start_.erase(name);
+                }
 
                 if (LOG_JOYSTICK) {
                     ofLogNotice("Joystick", "button=%d name=%s pressed=%i", i, name.c_str(), pressed);
                 }
             }
+
+            return presses;
         }
 
-        void Joystick::setPressed(std::string name, bool pressed, float t) {
-            std::string pressed_name = settings_.getNamePressed(name);
-            std::string pressed_at_name = settings_.getNamePressedAt(name);
-            std::string pressed_time_name = settings_.getNamePressedTime(name);
+        JoystickPress Joystick::makePress(std::string name, float t) {
+            JoystickPress press;
+            press.name = name;
+            press.first = press_start_.count(name) == 0;
 
-            // If pressed for the first time
-            if (pressed) {
-                bool previouslyPressed = params_.exists(pressed_name) ? params_.getBool(pressed_name) : false;
-                if (!previouslyPressed) {
-                    params_.set(settings::ParamSettings::floatValue(pressed_at_name, t));
-                }
-
-                params_.set(settings::ParamSettings::floatValue(pressed_time_name, t - params_.getFloat(pressed_at_name)));
-            } else {
-                params_.set(settings::ParamSettings::floatValue(pressed_time_name, 0));
+            if (!press_start_.count(name)) {
+                press_start_[name] = t;
             }
 
-            params_.set(settings::ParamSettings::boolValue(pressed_name, pressed));
-        }
+            press.pressed_time = t - press_start_.at(name);
 
-        void Joystick::copyTo(param::Params& p) const {
-            params_.copyTo(p);
+            return press;
         }
     }
 }

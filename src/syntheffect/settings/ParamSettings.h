@@ -27,6 +27,7 @@ namespace syntheffect {
 
             Option<ParamLimits> limits;
             float value = 0;
+            float default_value = 0;
             float shift = 0;
             float freq = 1;
             std::string variable_value;
@@ -37,6 +38,9 @@ namespace syntheffect {
             static ParamSettings floatValue(std::string name, float v, float low, float high);
             static ParamSettings floatValue(std::string name, float v);
             static ParamSettings boolValue(std::string name, bool v);
+
+            ParamSettings withValue(float v) const;
+            ParamSettings asDefault() const;
         };
     }
 }

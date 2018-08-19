@@ -4,8 +4,11 @@
 #include <map>
 
 namespace syntheffect {
-    namespace settings {
+    namespace input {
+        typedef int JoystickID;
+
         struct JoystickSettings {
+            JoystickID id;
             std::string device;
             std::string prefix;
             std::map<int, float> axis_neutrals;
