@@ -5,20 +5,20 @@
 
 #include "ofTexture.h"
 
-#include "syntheffect/settings/ParamSettings.h"
+#include "syntheffect/param/Param.h"
 
 namespace syntheffect {
     namespace param {
         class Params {
             public:
-                void set(const settings::ParamSettings p);
+                void set(const Param p);
                 void setTexture(std::string name, std::function<ofTexture()> v);
                 void setTexture(std::string name, std::string target);
 
-                const settings::ParamSettings& at(std::string name) const;
-                const settings::ParamSettings& resolveParent(const settings::ParamSettings& p) const;
-                const settings::ParamCast& resolveCast(const settings::ParamSettings& p, int resolutions=0) const;
-                float resolveValue(const settings::ParamSettings& p, int resolutions=0) const;
+                const Param& at(std::string name) const;
+                const Param& resolveParent(const Param& p) const;
+                const ParamCast& resolveCast(const Param& p, int resolutions=0) const;
+                float resolveValue(const Param& p, int resolutions=0) const;
 
                 bool getBool(std::string name) const;
                 int getInt(std::string name) const;
@@ -39,16 +39,16 @@ namespace syntheffect {
 
                 bool exists(std::string name) const;
 
-                bool isInt(const settings::ParamSettings& p) const;
-                bool isBool(const settings::ParamSettings& p) const;
-                bool isFloat(const settings::ParamSettings& p) const;
+                bool isInt(const Param& p) const;
+                bool isBool(const Param& p) const;
+                bool isFloat(const Param& p) const;
 
             private:
-                std::vector<settings::ParamSettings> getBoolParamSettings() const;
+                std::vector<Param> getBoolParamSettings() const;
 
                 std::map<std::string, std::function<ofTexture()>> textures_;
                 std::map<std::string, std::string> texture_params_;
-                std::map<std::string, settings::ParamSettings> params_;
+                std::map<std::string, Param> params_;
         };
     }
 }

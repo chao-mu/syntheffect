@@ -9,9 +9,8 @@
 
 #include "syntheffect/render/Renderer.h"
 #include "syntheffect/asset/AssetManager.h"
-
+#include "syntheffect/param/Param.h"
 #include "syntheffect/input/InputManager.h"
-
 #include "syntheffect/app/RecordingThread.h"
 #include "syntheffect/settings/ProjectSettings.h"
 
@@ -31,7 +30,7 @@ namespace syntheffect {
                 void keyPressed(int c);
 
                 void assetGroupTriggered(std::string& name);
-                void paramSetTriggered(const settings::ParamSettings& p);
+                void paramSetTriggered(const param::Param& p);
 
             private:
                 void recordFrame();

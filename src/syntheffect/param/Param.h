@@ -5,7 +5,7 @@
 #include "syntheffect/settings/Option.h"
 
 namespace syntheffect {
-    namespace settings {
+    namespace param {
         struct ParamLimits {
             float low;
             float high;
@@ -19,13 +19,13 @@ namespace syntheffect {
             IdentityFunc, NoiseFunc, CosFunc, SinFunc
         };
 
-        struct ParamSettings {
+        struct Param {
             ParamCast cast = NoCast;
             ParamFunc func = IdentityFunc;
 
             std::string name;
 
-            Option<ParamLimits> limits;
+            settings::Option<ParamLimits> limits;
             float value = 0;
             float default_value = 0;
             float shift = 0;
@@ -34,13 +34,13 @@ namespace syntheffect {
 
             bool isVariable() const;
 
-            static ParamSettings intValue(std::string name, int v);
-            static ParamSettings floatValue(std::string name, float v, float low, float high);
-            static ParamSettings floatValue(std::string name, float v);
-            static ParamSettings boolValue(std::string name, bool v);
+            static Param intValue(std::string name, int v);
+            static Param floatValue(std::string name, float v, float low, float high);
+            static Param floatValue(std::string name, float v);
+            static Param boolValue(std::string name, bool v);
 
-            ParamSettings withValue(float v) const;
-            ParamSettings asDefault() const;
+            Param withValue(float v) const;
+            Param asDefault() const;
         };
     }
 }

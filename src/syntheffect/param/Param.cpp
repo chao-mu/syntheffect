@@ -1,9 +1,9 @@
-#include "syntheffect/settings/ParamSettings.h"
+#include "syntheffect/param/Param.h"
 
 namespace syntheffect {
-    namespace settings {
-        ParamSettings ParamSettings::withValue(float v) const {
-            ParamSettings p = *this;
+    namespace param {
+        Param Param::withValue(float v) const {
+            Param p = *this;
 
             p.value = v;
             p.variable_value = "";
@@ -11,8 +11,8 @@ namespace syntheffect {
             return p;
         }
 
-        ParamSettings ParamSettings::asDefault() const {
-            ParamSettings p;
+        Param Param::asDefault() const {
+            Param p;
 
             p.name = name;
             p.cast = cast;
@@ -21,8 +21,8 @@ namespace syntheffect {
             return p;
         }
 
-        ParamSettings ParamSettings::intValue(std::string name, int v) {
-            ParamSettings p;
+        Param Param::intValue(std::string name, int v) {
+            Param p;
 
             p.name = name;
             p.value = v;
@@ -31,8 +31,8 @@ namespace syntheffect {
             return p;
         }
 
-        ParamSettings ParamSettings::floatValue(std::string name, float v) {
-            ParamSettings p;
+        Param Param::floatValue(std::string name, float v) {
+            Param p;
 
             p.name = name;
             p.value = v;
@@ -40,8 +40,8 @@ namespace syntheffect {
             return p;
         }
 
-        ParamSettings ParamSettings::floatValue(std::string name, float v, float low, float high) {
-            ParamSettings p;
+        Param Param::floatValue(std::string name, float v, float low, float high) {
+            Param p;
 
             p.name = name;
             p.value = v;
@@ -53,8 +53,8 @@ namespace syntheffect {
             return p;
         }
 
-        ParamSettings ParamSettings::boolValue(std::string name, bool v) {
-            ParamSettings p;
+        Param Param::boolValue(std::string name, bool v) {
+            Param p;
 
             p.name = name;
             p.value = v ? 1 : -1;
@@ -63,7 +63,7 @@ namespace syntheffect {
             return p;
         }
 
-        bool ParamSettings::isVariable() const {
+        bool Param::isVariable() const {
             return variable_value != "";
         }
     }

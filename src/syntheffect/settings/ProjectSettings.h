@@ -3,7 +3,6 @@
 #include <vector>
 
 #include "syntheffect/settings/AssetGroupSettings.h"
-#include "syntheffect/settings/ParamSettings.h"
 #include "syntheffect/settings/PipelineSettings.h"
 
 namespace syntheffect {
@@ -18,7 +17,6 @@ namespace syntheffect {
             int height;
 
             std::vector<PipelineSettings> pipelines;
-            std::vector<ParamSettings> params;
         };
     }
 }

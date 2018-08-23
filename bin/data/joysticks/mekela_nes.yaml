@@ -1,4 +1,4 @@
-device: "USB Gamepad"
+device: "usb gamepad"
 
 deadzone: 0
 
@@ -7,11 +7,7 @@ axes:
     1: "dir_y"
 
 buttons:
-    0: "x"
+    0: "b"
     1: "a"
-    2: "b"
-    3: "y"
-    4: "l"
-    5: "r"
     8: "select"
     9: "start"

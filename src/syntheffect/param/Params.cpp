@@ -11,11 +11,11 @@
 
 namespace syntheffect {
     namespace param {
-        void Params::set(settings::ParamSettings p) {
+        void Params::set(Param p) {
             params_[p.name] = p;
         }
 
-        const settings::ParamSettings& Params::at(std::string name) const {
+        const Param& Params::at(std::string name) const {
             if (params_.count(name) == 0) {
                 throw std::out_of_range("Parameter '" + name + "' not set, but attempted to be retrieved");
             }
@@ -23,19 +23,19 @@ namespace syntheffect {
             return params_.at(name);
         }
 
-        const settings::ParamCast& Params::resolveCast(const settings::ParamSettings& p, int resolutions) const {
+        const ParamCast& Params::resolveCast(const Param& p, int resolutions) const {
             if (p.isVariable() && resolutions > MAX_PARAMS_DEEP) {
                 throw std::runtime_error("loop involving parameter '" + p.variable_value  + "' detected");
             }
 
-            if (p.cast != settings::NoCast || !p.isVariable()) {
+            if (p.cast != NoCast || !p.isVariable()) {
                 return p.cast;
             }
 
             return resolveCast(resolveParent(p), resolutions + 1);
         }
 
-        const settings::ParamSettings& Params::resolveParent(const settings::ParamSettings& p) const {
+        const Param& Params::resolveParent(const Param& p) const {
             if (params_.count(p.variable_value) == 0) {
                 throw std::out_of_range("Parameter '" + p.variable_value + "' not set, required by parameter '" + p.name + "'");
             }
@@ -44,7 +44,7 @@ namespace syntheffect {
         }
 
 
-        float Params::resolveValue(const settings::ParamSettings& p, int resolutions) const {
+        float Params::resolveValue(const Param& p, int resolutions) const {
             if (p.isVariable() && resolutions > MAX_PARAMS_DEEP) {
                 throw std::runtime_error("loop involving  parameter" + p.variable_value  + " detected");
             }
@@ -52,30 +52,30 @@ namespace syntheffect {
             float v = p.value;
 
             if (p.isVariable()) {
-                const settings::ParamSettings& resolved_p = resolveParent(p);
+                const Param& resolved_p = resolveParent(p);
                 v = resolveValue(resolved_p, resolutions + 1);
-                if (resolved_p.limits.exists && p.limits.exists && p.func == settings::IdentityFunc) {
+                if (resolved_p.limits.exists && p.limits.exists && p.func == IdentityFunc) {
                     return ofMap(v, resolved_p.limits.value.low, resolved_p.limits.value.high, p.limits.value.low, p.limits.value.high);
                 }
             }
 
             v = (v * p.freq) + p.shift;
 
-            if (p.func == settings::IdentityFunc) {
+            if (p.func == IdentityFunc) {
                 return v;
             }
 
             float from_low;
             float from_high;
-            if (p.func == settings::NoiseFunc) {
+            if (p.func == NoiseFunc) {
                 v = ofNoise(v);
                 from_low = 0;
                 from_high = 1;
-            } else if (p.func == settings::SinFunc) {
+            } else if (p.func == SinFunc) {
                 from_low = -1;
                 from_high = 1;
                 v = sin(v);
-            } else if (p.func == settings::CosFunc) {
+            } else if (p.func == CosFunc) {
                 from_low = -1;
                 from_high = 1;
                 v = cos(v);
@@ -91,14 +91,14 @@ namespace syntheffect {
         }
 
         bool Params::getBool(std::string name) const {
-            settings::ParamSettings p = at(name);
+            Param p = at(name);
 
             float v = resolveValue(p);
-            settings::ParamCast cast = resolveCast(p);
+            ParamCast cast = resolveCast(p);
 
-            if (cast == settings::NegativeIsTrueCast) {
+            if (cast == NegativeIsTrueCast) {
                 return v < 0;
-            } else if (cast == settings::PositiveIsTrueCast) {
+            } else if (cast == PositiveIsTrueCast) {
                 return v > 0;
             } else {
                 throw std::runtime_error("bool not appropriate for given cast for parameter " + p.name);
@@ -106,11 +106,11 @@ namespace syntheffect {
         }
 
         int Params::getInt(std::string name) const {
-            settings::ParamSettings p = at(name);
+            Param p = at(name);
 
             float v = resolveValue(p);
-            settings::ParamCast cast = resolveCast(p);
-            if (cast == settings::RoundIntCast) {
+            ParamCast cast = resolveCast(p);
+            if (cast == RoundIntCast) {
                 return round(v);
             } else {
                 throw std::runtime_error("int not appropriate for given cast for parameter " + p.name);
@@ -118,12 +118,12 @@ namespace syntheffect {
         }
 
         float Params::getFloat(std::string name) const {
-            settings::ParamSettings p = at(name);
+            Param p = at(name);
 
             float v = resolveValue(p);
-            settings::ParamCast cast = resolveCast(p);
+            ParamCast cast = resolveCast(p);
 
-            if (cast == settings::NoCast) {
+            if (cast == NoCast) {
                 return v;
             } else {
                 throw std::runtime_error("float not appropriate for given cast for parameter " + p.name);
@@ -150,19 +150,19 @@ namespace syntheffect {
             texture_params_[name] = target;
         }
 
-        bool Params::isFloat(const settings::ParamSettings& p) const {
-            settings::ParamCast cast = resolveCast(p);
-            return cast == settings::NoCast;
+        bool Params::isFloat(const Param& p) const {
+            ParamCast cast = resolveCast(p);
+            return cast == NoCast;
         }
 
-        bool Params::isBool(const settings::ParamSettings& p) const {
-            settings::ParamCast cast = resolveCast(p);
-            return cast == settings::NegativeIsTrueCast || cast == settings::PositiveIsTrueCast;
+        bool Params::isBool(const Param& p) const {
+            ParamCast cast = resolveCast(p);
+            return cast == NegativeIsTrueCast || cast == PositiveIsTrueCast;
         }
 
-        bool Params::isInt(const settings::ParamSettings& p) const {
-            settings::ParamCast cast = resolveCast(p);
-            return cast == settings::RoundIntCast;
+        bool Params::isInt(const Param& p) const {
+            ParamCast cast = resolveCast(p);
+            return cast == RoundIntCast;
         }
 
         std::map<std::string, bool> Params::getBools() const {

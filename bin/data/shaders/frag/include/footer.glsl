@@ -1,5 +1,5 @@
 void main() {
-    vec3 originalCol = texture(tex0, textureCoordinate).rgb;
+    vec4 originalCol = texture(tex0, textureCoordinate);
     
     if (enabled) {
         vec3 col = mainFrag();
@@ -26,13 +26,13 @@ void main() {
 
         if (multiplyOriginalEnabled) {
             col = clamp(col, 0., 1.);
-            col *= originalCol;
+            col *= originalCol.rgb;
         }
 
-        col = mix(originalCol, col, mixture);
+        col = mix(originalCol.rgb, col.rgb, mixture);
 
-        outputColor = vec4(col, 1.0);
+        outputColor = vec4(col, originalCol.a);
     } else {
-        outputColor = vec4(originalCol, 1.0);
+        outputColor = originalCol;
     }
 }

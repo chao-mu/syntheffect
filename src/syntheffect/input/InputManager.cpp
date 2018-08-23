@@ -19,7 +19,7 @@ namespace syntheffect {
             asset_triggers_[joy_id][control] = name;
         }
 
-        void InputManager::addTriggerParamSet(JoystickID joy_id, std::string control, settings::ParamSettings param) {
+        void InputManager::addTriggerParamSet(JoystickID joy_id, std::string control, param::Param param) {
             param_triggers_[joy_id][control].push_back(param);
         }
 
@@ -88,7 +88,7 @@ namespace syntheffect {
                 JoystickID joy_id = kv.first;
                 for (auto& control_params : kv.second) {
                     std::string control = control_params.first;
-                    std::vector<settings::ParamSettings>& params = control_params.second;
+                    std::vector<param::Param>& params = control_params.second;
 
                     if (seen_presses.count(joy_id) && seen_presses.at(joy_id).count(control)) {
                         for (auto& p : params) {

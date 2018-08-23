@@ -24,7 +24,7 @@ namespace syntheffect {
                             asset = std::make_shared<Webcam>(name);
                             break;
                         case settings::VideoType:
-                            asset = std::make_shared<Video>(name, asset_settings.path, 0);
+                            asset = std::make_shared<Video>(name, asset_settings.path, 0, asset_settings.loop);
                             break;
                         default:
                             throw std::runtime_error("Internal error. Unexpected asset type");

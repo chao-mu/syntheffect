@@ -5,9 +5,10 @@
 #include "ofXml.h"
 
 #include "syntheffect/settings/ShaderSettings.h"
-#include "syntheffect/settings/ParamSettings.h"
 #include "syntheffect/settings/PipelineSettings.h"
 #include "syntheffect/settings/ProjectSettings.h"
+
+#include "syntheffect/param/Param.h"
 
 namespace syntheffect {
     namespace xml {

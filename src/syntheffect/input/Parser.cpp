@@ -15,12 +15,7 @@ namespace syntheffect {
                throw std::runtime_error("Unable to load project settings file " + path);
             }
 
-            ofXml::Search search = xml.find("//inputs");
-            if (search.empty()) {
-                throw std::runtime_error(path + " is missing <inputs> section");
-            }
-
-            for (auto const& child : search.getFirst().getChildren()) {
+            for (auto const& child : xml.find("//inputs/*")) {
                 std::string el_name = child.getName();
                 if (el_name == "joystick") {
                     addJoystick(manager, child);
@@ -71,7 +66,7 @@ namespace syntheffect {
                 } else if(el_name == "triggerSetParams") {
                     std::string control = xml::Util::getAttribute<std::string>(child, "control", true, "");
                     for (auto param_child : child.getChildren()) {
-                        settings::ParamSettings p = param::Parser::parseParam(param_child, true);
+                        param::Param p = param::Parser::parseParam(param_child, true);
                         manager.addTriggerParamSet(joy_id, control, p);
                     }
                 } else {

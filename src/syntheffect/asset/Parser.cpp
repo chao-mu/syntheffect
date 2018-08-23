@@ -1,5 +1,7 @@
 #include "syntheffect/asset/Parser.h"
 
+#include "ofVideoBaseTypes.h"
+
 #include "syntheffect/xml/Util.h"
 
 namespace syntheffect {
@@ -70,8 +72,19 @@ namespace syntheffect {
              settings::AssetSettings asset;
 
              asset.name = xml::Util::getAttribute<std::string>(xml, "name", true, "");
-             asset.path = ofFilePath::join( root, xml::Util::getAttribute<std::string>(xml, "path", true, ""));
+             asset.path = ofFilePath::join(root, xml::Util::getAttribute<std::string>(xml, "path", true, ""));
              asset.type = settings::VideoType;
+
+             std::string loop = xml::Util::getAttribute<std::string>(xml, "loop", false, "normal");
+             if (loop == "normal") {
+                 asset.loop = OF_LOOP_NORMAL;
+             } else if (loop == "palindrome") {
+                 asset.loop = OF_LOOP_PALINDROME;
+             } else if (loop == "none") {
+                 asset.loop = OF_LOOP_NONE;
+             } else {
+                 throw std::runtime_error("Unexpected loop attribute value of '" + loop + "', expected normal, palindrome, or none");
+             }
 
              return asset;
          }

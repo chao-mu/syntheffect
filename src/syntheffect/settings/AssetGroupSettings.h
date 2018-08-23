@@ -3,7 +3,6 @@
 #include <vector>
 
 #include "syntheffect/settings/AssetSettings.h"
-#include "syntheffect/settings/ParamSettings.h"
 
 namespace syntheffect {
     namespace settings {

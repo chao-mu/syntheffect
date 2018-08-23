@@ -9,16 +9,16 @@
 
 namespace syntheffect {
     namespace param {
-         settings::ParamSettings Parser::parseParam(const ofXml& xml, bool require_default) {
+         Param Parser::parseParam(const ofXml& xml, bool require_default) {
             std::string name = xml::Util::getAttribute<std::string>(xml, "name", true, "");
 
-            settings::ParamSettings p;
+            Param p;
 
             std::string value = xml.getAttribute("value").getValue();
             if (value == "true") {
-                p = settings::ParamSettings::boolValue(name, true);
+                p = Param::boolValue(name, true);
             } else if (value == "false") {
-                p = settings::ParamSettings::boolValue(name, false);
+                p = Param::boolValue(name, false);
             } else {
                 p.name = name;
 
@@ -30,26 +30,26 @@ namespace syntheffect {
 
                 std::string cast = xml.getAttribute("cast").getValue();
                 if (cast == "round-int") {
-                    p.cast = settings::RoundIntCast;
+                    p.cast = RoundIntCast;
                 } else if (cast == "negative-is-true") {
-                    p.cast = settings::NegativeIsTrueCast;
+                    p.cast = NegativeIsTrueCast;
                 } else if (cast == "positive-is-true") {
-                    p.cast = settings::PositiveIsTrueCast;
+                    p.cast = PositiveIsTrueCast;
                 } else if (cast == "") {
-                    p.cast = settings::NoCast;
+                    p.cast = NoCast;
                 } else {
                     throw std::runtime_error("cast attribute missing or invalid in <param>");
                 }
 
                 std::string func = xml.getAttribute("func").getValue();
                 if (func == "identity" || func == "") {
-                    p.func = settings::IdentityFunc;
+                    p.func = IdentityFunc;
                 } else if (func == "noise") {
-                    p.func = settings::NoiseFunc;
+                    p.func = NoiseFunc;
                 } else if (func == "cos") {
-                    p.func = settings::CosFunc;
+                    p.func = CosFunc;
                 } else if (func == "sin") {
-                    p.func = settings::SinFunc;
+                    p.func = SinFunc;
                 } else {
                     throw std::runtime_error("type attribute missing or invalid in <param>");
                 }
@@ -57,10 +57,10 @@ namespace syntheffect {
                 std::string low = xml.getAttribute("low").getValue();
                 std::string high = xml.getAttribute("high").getValue();
                 if (low != "" && high != "") {
-                    settings::ParamLimits limits;
+                    ParamLimits limits;
                     limits.low = xml.getAttribute("low").getFloatValue();
                     limits.high = xml.getAttribute("high").getFloatValue();
-                    p.limits = settings::Option<settings::ParamLimits>::make(limits);
+                    p.limits = settings::Option<ParamLimits>::make(limits);
                 }
 
                 std::string freq = xml.getAttribute("freq").getValue();
@@ -76,9 +76,9 @@ namespace syntheffect {
 
             std::string default_value = xml::Util::getAttribute<std::string>(xml, "default", require_default, "");
             if (default_value == "true") {
-                p.default_value = p.cast == settings::PositiveIsTrueCast ? 1 : -1;
+                p.default_value = p.cast == PositiveIsTrueCast ? 1 : -1;
             } else if (default_value == "false") {
-                p.default_value = p.cast == settings::PositiveIsTrueCast ? -1 : 1;
+                p.default_value = p.cast == PositiveIsTrueCast ? -1 : 1;
             } else if (default_value != "") {
                 try {
                     p.default_value = boost::lexical_cast<float>(default_value);

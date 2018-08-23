@@ -2,13 +2,13 @@
 
 #include "ofXml.h"
 
-#include "syntheffect/settings/ParamSettings.h"
+#include "syntheffect/param/Param.h"
 
 namespace syntheffect {
     namespace param {
         class Parser {
             public:
-                static settings::ParamSettings parseParam(const ofXml& xml, bool require_default=false);
+                static Param parseParam(const ofXml& xml, bool require_default=false);
         };
     }
 }

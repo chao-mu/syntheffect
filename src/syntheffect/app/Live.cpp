@@ -6,7 +6,7 @@
 
 #include "ofxTimeMeasurements.h"
 
-#include "syntheffect/settings/ParamSettings.h"
+#include "syntheffect/param/Param.h"
 #include "syntheffect/settings/ProjectSettings.h"
 
 #include "syntheffect/asset/Parser.h"
@@ -79,7 +79,7 @@ namespace syntheffect {
             }
         }
 
-        void Live::paramSetTriggered(const settings::ParamSettings& p) {
+        void Live::paramSetTriggered(const param::Param& p) {
             params_.set(p);
         }
 
@@ -102,11 +102,7 @@ namespace syntheffect {
         void Live::update() {
             float t = ofGetElapsedTimef();
 
-            params_.set(settings::ParamSettings::floatValue("time", t));
-
-            for (auto& param : settings_.params) {
-                params_.set(param);
-            }
+            params_.set(param::Param::floatValue("time", t));
 
             input_manager_.update(t);
 
@@ -126,6 +122,10 @@ namespace syntheffect {
                 }
 
                 renderer_.update(params_, asset_manager_.getActiveAssets());
+
+                if (recording_) {
+                    recordFrame();
+                }
             }
         }
 
@@ -136,17 +136,11 @@ namespace syntheffect {
         }
 
         void Live::recordFrame() {
-            /*
-            if (!out_) {
-                return;
-            }
-
             recorder_.fboBegin();
             ofClear(0);
-            out_->drawScaleCenter(recorder_.getWidth(), recorder_.getHeight());
+            renderer_.draw(recorder_.getWidth(), recorder_.getHeight());
             recorder_.fboEnd();
             recorder_.push();
-            */
         }
 
         void Live::keyPressed(int c) {
