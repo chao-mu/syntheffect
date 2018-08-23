@@ -128,7 +128,7 @@ PROJECT_CFLAGS = `pkg-config --cflags yaml-cpp` -I/usr/local/opt/openssl/include
 #
 #   Note: Leave a leading space when adding list items with the += operator
 ################################################################################
-# PROJECT_OPTIMIZATION_CFLAGS_RELEASE = 
+# PROJECT_OPTIMIZATION_CFLAGS_RELEASE =
 # PROJECT_OPTIMIZATION_CFLAGS_DEBUG = 
 
 ################################################################################

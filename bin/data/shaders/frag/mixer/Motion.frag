@@ -1,7 +1,7 @@
 #pragma include "../include/header.glsl"
 
 uniform sampler2DRect secondTex;
-uniform float threshold = 0.3;
+uniform float threshold = 0.1;
 
 vec3 mainFrag()
 {
