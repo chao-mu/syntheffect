@@ -3,7 +3,7 @@
 uniform float xCount = 1.;
 uniform float yCount = 1.;
 
-vec3 mainFrag() {
+vec4 mainFrag() {
     vec2 texCoord = textureCoordinate;
 
     float xOffset = abs(xCount);
@@ -16,7 +16,7 @@ vec3 mainFrag() {
         texCoord.y = floor(texCoord.y / yOffset) * yOffset;
     }
     
-    return texture(tex0, texCoord).rgb;
+    return texture(tex0, texCoord);
 }
 
 #pragma include "../include/footer.glsl"

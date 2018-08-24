@@ -14,7 +14,7 @@ float mod01(float v) {
     return mod(v, 1.);
 }
 
-vec3 mainFrag()
+vec4 mainFrag()
 {
     vec4 color = texture(tex0, textureCoordinate);
     
@@ -24,7 +24,7 @@ vec3 mainFrag()
     hsv.y = mod01(hsv.y + saturationOffset);
     hsv.z = mod01(hsv.z + valueOffset);
 
-    return hsv2rgb_smooth(hsv);
+    return vec4(hsv2rgb_smooth(hsv), color.a);
 }
 
 #pragma include "../include/footer.glsl"

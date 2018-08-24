@@ -1,10 +1,10 @@
 #pragma include "../include/header.glsl"
 
-vec3 mainFrag()
+vec4 mainFrag()
 {
-    vec3 color = rgb2hsv(texture(tex0, textureCoordinate).rgb);
+    vec4 color = rgb2hsv(texture(tex0, textureCoordinate));
     
-    return vec3(color.x);
+    return vec4(color.x, color.x, color.x, color.a);
 }
 
 #pragma include "../include/footer.glsl"

@@ -38,10 +38,10 @@ float mixWithMethod(float left, float right, float amount) {
     return 0;
 }
 
-vec3 mainFrag()
+vec4 mainFrag()
 {
-    vec3 left = texture(tex0, textureCoordinate).rgb;
-    vec3 right = texture(secondTex, textureCoordinate).rgb;
+    vec4 left = texture(tex0, textureCoordinate);
+    vec4 right = texture(secondTex, textureCoordinate);
 
     if (redEnabled) {
         left.r = mixWithMethod(left.r, right.r, amount);

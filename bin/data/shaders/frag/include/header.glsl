@@ -1,7 +1,5 @@
 #version 330
 
-#pragma include "noise.glsl"
-
 uniform sampler2DRect tex0;
 
 uniform float time;
@@ -28,6 +26,22 @@ uniform float mixture = 1.;
 out vec4 outputColor;
 
 in vec2 textureCoordinate;
+
+#define RGB_TO_Y(rgb) (0.257 * rgb[0]) + (0.504 * rgb[1]) + (0.098 * rgb[2]) + 16
+#define RGB_TO_U(rgb) (0.439 * rgb[0]) - (0.368 * rgb[1]) - (0.071 * rgb[2]) + 128
+#define RGB_TO_V(rgb) -(0.148 * rgb[0]) - (0.291 * rgb[1]) + (0.439 * rgb[2]) + 128
+
+// https://en.wikipedia.org/wiki/YUV
+#define RGB_TO_YUV \
+    mat3( \
+        0.299, 0.587, 0.114, \
+        -0.14713, -0.28886, 0.436, \
+        0.615, -0.51499, -0.10001 \
+    )
+
+vec2 rgb2chroma(vec3 rgb) {
+    return vec2(RGB_TO_U(rgb), RGB_TO_V(rgb));
+}
 
 vec3 rgb2hsv(vec3 c)
 {
@@ -124,3 +138,6 @@ vec2 denormalize_1to1(vec2 uv) {
 #define segment(U, len, width)  S( abs(U.x)-width ) * S( abs(U.y)-len )
 
 */
+
+#pragma include "noise.glsl"
+#pragma include "convolution_3x3.glsl"

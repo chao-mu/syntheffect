@@ -3,7 +3,7 @@
 uniform sampler2DRect displacerTex;
 uniform float scale = 1.;
 
-vec3 mainFrag()
+vec4 mainFrag()
 {
     vec3 noise = texture(displacerTex, textureCoordinate).rgb;
     
@@ -11,7 +11,7 @@ vec3 mainFrag()
     uv += (noise.rg * scale);
     uv = denormalize_0to1(uv, resolution);
  
-    return texture(tex0, uv).rgb;
+    return texture(tex0, uv);
 }
 
 #pragma include "../include/footer.glsl"

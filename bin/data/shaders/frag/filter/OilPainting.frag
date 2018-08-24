@@ -4,7 +4,7 @@
 
 uniform int radius = 9; 
 
-vec3 mainFrag() {
+vec4 mainFrag() {
     float n = float((radius + 1) * (radius + 1));
     int i; 
     int j;
@@ -84,7 +84,7 @@ vec3 mainFrag() {
         color = m3;
     }
     
-    return color;
+    return vec4(color, 1);
 }
 
 #pragma include "../include/footer.glsl"

@@ -3,9 +3,10 @@
 uniform int channel = 2;
 uniform float target = 0.;
 
-vec3 mainFrag()
+vec4 mainFrag()
 {
-    return vec3(abs(target - rgb2hsv(texture(tex0, textureCoordinate).rgb)[channel]));
+    vec4 color = texture(tex0, textureCoordinate);
+    return vec4(abs(target - rgb2hsv(color.rgb)[channel]), color.a);
 }
 
 #pragma include "../include/footer.glsl"

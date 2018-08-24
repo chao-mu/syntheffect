@@ -2,11 +2,11 @@
 
 uniform sampler2DRect last;
 
-vec3 mainFrag() {
-    vec3 currentCol = texture(tex0, textureCoordinate).rgb;
-    vec3 lastCol = texture(last, textureCoordinate).rgb;
+vec4 mainFrag() {
+    vec4 currentCol = texture(tex0, textureCoordinate);
+    vec4 lastCol = texture(last, textureCoordinate);
 
-    return abs(currentCol - lastCol);
+    return vec4(abs(currentCol.rgb - lastCol.rgb), currentCol.a);
 }
 
 #pragma include "../include/footer.glsl"

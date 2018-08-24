@@ -3,12 +3,12 @@
 uniform sampler2DRect secondTex;
 uniform float threshold = 0.1;
 
-vec3 mainFrag()
+vec4 mainFrag()
 {
-    vec3 new = texture(tex0, textureCoordinate).rgb;
-    vec3 old = texture(secondTex, textureCoordinate).rgb;
+    vec4 new = texture(tex0, textureCoordinate);
+    vec4 old = texture(secondTex, textureCoordinate);
     
-    if (abs(luminance(new) - luminance(old)) > threshold) {
+    if (abs(luminance(new.rgb) - luminance(old.rgb)) > threshold) {
         return new;
     } else {
         return old;

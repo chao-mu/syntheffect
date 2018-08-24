@@ -2,36 +2,36 @@ void main() {
     vec4 originalCol = texture(tex0, textureCoordinate);
     
     if (enabled) {
-        vec3 col = mainFrag();
+        vec4 col = mainFrag();
 
         if (rangeAdjustEnabled) {
-            col /= vec3(rangeAdjustHigh);
+            col.rgb /= vec3(rangeAdjustHigh);
         }
 
         if (greyscaleEnabled) {
-            col = vec3(luminance(col));
+            col.rgb = vec3(luminance(col.rgb));
         }
         
         if (inversionEnabled) {
             if (inversionClamp) {
-                col = clamp(col, 0., 1.);
+                col.rgb = clamp(col.rgb, 0., 1.);
             }
 
-            col = inversionAdjustment - col;
+            col.rgb = inversionAdjustment - col.rgb;
         }
 
         if (stepEnabled) {
-            col = step(stepThreshold, col);
+            col.rgb = step(stepThreshold, col.rgb);
         }
 
         if (multiplyOriginalEnabled) {
-            col = clamp(col, 0., 1.);
-            col *= originalCol.rgb;
+            col.rgb = clamp(col.rgb, 0., 1.);
+            col.rgb *= originalCol.rgb;
         }
 
-        col = mix(originalCol.rgb, col.rgb, mixture);
+        col = mix(originalCol, col, mixture);
 
-        outputColor = vec4(col, originalCol.a);
+        outputColor = col;
     } else {
         outputColor = originalCol;
     }

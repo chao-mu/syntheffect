@@ -24,10 +24,10 @@ float getOffset(vec3 base, vec2 uv, float scale, float distanceX, float distance
     return texture(tex0, denormalize_1to1(uv, resolution))[channel];
 }
 
-vec3 mainFrag() {
+vec4 mainFrag() {
     vec2 uv = normalize_1to1(textureCoordinate, resolution);
 
-    vec3 color = texture(tex0, textureCoordinate).rgb;
+    vec4 color = texture(tex0, textureCoordinate);
 
     color.r = getOffset(color, uv, redScale, redOffsetX, redOffsetY, 0);
     color.g = getOffset(color, uv, greenScale, greenOffsetX, greenOffsetY, 1);

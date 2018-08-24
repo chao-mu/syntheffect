@@ -1,13 +1,16 @@
 #pragma include "../include/header.glsl"
 
-uniform float speed = 1.;
-uniform float range = 2.;
-uniform float zoomAdjustment = 0.1;
+uniform float zoom = 1.;
+uniform float moveX = 0.;
+uniform float moveY = 0.;
 
 vec4 mainFrag() {
     vec2 uv = normalize_1to1(textureCoordinate, resolution);
-
-    uv /= abs(sin(time * speed) * range) + zoomAdjustment;
+    
+    uv /= zoom;
+    
+    uv.x += moveX;
+    uv.y += moveY;
 
     uv = denormalize_1to1(uv, resolution);
 

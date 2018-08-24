@@ -3,10 +3,10 @@
 uniform float boxes = 10;
 uniform float minimum = 0.5;
 
-vec3 mainFrag() {
+vec4 mainFrag() {
     vec2 uv = normalize_0to1(textureCoordinate, resolution);
 
-    vec3 color = texture(tex0, textureCoordinate).rgb;
+    vec4 color = texture(tex0, textureCoordinate);
     
     vec2 px = uv * boxes;
     
@@ -20,7 +20,7 @@ vec3 mainFrag() {
         
 
      // Apply grid and color;
-    return g * color * shade;
+    return vec4(g * color.rgb * shade, color.a);
 }
 
 #pragma include "../include/footer.glsl"

@@ -1,6 +1,6 @@
 #pragma include "../include/header.glsl"
 
-vec3 mainFrag()
+vec4 mainFrag()
 {
     vec2 uv = textureCoordinate / resolution;
 
@@ -15,7 +15,7 @@ vec3 mainFrag()
         uv += vec2(0.5);
     }
 
-    return texture(tex0, uv * resolution).rgb;
+    return texture(tex0, uv * resolution);
 }
 
 #pragma include "../include/footer.glsl"

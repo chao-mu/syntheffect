@@ -28,10 +28,10 @@ vec3 noiseyInverse(vec3 color, vec2 uv) {
     return mix(color, vec3(1.) - getNormalized(uv).rgb, 0.5);
 }
 
-vec3 mainFrag() {
+vec4 mainFrag() {
     vec2 uv = textureCoordinate / resolution;
 
-    vec3 color = texture(tex0, textureCoordinate).rgb;
+    vec4 color = texture(tex0, textureCoordinate);
 
     if (displaceRed || displaceRGB) {
         color.r = noiseyChannel(color, uv, 0);
@@ -46,7 +46,7 @@ vec3 mainFrag() {
     }
     
     if (displaceInverse) {
-        color = noiseyInverse(color, uv);
+        color.rgb = noiseyInverse(color.rgb, uv);
     }
 
     return color;

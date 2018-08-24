@@ -7,7 +7,7 @@ uniform float speed = 1.;
 uniform float anchorX = 0.5;
 uniform float anchorY = 0.5;
 
-vec3 mainFrag() {
+vec4 mainFrag() {
     vec2 uv = normalize_0to1(textureCoordinate, resolution);
     
     float theta = atan(uv.y - anchorX, uv.x - anchorY);
@@ -19,7 +19,7 @@ vec3 mainFrag() {
         color = texture(secondTex, denormalize_0to1(uv, resolution));
     }
 
-    return color.rgb;
+    return color;
 }
 
 #pragma include "../include/footer.glsl"
