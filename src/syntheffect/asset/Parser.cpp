@@ -64,6 +64,7 @@ namespace syntheffect {
 
              asset.name = xml::Util::getAttribute<std::string>(xml, "name", true, "");
              asset.type = settings::WebcamType;
+             asset.device_id = xml::Util::getAttribute<int>(xml, "device", false, 0);
 
              return asset;
          }

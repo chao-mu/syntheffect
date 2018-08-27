@@ -7,11 +7,11 @@ uniform float moveY = 0.;
 vec4 mainFrag() {
     vec2 uv = normalize_1to1(textureCoordinate, resolution);
     
-    uv /= zoom;
-    
     uv.x += moveX;
     uv.y += moveY;
 
+    uv /= zoom;
+    
     uv = denormalize_1to1(uv, resolution);
 
     return texture(tex0, uv);

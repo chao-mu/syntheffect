@@ -34,15 +34,15 @@ vec4 mainFrag() {
     vec4 color = texture(tex0, textureCoordinate);
 
     if (displaceRed || displaceRGB) {
-        color.r = noiseyChannel(color, uv, 0);
+        color.r = noiseyChannel(color.rgb, uv, 0);
     }
     
     if (displaceGreen || displaceRGB) {
-        color.g = noiseyChannel(color, uv, 1);
+        color.g = noiseyChannel(color.rgb, uv, 1);
     }
     
     if (displaceBlue || displaceRGB) {
-        color.b = noiseyChannel(color, uv, 2);
+        color.b = noiseyChannel(color.rgb, uv, 2);
     }
     
     if (displaceInverse) {

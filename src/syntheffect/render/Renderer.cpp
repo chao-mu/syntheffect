@@ -51,6 +51,11 @@ namespace syntheffect {
                 channels_.get_or_allocate(getLastName(a->getName()));
             }
 
+            for (const auto& pipeline : pipelines_) {
+                channels_.get_or_allocate(pipeline->getOut());
+                channels_.get_or_allocate(getLastName(pipeline->getOut()));
+            }
+
             // Save previous buffers
             for (const auto& buf_name : channels_.getKeys()) {
                 // Save previous buffer

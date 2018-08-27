@@ -4,11 +4,13 @@
 
 namespace syntheffect {
     namespace asset {
-        Webcam::Webcam(std::string path) : Asset(path) {
+        Webcam::Webcam(std::string path, int device_id) : Asset(path) {
+            device_id_ = device_id;
         }
 
         void Webcam::setup() {
             grabber_.setUseTexture(true);
+            grabber_.setDeviceID(device_id_);
 
             if (!grabber_.initGrabber(1280, 1024)) {
                 throw std::runtime_error("Error loading webcam");

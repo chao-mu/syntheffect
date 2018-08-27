@@ -27,9 +27,9 @@ out vec4 outputColor;
 
 in vec2 textureCoordinate;
 
-#define RGB_TO_Y(rgb) (0.257 * rgb[0]) + (0.504 * rgb[1]) + (0.098 * rgb[2]) + 16
-#define RGB_TO_U(rgb) (0.439 * rgb[0]) - (0.368 * rgb[1]) - (0.071 * rgb[2]) + 128
-#define RGB_TO_V(rgb) -(0.148 * rgb[0]) - (0.291 * rgb[1]) + (0.439 * rgb[2]) + 128
+#define RGB_TO_Y(rgb) (0.257 * rgb[0]) + (0.504 * rgb[1]) + (0.098 * rgb[2]) + (16/255.)
+#define RGB_TO_U(rgb) (0.439 * rgb[0]) - (0.368 * rgb[1]) - (0.071 * rgb[2]) + (128/255.)
+#define RGB_TO_V(rgb) -(0.148 * rgb[0]) - (0.291 * rgb[1]) + (0.439 * rgb[2]) + (128/255.)
 
 // https://en.wikipedia.org/wiki/YUV
 #define RGB_TO_YUV \

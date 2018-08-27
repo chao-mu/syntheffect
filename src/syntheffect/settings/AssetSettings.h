@@ -17,6 +17,7 @@ namespace syntheffect {
             std::string path;
             AssetType type;
             ofLoopType loop = OF_LOOP_NORMAL;
+            int device_id;
         };
     }
 }

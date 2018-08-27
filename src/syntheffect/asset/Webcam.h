@@ -8,7 +8,7 @@ namespace syntheffect {
     namespace asset {
         class Webcam : public Asset {
             public:
-                Webcam(std::string path);
+                Webcam(std::string path, int device_id);
                 void setup() override;
                 void update(float t) override;
                 void draw(float x, float y, float width, float height) override;
@@ -18,6 +18,7 @@ namespace syntheffect {
 
             private:
                 ofVideoGrabber grabber_;
+                int device_id_;
         };
     }
 }
