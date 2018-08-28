@@ -10,6 +10,7 @@ namespace syntheffect {
             public:
                 static void addInputs(InputManager& manager, std::string path);
                 static void addJoystick(InputManager& manager, const ofXml& xml);
+                static void addControl(InputManager& manager, const ofXml& xml, JoystickID joy_id);
         };
     }
 }

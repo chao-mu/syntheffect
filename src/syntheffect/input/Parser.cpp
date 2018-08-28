@@ -25,6 +25,26 @@ namespace syntheffect {
             }
         }
 
+        void Parser::addControl(InputManager& manager, const ofXml& xml, JoystickID joy_id) {
+            std::string control = xml::Util::getAttribute<std::string>(xml, "control", true, "");
+            ofLog() << control;
+
+            for (const ofXml& child : xml.getChildren()) {
+                std::string el_name = child.getName();
+
+                if (el_name == "setAssetGroup") {
+                    std::string target = xml::Util::getAttribute<std::string>(child, "target", true, "");
+
+                    manager.addSetAssetGroup(joy_id, control, target);
+                } else if(el_name == "setParam") {
+                    param::Param p = param::Parser::parseParam(child, true);
+                    manager.addSetParam(joy_id, control, p);
+                } else {
+                    throw std::runtime_error("Expected <setAssetGroup> or <setParam> got <" + el_name + ">");
+                }
+            }
+        }
+
         void Parser::addJoystick(InputManager& manager, const ofXml& xml) {
             JoystickSettings joystick;
 
@@ -57,20 +77,10 @@ namespace syntheffect {
             for (const ofXml& child : xml.getChildren()) {
                 std::string el_name = child.getName();
 
-                if (el_name == "triggerAssetGroup") {
-                    std::string name = xml::Util::getAttribute<std::string>(child, "name", true, "");
-                    std::string control = xml::Util::getAttribute<std::string>(child, "control", true, "");
-
-
-                    manager.addTriggerAssetGroup(joy_id, name, control);
-                } else if(el_name == "triggerSetParams") {
-                    std::string control = xml::Util::getAttribute<std::string>(child, "control", true, "");
-                    for (auto param_child : child.getChildren()) {
-                        param::Param p = param::Parser::parseParam(param_child, true);
-                        manager.addTriggerParamSet(joy_id, control, p);
-                    }
+                if (el_name == "control") {
+                    addControl(manager, child, joy_id);
                 } else {
-                    throw std::runtime_error("Expected <triggerAssetGroup> or <triggerSetParam> got <" + el_name + ">");
+                    throw std::runtime_error("Expected <control> got <" + el_name + ">");
                 }
             }
         }

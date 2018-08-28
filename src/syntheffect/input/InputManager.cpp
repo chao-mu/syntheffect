@@ -15,11 +15,11 @@ namespace syntheffect {
             return id;
         }
 
-        void InputManager::addTriggerAssetGroup(JoystickID joy_id, std::string name, std::string control) {
-            asset_triggers_[joy_id][control] = name;
+        void InputManager::addSetAssetGroup(JoystickID joy_id, std::string control, std::string target) {
+            asset_triggers_[joy_id][control] = target;
         }
 
-        void InputManager::addTriggerParamSet(JoystickID joy_id, std::string control, param::Param param) {
+        void InputManager::addSetParam(JoystickID joy_id, std::string control, param::Param param) {
             param_triggers_[joy_id][control].push_back(param);
         }
 

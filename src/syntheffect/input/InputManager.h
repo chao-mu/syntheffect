@@ -16,8 +16,8 @@ namespace syntheffect {
         class InputManager {
             public:
                 JoystickID addJoystick(JoystickSettings js);
-                void addTriggerAssetGroup(JoystickID joy_id, std::string name, std::string control);
-                void addTriggerParamSet(JoystickID joy_id, std::string control, param::Param param);
+                void addSetAssetGroup(JoystickID joy_id, std::string contol, std::string target);
+                void addSetParam(JoystickID joy_id, std::string control, param::Param param);
 
                 void setup();
 
