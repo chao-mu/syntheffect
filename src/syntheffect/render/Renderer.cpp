@@ -75,15 +75,19 @@ namespace syntheffect {
             // Write drawables to their destinations and record which are new frames
             std::map<std::string, bool> new_frames;
             for (auto a : assets) {
-                std::string id = a->getID();
-                params.set(param::Param::boolValue("$" + id + "-new_frame", a->isFrameNew()));
-                new_frames[id] = a->isFrameNew();
+                bool is_new = a->isFrameNew();
 
-                std::shared_ptr<graphics::PingPongBuffer> chan = channels_.get(id);
-                chan->begin();
-                ofClear(0);
-                a->drawScaleCenter(chan->getWidth(), chan->getHeight());
-                chan->end();
+                std::string id = a->getID();
+                params.set(param::Param::boolValue("$" + id + "-new_frame", is_new));
+                new_frames[id] = is_new;
+
+                if (is_new) {
+                    std::shared_ptr<graphics::PingPongBuffer> chan = channels_.get(id);
+                    chan->begin();
+                    ofClear(0);
+                    a->drawScaleCenter(chan->getWidth(), chan->getHeight());
+                    chan->end();
+                }
             }
 
             // Translate new frame info for stacks
