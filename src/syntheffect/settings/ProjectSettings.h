@@ -2,7 +2,6 @@
 
 #include <vector>
 
-#include "syntheffect/settings/AssetGroupSettings.h"
 #include "syntheffect/settings/PipelineSettings.h"
 
 namespace syntheffect {

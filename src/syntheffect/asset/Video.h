@@ -15,6 +15,7 @@ namespace syntheffect {
                 float getWidth() override;
                 float getHeight() override;
                 bool isReady() override;
+                bool isFrameNew() override;
 
             private:
                 std::string path_;

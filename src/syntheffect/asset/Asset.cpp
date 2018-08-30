@@ -1,13 +1,11 @@
 #include "syntheffect/asset/Asset.h"
 
+#define ID_LENGTH 10
+
 namespace syntheffect {
     namespace asset {
-        Asset::Asset(std::string name) {
-            name_ = name;
-        }
-
-        std::string Asset::getName() {
-            return name_;
+        Asset::Asset(std::string id) {
+            id_ = id;
         }
 
         bool Asset::isReady() {
@@ -22,6 +20,14 @@ namespace syntheffect {
         }
 
         void Asset::update(float) {
+        }
+
+        std::string Asset::getID() {
+            return id_;
+        }
+
+        bool Asset::isFrameNew() {
+            return true;
         }
 
         void Asset::drawScaleCenter(float dest_width, float dest_height) {
@@ -47,3 +53,5 @@ namespace syntheffect {
         }
     }
 }
+
+#undef ID_LENGTH

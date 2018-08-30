@@ -24,16 +24,19 @@ namespace syntheffect {
                 int getWidth();
                 int getHeight();
 
-                void update(param::Params& params, const std::vector<std::shared_ptr<asset::Asset>>& assets);
+                void update(param::Params& params, std::map<std::string, std::string> stack_to_asset,
+                        const std::vector<std::shared_ptr<asset::Asset>>& assets);
 
                 void saveImage(std::string path);
                 void draw(int width, int height);
 
             private:
                 std::vector<std::shared_ptr<Pipeline>> pipelines_;
+                std::map<std::string, std::string> channel_aliases_;
                 graphics::PingPongBufferMap channels_;
 
-                std::string getLastName(std::string name);
+                std::string lookupName(std::map<std::string, std::string> lookup, std::string name);
+                static std::string getLastName(std::string name);
         };
     }
 }

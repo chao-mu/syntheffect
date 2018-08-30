@@ -7,6 +7,7 @@
 #include "ofImage.h"
 
 #include "syntheffect/asset/PingPongChannel.h"
+#include "syntheffect/param/Param.h"
 
 #define CHANNEL_OUT "out"
 #define LAST_NAME_SUFFIX "-last"
@@ -44,16 +45,16 @@ namespace syntheffect {
             }
         }
 
-        void Renderer::update(param::Params& params, const std::vector<std::shared_ptr<asset::Asset>>& assets) {
+        void Renderer::update(param::Params& params, std::map<std::string, std::string> stack_to_asset, const std::vector<std::shared_ptr<asset::Asset>>& assets) {
             // Initialize channels that have not been allocated yet
             for (const auto& a : assets) {
-                channels_.get_or_allocate(a->getName());
-                channels_.get_or_allocate(getLastName(a->getName()));
+                channels_.allocate(a->getID());
+                channels_.allocate(getLastName(a->getID()));
             }
 
             for (const auto& pipeline : pipelines_) {
-                channels_.get_or_allocate(pipeline->getOut());
-                channels_.get_or_allocate(getLastName(pipeline->getOut()));
+                channels_.allocate(pipeline->getOut());
+                channels_.allocate(getLastName(pipeline->getOut()));
             }
 
             // Save previous buffers
@@ -71,19 +72,36 @@ namespace syntheffect {
                 chan->end();
             }
 
-            // Write drawables to their destinations
+            // Write drawables to their destinations and record which are new frames
+            std::map<std::string, bool> new_frames;
             for (auto a : assets) {
-                std::shared_ptr<graphics::PingPongBuffer> chan = channels_.get(a->getName());
+                std::string id = a->getID();
+                params.set(param::Param::boolValue("$" + id + "-new_frame", a->isFrameNew()));
+                new_frames[id] = a->isFrameNew();
+
+                std::shared_ptr<graphics::PingPongBuffer> chan = channels_.get(id);
                 chan->begin();
                 ofClear(0);
                 a->drawScaleCenter(chan->getWidth(), chan->getHeight());
                 chan->end();
             }
 
-            // Set texture parameters
+            // Translate new frame info for stacks
+            for (const auto& kv : stack_to_asset) {
+                params.set(param::Param::boolValue("$" + kv.first + "-new_frame", new_frames.at(kv.second)));
+                new_frames[kv.first] = new_frames[kv.second];
+            }
+
+            // Set texture parameters for channels
             for (const auto& buf_name : channels_.getKeys()) {
                 auto chan = channels_.get(buf_name);
                 params.setTexture(buf_name, [chan]() { return chan->drawable()->getTexture(); });
+            }
+
+            // Set texture parameters for stacks
+            for (const auto& kv : stack_to_asset) {
+                auto chan = channels_.get(kv.second);
+                params.setTexture(kv.first, [chan]() { return chan->drawable()->getTexture(); });
             }
 
             // Transfer parameters
@@ -95,19 +113,34 @@ namespace syntheffect {
 
             // Apply effects and produce output
             for (auto pipeline : pipelines_) {
-                std::shared_ptr<graphics::PingPongBuffer> in = channels_.get(pipeline->getIn());
-                std::shared_ptr<graphics::PingPongBuffer> out = channels_.get_or_allocate(pipeline->getOut());
+                std::string in_name = lookupName(stack_to_asset, pipeline->getIn());
+                std::string out_name = lookupName(stack_to_asset, pipeline->getOut());
+
+                // If this requires a buffer we have new frame data for, skip if there are none.
+                if (new_frames.count(in_name) && !new_frames[in_name]) {
+                    continue;
+                }
+
+                std::shared_ptr<graphics::PingPongBuffer> in = channels_.get(in_name);
+                std::shared_ptr<graphics::PingPongBuffer> out = channels_.get(out_name);
                 pipeline->drawTo(in, out);
             }
+        }
+
+        std::string Renderer::lookupName(std::map<std::string, std::string> lookup, std::string name) {
+            if (lookup.count(name)) {
+                return lookup.at(name);
+            }
+
+            return name;
         }
 
         std::string Renderer::getLastName(std::string buf_name) {
             return buf_name + LAST_NAME_SUFFIX;
         }
 
-
         void Renderer::draw(int width, int height) {
-            auto out = asset::PingPongChannel(CHANNEL_OUT, channels_.get(CHANNEL_OUT));
+            auto out = asset::PingPongChannel({CHANNEL_OUT}, channels_.get(CHANNEL_OUT));
             out.drawScaleCenter(width, height);
         }
 

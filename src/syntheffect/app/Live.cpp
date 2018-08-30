@@ -64,7 +64,7 @@ namespace syntheffect {
             ofAddListener(input_manager_.param_trigger_events, this, &Live::paramSetTriggered);
 
             // Asset manager
-            asset_manager_.setAssets(asset::Parser::parseAssets(settings_.assets_path));
+            asset::Parser::addAssets(asset_manager_, settings_.assets_path);
 
             // Renderer
             renderer_.setup();
@@ -121,7 +121,7 @@ namespace syntheffect {
                     ofExit();
                 }
 
-                renderer_.update(params_, asset_manager_.getActiveAssets());
+                renderer_.update(params_, asset_manager_.getStackToAsset(), asset_manager_.getAssets());
 
                 if (recording_) {
                     recordFrame();

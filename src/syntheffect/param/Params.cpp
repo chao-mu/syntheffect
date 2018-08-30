@@ -36,11 +36,16 @@ namespace syntheffect {
         }
 
         const Param& Params::resolveParent(const Param& p) const {
-            if (params_.count(p.variable_value) == 0) {
+            std::string var = p.variable_value;
+            if (var[0] == '!') {
+                var.erase(0, 1);
+            }
+
+            if (params_.count(var) == 0) {
                 throw std::out_of_range("Parameter '" + p.variable_value + "' not set, required by parameter '" + p.name + "'");
             }
 
-            return at(p.variable_value);
+            return at(var);
         }
 
 
@@ -91,6 +96,10 @@ namespace syntheffect {
         }
 
         bool Params::getBool(std::string name) const {
+            if (name[0] == '!') {
+                return !getBool(name.substr(1, name.size()));
+            }
+
             Param p = at(name);
 
             float v = resolveValue(p);
@@ -131,8 +140,12 @@ namespace syntheffect {
         }
 
         ofTexture Params::getTexture(std::string name) const {
-            if (texture_params_.count(name) > 0) {
+            if (texture_params_.count(name)) {
                 name = texture_params_.at(name);
+            }
+
+            if (!textures_.count(name)) {
+                throw std::out_of_range("texture with name '" + name + "' not found");
             }
 
             return textures_.at(name)();

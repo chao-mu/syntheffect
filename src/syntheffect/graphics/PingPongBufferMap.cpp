@@ -37,14 +37,6 @@ namespace syntheffect {
             buffers_[key] = buf;
         }
 
-        std::shared_ptr<PingPongBuffer> PingPongBufferMap::get_or_allocate(std::string key) {
-            if (buffers_.count(key) == 0) {
-                allocate(key);
-            }
-
-            return buffers_.at(key);
-        }
-
 
         std::shared_ptr<PingPongBuffer> PingPongBufferMap::get(std::string key) {
             if (buffers_.count(key) == 0) {

@@ -4,7 +4,7 @@
 
 namespace syntheffect {
     namespace asset {
-        Webcam::Webcam(std::string path, int device_id) : Asset(path) {
+        Webcam::Webcam(std::string id, int device_id) : Asset(id) {
             device_id_ = device_id;
         }
 
@@ -23,6 +23,10 @@ namespace syntheffect {
 
         void Webcam::draw(float x, float y, float width, float height) {
             grabber_.draw(x, y, width, height);
+        }
+
+        bool Webcam::isFrameNew() {
+            return grabber_.isFrameNew();
         }
 
         bool Webcam::isReady() {

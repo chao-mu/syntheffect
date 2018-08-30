@@ -8,7 +8,8 @@ namespace syntheffect {
     namespace asset {
         class Asset {
             public:
-                Asset(std::string name);
+                Asset(std::string id);
+
                 virtual void setup();
                 virtual void update(float t);
                 virtual void draw(float x, float y, float width, float height) = 0;
@@ -16,13 +17,15 @@ namespace syntheffect {
                 virtual float getHeight() = 0;
                 virtual bool isReady();
                 virtual bool isFinished();
+                virtual bool isFrameNew();
 
                 void drawScaleCenter(float dest_w, float dest_h);
 
-                std::string getName();
+                std::string getID();
+                std::string setID(std::string id);
 
             private:
-                std::string name_;
+                std::string id_;
         };
     }
 }

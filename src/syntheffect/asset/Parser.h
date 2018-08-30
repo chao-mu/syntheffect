@@ -4,22 +4,19 @@
 
 #include "ofXml.h"
 
-#include "syntheffect/settings/AssetGroupSettings.h"
-#include "syntheffect/settings/AssetSettings.h"
+#include "syntheffect/asset/AssetManager.h"
 #include "syntheffect/xml/Util.h"
 
 namespace syntheffect {
     namespace asset {
         class Parser {
             public:
-                static std::vector<settings::AssetGroupSettings> parseAssets(std::string path);
+                static void addAssets(AssetManager& m, std::string path);
 
-                static settings::AssetGroupSettings parseAssetGroup(const ofXml& xml, std::string settings_path);
-
-                static settings::AssetSettings parseImageAsset(const ofXml& xml, std::string root);
-                static settings::AssetSettings parseVideoAsset(const ofXml& xml, std::string root);
-                static settings::AssetSettings parseWebcamAsset(const ofXml& xml);
-
+                static void addAssetGroup(AssetManager& m, const ofXml& xml, std::string settings_path);
+                static void addImageAsset(AssetManager& m, const ofXml& xml, std::string group, std::string root);
+                static void addVideoAsset(AssetManager& m, const ofXml& xml, std::string group, std::string root);
+                static void addWebcamAsset(AssetManager& m, const ofXml& xml, std::string group);
         };
     }
 }
