@@ -3,7 +3,7 @@
 #include <vector>
 #include <memory>
 
-#include "ofMain.h"
+#include "ofBaseApp.h"
 
 #include "ofxBeat.h"
 

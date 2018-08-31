@@ -11,6 +11,7 @@ namespace syntheffect {
             std::string name;
             float pressed_time;
             bool first;
+            float value;
         };
 
         class Joystick {
@@ -26,7 +27,7 @@ namespace syntheffect {
                 std::map<std::string, float> press_start_;
                 JoystickSettings settings_;
 
-                JoystickPress makePress(std::string name, float t);
+                JoystickPress makePress(std::string name, float t, float value=0);
 
                 bool isAxisPressed(const float* axes, int i, int sibling=-1);
 

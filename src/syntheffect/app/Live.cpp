@@ -2,7 +2,7 @@
 
 #include "GLFW/glfw3.h"
 
-#include "ofMain.h"
+#include "ofGraphics.h"
 
 #include "ofxTimeMeasurements.h"
 

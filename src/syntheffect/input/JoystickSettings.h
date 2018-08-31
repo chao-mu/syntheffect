@@ -15,6 +15,8 @@ namespace syntheffect {
             std::map<int, std::string> axis_names;
             std::map<int, std::string> button_names;
             std::map<int, int> stick_siblings;
+            std::map<std::string, std::string> fake_buttons_negative;
+            std::map<std::string, std::string> fake_buttons_positive;
             float deadzone;
 
             float getAxisNeutral(int);

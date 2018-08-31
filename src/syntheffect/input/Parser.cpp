@@ -81,6 +81,14 @@ namespace syntheffect {
                 joystick.button_names[it->first.as<int>()] = it->second.as<std::string>();
             }
 
+            for (YAML::const_iterator it=config["fake_buttons_negative"].begin(); it != config["fake_buttons_negative"].end(); ++it) {
+                joystick.fake_buttons_negative[it->first.as<std::string>()] = it->second.as<std::string>();
+            }
+
+            for (YAML::const_iterator it=config["fake_buttons_positive"].begin(); it != config["fake_buttons_positive"].end(); ++it) {
+                joystick.fake_buttons_positive[it->first.as<std::string>()] = it->second.as<std::string>();
+            }
+
             JoystickID joy_id = manager.addJoystick(joystick);
 
             for (const ofXml& child : xml.getChildren()) {

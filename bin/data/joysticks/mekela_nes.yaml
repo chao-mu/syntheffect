@@ -11,3 +11,12 @@ buttons:
     1: "a"
     8: "select"
     9: "start"
+    
+fake_buttons_negative:
+    up: "dir_x"
+    left: "dir_y"
+    
+
+fake_buttons_positive:
+    down: "dir_x"
+    right: "dir_y"
