@@ -85,7 +85,7 @@ namespace syntheffect {
                 }
 
                 if (pressed) {
-                    presses[name] = makePress(name, t);
+                    presses[name] = makePress(name, t, v);
                 } else {
                     press_start_.erase(name);
                 }
@@ -115,13 +115,37 @@ namespace syntheffect {
                 }
             }
 
+            for (const auto& kv : settings_.fake_buttons_negative) {
+                std::string alias = kv.first;
+                std::string axis_name = kv.second;
+
+                if (presses.count(axis_name) && presses.at(axis_name).value < 0) {
+                    presses[alias] = makePress(alias, presses.at(axis_name).pressed_time);
+                } else {
+                    press_start_.erase(alias);
+                }
+            }
+
+
+            for (const auto& kv : settings_.fake_buttons_positive) {
+                std::string alias = kv.first;
+                std::string axis_name = kv.second;
+
+                if (presses.count(axis_name) && presses.at(axis_name).value > 0) {
+                    presses[alias] = makePress(alias, presses.at(axis_name).pressed_time);
+                } else {
+                    press_start_.erase(alias);
+                }
+            }
+
             return presses;
         }
 
-        JoystickPress Joystick::makePress(std::string name, float t) {
+        JoystickPress Joystick::makePress(std::string name, float t, float value) {
             JoystickPress press;
             press.name = name;
             press.first = press_start_.count(name) == 0;
+            press.value = value;
 
             if (!press_start_.count(name)) {
                 press_start_[name] = t;
