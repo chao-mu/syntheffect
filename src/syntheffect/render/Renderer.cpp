@@ -89,13 +89,11 @@ namespace syntheffect {
                 params.set(param::Param::boolValue("$" + id + "-new_frame", is_new));
                 new_frames[id] = is_new;
 
-                if (is_new) {
-                    std::shared_ptr<graphics::PingPongBuffer> chan = channels_.get(id);
-                    chan->begin();
-                    ofClear(0);
-                    a->drawScaleCenter(chan->getWidth(), chan->getHeight());
-                    chan->end();
-                }
+                std::shared_ptr<graphics::PingPongBuffer> chan = channels_.get(id);
+                chan->begin();
+                ofClear(0);
+                a->drawScaleCenter(chan->getWidth(), chan->getHeight());
+                chan->end();
             }
 
             // Translate new frame info for stacks
@@ -128,13 +126,9 @@ namespace syntheffect {
                 std::string in_name = lookupName(stack_to_asset, pipeline->getIn());
                 std::string out_name = lookupName(stack_to_asset, pipeline->getOut());
 
-                // If this requires a buffer we have new frame data for, skip if there are none.
-                if (new_frames.count(in_name) && !new_frames[in_name]) {
-                    continue;
-                }
-
                 std::shared_ptr<graphics::PingPongBuffer> in = channels_.get(in_name);
                 std::shared_ptr<graphics::PingPongBuffer> out = channels_.get(out_name);
+
                 pipeline->drawTo(in, out);
             }
         }
