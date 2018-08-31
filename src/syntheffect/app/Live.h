@@ -20,17 +20,15 @@ namespace syntheffect {
             public:
                 Live(settings::ProjectSettings settings);
 
-                void setup();
-                void update();
-                void draw();
-                void exit();
-                void audioIn(ofSoundBuffer& buf);
-
             protected:
-                void keyPressed(int c);
+                void setup() override;
+                void update() override;
+                void draw() override;
+                void exit() override;
+                void keyPressed(int c) override;
+                void audioIn(ofSoundBuffer& buf) override;
 
-                void assetGroupTriggered(std::string& name);
-                void paramSetTriggered(const param::Param& p);
+                void handleControlState(const input::ControlState& state);
 
             private:
                 void recordFrame();

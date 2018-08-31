@@ -26,6 +26,35 @@ namespace syntheffect {
             return id_;
         }
 
+        void Asset::setID(std::string id) {
+            id_ = id;
+        }
+
+        bool Asset::isActive() {
+            return active_;
+        }
+
+        void Asset::setActive(bool active) {
+            active_ = active;
+        }
+
+        std::string Asset::getStack() {
+            return stack_;
+        }
+
+        void Asset::setStack(std::string stack) {
+            stack_ = stack;
+        }
+
+
+        std::string Asset::getGroup() {
+            return group_;
+        }
+
+        void Asset::setGroup(std::string group) {
+            group_ = group;
+        }
+
         bool Asset::isFrameNew() {
             return true;
         }

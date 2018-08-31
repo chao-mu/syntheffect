@@ -60,8 +60,7 @@ namespace syntheffect {
 
             // Input manager
             input::Parser::addInputs(input_manager_, settings_.inputs_path);
-            ofAddListener(input_manager_.asset_trigger_events, this, &Live::assetGroupTriggered);
-            ofAddListener(input_manager_.param_trigger_events, this, &Live::paramSetTriggered);
+            ofAddListener(input_manager_.state_events, this, &Live::handleControlState);
 
             // Asset manager
             asset::Parser::addAssets(asset_manager_, settings_.assets_path);
@@ -79,12 +78,38 @@ namespace syntheffect {
             }
         }
 
-        void Live::paramSetTriggered(const param::Param& p) {
-            params_.set(p);
-        }
+        void Live::handleControlState(const input::ControlState& state) {
+            if (state.pressed) {
+                for (const auto& p : state.mapping.pressed_param) {
+                    if (p.variable_value == "press_time") {
+                        params_.set(p.withValue(state.pressed_time));
+                    } else {
+                        params_.set(p);
+                    }
+                }
+            } else {
+                for (const auto& p : state.mapping.unpressed_param) {
+                    params_.set(p);
+                }
+            }
 
-        void Live::assetGroupTriggered(std::string& name) {
-            asset_manager_.triggerAssetGroup(name);
+            if (state.first_press) {
+                for (const auto& asset : state.mapping.first_press_activate_asset) {
+                    asset_manager_.activateAsset(asset);
+                }
+                for (const auto& group : state.mapping.first_press_activate_group) {
+                    asset_manager_.activateGroup(group);
+                }
+                for (const auto& stack : state.mapping.first_press_shuffle_active_stack) {
+                    asset_manager_.shuffleActiveStack(stack);
+                }
+                for (const auto& stack : state.mapping.first_press_next_stack_asset) {
+                    asset_manager_.nextStackAsset(stack);
+                }
+                for (const auto& stack : state.mapping.first_press_prev_stack_asset) {
+                    asset_manager_.prevStackAsset(stack);
+                }
+            }
         }
 
         void Live::exit() {
@@ -121,7 +146,7 @@ namespace syntheffect {
                     ofExit();
                 }
 
-                renderer_.update(params_, asset_manager_.getStackToAsset(), asset_manager_.getAssets());
+                renderer_.update(params_, asset_manager_.getAssets());
 
                 if (recording_) {
                     recordFrame();

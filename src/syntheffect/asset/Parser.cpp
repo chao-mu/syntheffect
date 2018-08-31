@@ -5,10 +5,6 @@
 #include "ofVideoBaseTypes.h"
 
 #include "syntheffect/xml/Util.h"
-#include "syntheffect/asset/Video.h"
-#include "syntheffect/asset/Image.h"
-#include "syntheffect/asset/Webcam.h"
-
 
 namespace syntheffect {
     namespace asset {
@@ -41,27 +37,33 @@ namespace syntheffect {
 
              for (const auto& child : xml.getChildren()) {
                  std::string el_name = child.getName();
+                 std::shared_ptr<Asset> asset;
 
                  if (el_name == "webcam") {
-                     addWebcamAsset(m, child, group);
+                     asset = parseWebcamAsset(m, child);
                  } else if (el_name == "image") {
-                     addImageAsset(m, child, group, root);
+                     asset = parseImageAsset(m, child, root);
                  } else if (el_name == "video") {
-                     addVideoAsset(m, child, group, root);
+                     asset = parseVideoAsset(m, child, root);
                  } else {
                      throw std::runtime_error("Expected <image>, <video>, or <webcam>, got <" + el_name + ">");
                  }
+
+                 asset->setGroup(group);
+                 asset->setStack(child.getAttribute("stack").getValue());
+
+                 m.addAsset(asset);
              }
          }
 
-         void Parser::addWebcamAsset(AssetManager& m, const ofXml& xml, std::string group) {
+         std::shared_ptr<Webcam> Parser::parseWebcamAsset(AssetManager& m, const ofXml& xml) {
              std::string id = xml::Util::getAttribute<std::string>(xml, "id", true, "");
              int device_id = xml::Util::getAttribute<int>(xml, "device", false, 0);
 
-             m.addAsset(group, xml.getAttribute("stack").getValue(), std::make_shared<Webcam>(id, device_id));
+             return std::make_shared<Webcam>(id, device_id);
          }
 
-         void Parser::addVideoAsset(AssetManager& m, const ofXml& xml, std::string group, std::string root) {
+         std::shared_ptr<Video> Parser::parseVideoAsset(AssetManager& m, const ofXml& xml, std::string root) {
              std::string id = xml::Util::getAttribute<std::string>(xml, "id", true, "");
              std::string path = ofFilePath::join(root, xml::Util::getAttribute<std::string>(xml, "path", true, ""));
              float volume = xml::Util::getAttribute<float>(xml, "volume", false, 0);
@@ -78,14 +80,14 @@ namespace syntheffect {
                  throw std::runtime_error("Unexpected loop attribute value of '" + loop_raw + "', expected normal, palindrome, or none");
              }
 
-             m.addAsset(group, xml.getAttribute("stack").getValue(), std::make_shared<Video>(id, path, volume, loop_type));
+             return std::make_shared<Video>(id, path, volume, loop_type);
          }
 
-         void Parser::addImageAsset(AssetManager& m, const ofXml& xml, std::string group, std::string root) {
+         std::shared_ptr<Image> Parser::parseImageAsset(AssetManager& m, const ofXml& xml, std::string root) {
              std::string id = xml::Util::getAttribute<std::string>(xml, "id", true, "");
              std::string path = ofFilePath::join( root, xml::Util::getAttribute<std::string>(xml, "path", true, ""));
 
-             m.addAsset(group, xml.getAttribute("stack").getValue(), std::make_shared<Image>(id, path));
+             return std::make_shared<Image>(id, path);
          }
     }
 }

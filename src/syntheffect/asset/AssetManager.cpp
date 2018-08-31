@@ -8,41 +8,95 @@
 
 namespace syntheffect {
     namespace asset {
-        void AssetManager::addAsset(std::string group, std::string stack, std::shared_ptr<Asset> asset) {
+        void AssetManager::addAsset(std::shared_ptr<Asset> asset) {
             std::string id = asset->getID();
+            std::string stack = asset->getStack();
+            std::string group = asset->getGroup();
 
-            if (stack == "") {
-                stack = id;
+            if (assets_by_id_.count(id)) {
+                throw std::runtime_error("Duplicate asset id: " + id);
             }
 
-            stacks_by_group_[group][stack].push_back(asset);
-            if (!stack_cursors_[group].count(stack)) {
-                stack_cursors_[group][stack] = 0;
+            if (assets_by_id_.count(stack) || assets_by_stack_.count(id)) {
+                throw std::runtime_error("Asset id '" + id + "' collides with stack name");
             }
 
-            if (!active_assets_.count(stack)) {
-                active_assets_[stack] = id;
+            if (assets_by_stack_[stack].empty() || stack.empty()) {
+                asset->setActive(true);
             }
+
+            assets_by_id_[id] = asset;
+            assets_by_stack_[stack].push_back(id);
+            assets_by_group_[group].push_back(id);
+            assets_by_group_and_stack_[group][stack].push_back(id);
 
             asset->setup();
         }
 
-        void AssetManager::triggerAssetGroup(std::string group) {
-            if (!stacks_by_group_.count(group)) {
+        void AssetManager::activateAsset(std::string asset_id) {
+            if (!assets_by_id_.count(asset_id)) {
+                throw std::out_of_range("An asset with id '" + asset_id + "' does not exist");
+            }
+
+            auto asset = assets_by_id_.at(asset_id);
+            if (asset->getStack().empty()) {
+                asset->setActive(true);
+            } else {
+                for (const auto& other_id : assets_by_stack_.at(asset->getStack())) {
+                    assets_by_id_.at(other_id)->setActive(other_id == asset_id);
+                }
+            }
+        }
+
+        void AssetManager::activateGroup(std::string group) {
+            if (!assets_by_group_and_stack_.count(group)) {
                 throw std::out_of_range("Asset group '" + group + "' does not exist");
             }
 
-            // Deactivate existing assets and activate new ones
-            for (const auto& kv : stacks_by_group_.at(group)) {
-                const auto& stack_name = kv.first;
-                auto& siblings = kv.second;
-
-                int index = (stack_cursors_.at(group).at(stack_name) + 1) % siblings.size();
-                active_assets_[stack_name] = siblings.at(index)->getID();
-
-                // Activate something different next time
-                stack_cursors_[group][stack_name] = index;
+            for (const auto& stack_and_assets : assets_by_group_and_stack_.at(group)) {
+                activateAsset(stack_and_assets.second.front());
             }
+        }
+
+        void AssetManager::reorderActiveStack(std::string stack, std::function<void(std::vector<std::string>&)> f) {
+            if (!assets_by_stack_.count(stack)) {
+                throw std::out_of_range("Asset stack '" + stack + "' does not exist");
+            }
+
+            std::vector<std::string> ids = assets_by_stack_.at(stack);
+            if (ids.size() < 2) {
+                return;
+            }
+
+            for (const auto& asset_id : ids) {
+                auto a = assets_by_id_.at(asset_id);
+                if (a->isActive()) {
+                    std::vector<std::string>& siblings = assets_by_group_and_stack_.at(a->getGroup()).at(a->getStack());
+                    f(siblings);
+                    activateAsset(siblings.front());
+                    break;
+                }
+            }
+        }
+
+        void AssetManager::prevStackAsset(std::string stack) {
+            reorderActiveStack(stack, [](std::vector<std::string>& siblings) {
+                std::rotate(siblings.begin(), siblings.begin() + 1, siblings.end());
+            });
+        }
+
+
+        void AssetManager::nextStackAsset(std::string stack) {
+            reorderActiveStack(stack, [](std::vector<std::string>& siblings) {
+                std::rotate(siblings.rbegin(), siblings.rbegin() + 1, siblings.rend());
+            });
+        }
+
+        void AssetManager::shuffleActiveStack(std::string stack) {
+            reorderActiveStack(stack, [](std::vector<std::string>& siblings) {
+                std::random_shuffle(siblings.begin() + 1, siblings.end());
+                std::rotate(siblings.begin(), siblings.begin(), siblings.end());
+            });
         }
 
         void AssetManager::update(float t) {
@@ -62,18 +116,10 @@ namespace syntheffect {
             return true;
         }
 
-        std::map<std::string, std::string> AssetManager::getStackToAsset() {
-            return active_assets_;
-        }
-
         std::vector<std::shared_ptr<Asset>> AssetManager::getAssets() {
             std::vector<std::shared_ptr<Asset>> assets;
-            for (const auto& kv : stacks_by_group_) {
-                for (const auto& stack_and_assets : kv.second) {
-                    for (auto asset : stack_and_assets.second) {
-                        assets.push_back(asset);
-                    }
-                }
+            for (const auto& kv : assets_by_id_) {
+                assets.push_back(kv.second);
             }
 
             return assets;

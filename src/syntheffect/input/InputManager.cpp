@@ -15,12 +15,8 @@ namespace syntheffect {
             return id;
         }
 
-        void InputManager::addSetAssetGroup(JoystickID joy_id, std::string control, std::string target) {
-            asset_triggers_[joy_id][control] = target;
-        }
-
-        void InputManager::addSetParam(JoystickID joy_id, std::string control, param::Param param) {
-            param_triggers_[joy_id][control].push_back(param);
+        void InputManager::addControlMapping(JoystickID joy_id, ControlMapping mapping) {
+            mappings_[joy_id].push_back(mapping);
         }
 
         void InputManager::assignJoysticks() {
@@ -59,14 +55,14 @@ namespace syntheffect {
 
             std::map<JoystickID, std::map<std::string, JoystickPress>> seen_presses;
             for (auto& kv : joysticks_) {
-                JoystickID id = kv.first;
+                JoystickID joy_id = kv.first;
                 std::shared_ptr<Joystick> joy = kv.second;
 
-                if (!glfw_ids_.count(id)) {
+                if (!glfw_ids_.count(joy_id)) {
                     continue;
                 }
 
-                int glfw_id = glfw_ids_[id];
+                int glfw_id = glfw_ids_[joy_id];
                 if (glfwJoystickPresent(glfw_id) == GLFW_FALSE) {
                     continue;
                 }
@@ -76,34 +72,25 @@ namespace syntheffect {
                     std::string control = kv.first;
                     JoystickPress press = kv.second;
 
-                    if (press.first && asset_triggers_.count(id) && asset_triggers_.at(id).count(control)) {
-                        ofNotifyEvent(asset_trigger_events, asset_triggers_.at(id).at(control));
-                    }
-
-                    seen_presses[id][control] = press;
+                    seen_presses[joy_id][control] = press;
                 }
             }
 
-            for (auto& kv : param_triggers_) {
-                JoystickID joy_id = kv.first;
-                for (auto& control_params : kv.second) {
-                    std::string control = control_params.first;
-                    std::vector<param::Param>& params = control_params.second;
+            for (auto& joy_and_mappings : mappings_) {
+                JoystickID joy_id = joy_and_mappings.first;
+                for (auto& mapping : joy_and_mappings.second) {
+                    std::string control = mapping.control;
 
-                    if (seen_presses.count(joy_id) && seen_presses.at(joy_id).count(control)) {
-                        for (auto& p : params) {
-                            if (p.variable_value == "press_time") {
-                                float v = seen_presses.at(joy_id).at(control).pressed_time;
-                                ofNotifyEvent(param_trigger_events, p.withValue(v));
-                            } else {
-                                ofNotifyEvent(param_trigger_events, p);
-                            }
-                        }
-                    } else {
-                        for (auto& p : params) {
-                            ofNotifyEvent(param_trigger_events, p.asDefault());
-                        }
+                    ControlState state;
+                    state.mapping = mapping;
+                    state.pressed = seen_presses.count(joy_id) && seen_presses.at(joy_id).count(control);
+                    if (state.pressed) {
+                        auto press = seen_presses.at(joy_id).at(control);
+                        state.pressed_time = press.pressed_time;
+                        state.first_press = press.first;
                     }
+
+                    ofNotifyEvent(state_events, state, this);
                 }
             }
         }

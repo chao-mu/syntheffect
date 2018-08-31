@@ -26,23 +26,32 @@ namespace syntheffect {
         }
 
         void Parser::addControl(InputManager& manager, const ofXml& xml, JoystickID joy_id) {
-            std::string control = xml::Util::getAttribute<std::string>(xml, "control", true, "");
-            ofLog() << control;
+            ControlMapping mapping;
+            mapping.control = xml::Util::getAttribute<std::string>(xml, "control", true, "");
 
             for (const ofXml& child : xml.getChildren()) {
                 std::string el_name = child.getName();
 
-                if (el_name == "setAssetGroup") {
-                    std::string target = xml::Util::getAttribute<std::string>(child, "target", true, "");
-
-                    manager.addSetAssetGroup(joy_id, control, target);
+                if (el_name == "activateGroup") {
+                    mapping.first_press_activate_group.push_back(xml::Util::getAttribute<std::string>(child, "target", true, ""));
+                } else if(el_name == "activateAsset") {
+                    mapping.first_press_activate_asset.push_back(xml::Util::getAttribute<std::string>(child, "target", true, ""));
+                } else if(el_name == "prevStackAsset") {
+                    mapping.first_press_prev_stack_asset.push_back(xml::Util::getAttribute<std::string>(child, "target", true, ""));
+                } else if(el_name == "nextStackAsset") {
+                    mapping.first_press_next_stack_asset.push_back(xml::Util::getAttribute<std::string>(child, "target", true, ""));
+                } else if(el_name == "shuffleActiveStack") {
+                    mapping.first_press_shuffle_active_stack.push_back(xml::Util::getAttribute<std::string>(child, "target", true, ""));
                 } else if(el_name == "setParam") {
                     param::Param p = param::Parser::parseParam(child, true);
-                    manager.addSetParam(joy_id, control, p);
+                    mapping.pressed_param.push_back(p);
+                    mapping.unpressed_param.push_back(p.asDefault());
                 } else {
-                    throw std::runtime_error("Expected <setAssetGroup> or <setParam> got <" + el_name + ">");
+                    throw std::runtime_error("Expected <activateGroup>, <activateAsset>, <nextStackAsset>, <prevStackAsset>, <shuffleActiveStack> <rotate got <" + el_name + ">");
                 }
             }
+
+            manager.addControlMapping(joy_id, mapping);
         }
 
         void Parser::addJoystick(InputManager& manager, const ofXml& xml) {

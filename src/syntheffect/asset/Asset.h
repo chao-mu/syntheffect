@@ -22,10 +22,23 @@ namespace syntheffect {
                 void drawScaleCenter(float dest_w, float dest_h);
 
                 std::string getID();
-                std::string setID(std::string id);
+                void setID(std::string id);
+
+                bool isActive();
+                void setActive(bool active);
+
+
+                std::string getStack();
+                void setStack(std::string stack);
+
+                std::string getGroup();
+                void setGroup(std::string stack);
 
             private:
                 std::string id_;
+                std::string stack_;
+                std::string group_;
+                bool active_;
         };
     }
 }

@@ -8,23 +8,29 @@
 
 #include "syntheffect/input/JoystickSettings.h"
 #include "syntheffect/input/Joystick.h"
+#include "syntheffect/input/ControlMapping.h"
 #include "syntheffect/param/Params.h"
-#include "syntheffect/param/Param.h"
 
 namespace syntheffect {
     namespace input {
+        struct ControlState {
+            ControlMapping mapping;
+
+            bool pressed = false;
+            bool first_press = false;
+            float pressed_time = 0;
+        };
+
         class InputManager {
             public:
                 JoystickID addJoystick(JoystickSettings js);
-                void addSetAssetGroup(JoystickID joy_id, std::string contol, std::string target);
-                void addSetParam(JoystickID joy_id, std::string control, param::Param param);
+                void addControlMapping(JoystickID joy_id, ControlMapping mapping);
 
                 void setup();
 
                 void update(float t);
 
-                ofEvent<std::string> asset_trigger_events;
-                ofEvent<const param::Param> param_trigger_events;
+                ofFastEvent<const ControlState> state_events;
 
             private:
                 void assignJoysticks();
@@ -33,8 +39,7 @@ namespace syntheffect {
                 JoystickID last_id_ = 0;
                 std::map<JoystickID, int> glfw_ids_;
                 std::map<JoystickID, std::shared_ptr<Joystick>> joysticks_;
-                std::map<JoystickID, std::map<std::string, std::string>> asset_triggers_;
-                std::map<JoystickID, std::map<std::string, std::vector<param::Param>>> param_triggers_;
+                std::map<JoystickID, std::vector<ControlMapping>> mappings_;
         };
     }
 }

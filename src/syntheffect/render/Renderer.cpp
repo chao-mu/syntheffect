@@ -45,7 +45,15 @@ namespace syntheffect {
             }
         }
 
-        void Renderer::update(param::Params& params, std::map<std::string, std::string> stack_to_asset, const std::vector<std::shared_ptr<asset::Asset>>& assets) {
+        void Renderer::update(param::Params& params, const std::vector<std::shared_ptr<asset::Asset>>& assets) {
+            // Create handy lookup
+            std::map<std::string, std::string> stack_to_asset;
+            for (auto const& a : assets) {
+                if (a->isActive()) {
+                    stack_to_asset[a->getStack()] = a->getID();
+                }
+            }
+
             // Initialize channels that have not been allocated yet
             for (const auto& a : assets) {
                 channels_.allocate(a->getID());
