@@ -21,7 +21,7 @@ namespace syntheffect {
             return p;
         }
 
-        Param Param::intValue(std::string name, int v) {
+        Param Param::intValue(const std::string& name, const int v) {
             Param p;
 
             p.name = name;
@@ -31,7 +31,7 @@ namespace syntheffect {
             return p;
         }
 
-        Param Param::floatValue(std::string name, float v) {
+        Param Param::floatValue(const std::string& name, const float v) {
             Param p;
 
             p.name = name;
@@ -40,7 +40,7 @@ namespace syntheffect {
             return p;
         }
 
-        Param Param::floatValue(std::string name, float v, float low, float high) {
+        Param Param::floatValue(const std::string& name, float v, float low, float high) {
             Param p;
 
             p.name = name;
@@ -53,7 +53,7 @@ namespace syntheffect {
             return p;
         }
 
-        Param Param::boolValue(std::string name, bool v) {
+        Param Param::boolValue(const std::string& name, bool v) {
             Param p;
 
             p.name = name;

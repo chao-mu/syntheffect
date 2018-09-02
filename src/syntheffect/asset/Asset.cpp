@@ -4,8 +4,7 @@
 
 namespace syntheffect {
     namespace asset {
-        Asset::Asset(std::string id) {
-            id_ = id;
+        Asset::Asset(const std::string id) : id_(id) {
         }
 
         bool Asset::isReady() {
@@ -26,7 +25,7 @@ namespace syntheffect {
             return id_;
         }
 
-        void Asset::setID(std::string id) {
+        void Asset::setID(const std::string id) {
             id_ = id;
         }
 
@@ -42,7 +41,7 @@ namespace syntheffect {
             return stack_;
         }
 
-        void Asset::setStack(std::string stack) {
+        void Asset::setStack(const std::string stack) {
             stack_ = stack;
         }
 
@@ -51,7 +50,7 @@ namespace syntheffect {
             return group_;
         }
 
-        void Asset::setGroup(std::string group) {
+        void Asset::setGroup(const std::string group) {
             group_ = group;
         }
 

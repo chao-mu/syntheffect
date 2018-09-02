@@ -18,7 +18,7 @@ int main(int argc, const char *argv[]){
     TCLAP::CmdLine cmd("Syntheffect - Magical magic magic");
 
     TCLAP::ValueArg<std::string> outArg("o", "out", "Output video", false, "", "string", cmd);
-    TCLAP::ValueArg<std::string> projectArg("p", "project", "project directory", false, "projects/example/project.xml", "string", cmd);
+    TCLAP::ValueArg<std::string> projectArg("p", "project", "project path", true, "", "string", cmd);
     TCLAP::ValueArg<float> volumeArg("s", "volume", "volume between 0 and 1", false, 0, "float", cmd);
     TCLAP::SwitchArg fsArg("f", "fullscreen", "set window to fullscreen", cmd);
 
@@ -28,8 +28,6 @@ int main(int argc, const char *argv[]){
         std::cerr << "error: " << e.error() << " for arg " << e.argId() << std::endl;
         return 1;
     }
-
-    std::string project_path = ofFilePath::getAbsolutePath(projectArg.getValue(), false);
 
     std::string out_path;
     if (!outArg.getValue().empty()) {

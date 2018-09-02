@@ -15,23 +15,23 @@ namespace syntheffect {
         class Params {
             public:
                 void set(Param p);
-                void setTexture(std::string name, std::function<ofTexture()> v);
-                void setTexture(std::string name, std::string target);
+                void setTexture(const std::string& name, std::function<ofTexture()> v);
+                void setTexture(const std::string& name, const std::string& target);
 
-                const Param& at(std::string name) const;
+                const Param& at(const std::string& name) const;
                 const Param& resolveParent(const Param& p) const;
                 const ParamCast& resolveCast(const Param& p, int resolutions=0) const;
                 float resolveValue(const Param& p, int resolutions=0) const;
 
-                bool getBool(std::string name) const;
-                int getInt(std::string name) const;
-                float getFloat(std::string name) const;
-                ofTexture getTexture(std::string name) const;
+                bool getBool(const std::string& name) const;
+                int getInt(const std::string& name) const;
+                float getFloat(const std::string& name) const;
+                ofTexture getTexture(const std::string& name) const;
 
-                bool getBool(std::string name, bool def) const;
-                int getInt(std::string name, int def) const;
-                float getFloat(std::string name, float def) const;
-                ofTexture getTexture(std::string name, ofTexture def) const;
+                bool getBool(const std::string& name, bool def) const;
+                int getInt(const std::string& name, int def) const;
+                float getFloat(const std::string& name, float def) const;
+                ofTexture getTexture(const std::string& name, ofTexture def) const;
 
                 std::map<std::string, bool> getBools() const;
                 std::map<std::string, int> getInts() const;
@@ -40,7 +40,7 @@ namespace syntheffect {
 
                 void copyTo(Params& p) const;
 
-                bool exists(std::string name) const;
+                bool exists(const std::string& name) const;
 
                 bool isInt(const Param& p) const;
                 bool isBool(const Param& p) const;

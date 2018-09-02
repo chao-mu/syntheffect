@@ -29,7 +29,7 @@ namespace syntheffect {
 
                 void update(param::Params& params, const std::vector<std::shared_ptr<asset::Asset>>& assets);
 
-                void saveImage(std::string path);
+                void saveImage(const std::string& path);
                 void draw(int width, int height);
 
             private:
@@ -38,7 +38,7 @@ namespace syntheffect {
                 graphics::PingPongBufferMap channels_;
 
                 std::string lookupName(std::map<std::string, std::string> lookup, std::string name);
-                static std::string getLastName(std::string name);
+                static std::string getLastName(const std::string& name);
         };
     }
 }

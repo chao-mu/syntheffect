@@ -7,8 +7,8 @@
 namespace syntheffect {
     namespace asset {
         class Video : public Asset {
-            public:
-                Video(std::string name, std::string path, float volume, ofLoopType loop=OF_LOOP_NONE);
+           public:
+                Video(const std::string& name, const std::string& path, float volume, ofLoopType loop=OF_LOOP_NONE);
                 void setup() override;
                 void update(float t) override;
                 void draw(float x, float y, float width, float height) override;

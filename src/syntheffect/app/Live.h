@@ -21,7 +21,7 @@ namespace syntheffect {
     namespace app {
         class Live : public ofBaseApp {
             public:
-                Live(settings::ProjectSettings settings);
+                explicit Live(settings::ProjectSettings settings);
 
             protected:
                 void setup() override;

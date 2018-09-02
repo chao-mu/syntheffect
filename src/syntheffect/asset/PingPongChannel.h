@@ -7,7 +7,7 @@ namespace syntheffect {
     namespace asset {
         class PingPongChannel : public Asset {
             public:
-                PingPongChannel(std::string name, std::shared_ptr<graphics::PingPongBuffer> buf);
+                PingPongChannel(const std::string& name, std::shared_ptr<graphics::PingPongBuffer> buf);
                 void draw(float x, float y, float width, float height) override;
                 float getWidth() override;
                 float getHeight() override;

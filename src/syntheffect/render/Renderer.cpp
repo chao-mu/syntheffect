@@ -141,7 +141,7 @@ namespace syntheffect {
             return name;
         }
 
-        std::string Renderer::getLastName(std::string buf_name) {
+        std::string Renderer::getLastName(const std::string& buf_name) {
             return buf_name + LAST_NAME_SUFFIX;
         }
 
@@ -150,7 +150,7 @@ namespace syntheffect {
             out.drawScaleCenter(width, height);
         }
 
-        void Renderer::saveImage(std::string path) {
+        void Renderer::saveImage(const std::string& path) {
             ofPixels pixels;
             channels_.get(CHANNEL_OUT)->drawable()->readToPixels(pixels);
 

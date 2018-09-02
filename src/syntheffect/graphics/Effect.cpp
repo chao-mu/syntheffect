@@ -12,14 +12,6 @@ namespace syntheffect {
             return active_;
         }
 
-        void Effect::toggle() {
-            if (isActive()) {
-                stop();
-            } else {
-                start();
-            }
-        }
-
         void Effect::start() {
             active_ = true;
         }

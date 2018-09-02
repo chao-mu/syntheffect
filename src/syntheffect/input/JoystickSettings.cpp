@@ -1,5 +1,7 @@
 #include "syntheffect/input/JoystickSettings.h"
 
+#include <stdexcept>
+
 namespace syntheffect {
     namespace input {
         float JoystickSettings::getAxisNeutral(int i) {
@@ -10,71 +12,20 @@ namespace syntheffect {
             return 0;
         }
 
-        std::string JoystickSettings::withPrefix(std::string name)  {
-            if (prefix != "") {
-                name += "-" + prefix;
-            }
-
-            return name;
-        }
-
         std::string JoystickSettings::getButtonName(int i) {
-            if (button_names.count(i) > 0) {
-                return withPrefix(button_names.at(i));
+            if (!button_names.count(i)) {
+                throw std::out_of_range("Button name not configured for button " + std::to_string(i));
             }
 
-            return "";
+            return button_names.at(i);
         }
-
-
-        std::string JoystickSettings::getButtonNamePressed(int i) {
-            return getNamePressed(getButtonName(i));
-        }
-
-        std::string JoystickSettings::getButtonNamePressedAt(int i) {
-            return getNamePressedAt(getButtonName(i));
-        }
-
-
-        std::string JoystickSettings::getButtonNamePressedTime(int i) {
-            return getNamePressedTime(getButtonName(i));
-        }
-
 
         std::string JoystickSettings::getAxisName(int i) {
-            if (axis_names.count(i) > 0) {
-                return withPrefix(axis_names.at(i));
+            if (!axis_names.count(i)) {
+                throw std::out_of_range("Axis name not configured for axis " + std::to_string(i));
             }
 
-            return "";
-        }
-
-
-        std::string JoystickSettings::getAxisNamePressed(int i) {
-            return getNamePressed(getAxisName(i));
-        }
-
-
-        std::string JoystickSettings::getAxisNamePressedAt(int i) {
-            return getNamePressedAt(getAxisName(i));
-        }
-
-
-        std::string JoystickSettings::getAxisNamePressedTime(int i) {
-            return getNamePressedTime(getAxisName(i));
-        }
-
-
-        std::string JoystickSettings::getNamePressedAt(std::string name) {
-            return name + "-pressed_at";
-        }
-
-        std::string JoystickSettings::getNamePressedTime(std::string name) {
-            return name + "-pressed_time";
-        }
-
-        std::string JoystickSettings::getNamePressed(std::string name) {
-            return name + "-pressed";
+            return axis_names.at(i);
         }
     }
 }

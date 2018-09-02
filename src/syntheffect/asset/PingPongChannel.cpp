@@ -2,8 +2,7 @@
 
 namespace syntheffect {
     namespace asset {
-        PingPongChannel::PingPongChannel(std::string id, std::shared_ptr<graphics::PingPongBuffer> buf) : Asset(id) {
-            buf_ = buf;
+        PingPongChannel::PingPongChannel(const std::string& id, std::shared_ptr<graphics::PingPongBuffer> buf) : Asset(id), buf_(buf) {
         }
 
         void PingPongChannel::draw(float x, float y, float width, float height) {

@@ -10,7 +10,7 @@ namespace syntheffect {
     namespace render {
         class Pipeline {
             public:
-                Pipeline(std::string in, std::string out);
+                Pipeline(const std::string& in, const std::string& out);
                 void drawTo(std::shared_ptr<graphics::PingPongBuffer> buf_in, std::shared_ptr<graphics::PingPongBuffer> buf_out);
 
                 int addEffect(std::shared_ptr<graphics::Effect> pipeline_effect);
@@ -18,10 +18,10 @@ namespace syntheffect {
                 std::vector<std::shared_ptr<graphics::Effect>> getEffects();
 
                 std::string getOut();
-                void setOut(std::string out);
+                void setOut(const std::string& out);
 
                 std::string getIn();
-                void setIn(std::string in);
+                void setIn(const std::string& in);
 
             private:
                 std::vector<std::shared_ptr<graphics::Effect>> effects_;

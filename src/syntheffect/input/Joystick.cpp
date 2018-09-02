@@ -13,8 +13,7 @@
 
 namespace syntheffect {
     namespace input {
-        Joystick::Joystick(JoystickSettings settings) {
-            settings_ = settings;
+        Joystick::Joystick(const JoystickSettings& settings) : settings_(settings) {
         }
 
         bool Joystick::isCompatible(int glfw_id) {
