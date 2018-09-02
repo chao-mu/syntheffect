@@ -1,3 +1,6 @@
+#ifndef SYNTHEFFECT_INPUT_JOYSTICKSETTINGS_H
+#define SYNTHEFFECT_INPUT_JOYSTICKSETTINGS_H
+
 #pragma once
 
 #include <string>
@@ -5,7 +8,7 @@
 
 namespace syntheffect {
     namespace input {
-        typedef int JoystickID;
+        using JoystickID = int;
 
         struct JoystickSettings {
             JoystickID id;
@@ -39,3 +42,5 @@ namespace syntheffect {
         };
     }
 }
+
+#endif

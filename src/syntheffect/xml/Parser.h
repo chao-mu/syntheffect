@@ -1,3 +1,6 @@
+#ifndef SYNTHEFFECT_XML_PARSER_H
+#define SYNTHEFFECT_XML_PARSER_H
+
 #pragma once
 
 #include <map>
@@ -24,3 +27,5 @@ namespace syntheffect {
         };
     }
 }
+
+#endif

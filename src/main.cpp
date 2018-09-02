@@ -31,8 +31,8 @@ int main(int argc, const char *argv[]){
 
     std::string project_path = ofFilePath::getAbsolutePath(projectArg.getValue(), false);
 
-    std::string out_path = "";
-    if (outArg.getValue() != "") {
+    std::string out_path;
+    if (!outArg.getValue().empty()) {
         out_path = ofFilePath::getAbsolutePath(outArg.getValue(), false);
     }
 

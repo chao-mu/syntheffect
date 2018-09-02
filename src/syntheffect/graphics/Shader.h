@@ -1,3 +1,6 @@
+#ifndef SYNTHEFFECT_GRAPHICS_SHADER_H
+#define SYNTHEFFECT_GRAPHICS_SHADER_H
+
 #pragma once
 
 #include "ofShader.h"
@@ -21,3 +24,5 @@ namespace syntheffect {
         };
     }
 }
+
+#endif

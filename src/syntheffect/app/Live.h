@@ -1,3 +1,6 @@
+#ifndef SYNTHEFFECT_APP_LIVE_H
+#define SYNTHEFFECT_APP_LIVE_H
+
 #pragma once
 
 #include <vector>
@@ -49,3 +52,5 @@ namespace syntheffect {
         };
     }
 }
+
+#endif

@@ -1,3 +1,6 @@
+#ifndef SYNTHEFFECT_GRAPHICS_PINGPONGBUFFERMAP_H
+#define SYNTHEFFECT_GRAPHICS_PINGPONGBUFFERMAP_H
+
 #pragma once
 
 #include <map>
@@ -24,3 +27,5 @@ namespace syntheffect {
         };
     }
 }
+
+#endif

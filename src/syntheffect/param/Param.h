@@ -1,3 +1,6 @@
+#ifndef SYNTHEFFECT_PARAM_PARAM_H
+#define SYNTHEFFECT_PARAM_PARAM_H
+
 #pragma once
 
 #include <string>
@@ -44,3 +47,5 @@ namespace syntheffect {
         };
     }
 }
+
+#endif

@@ -1,3 +1,6 @@
+#ifndef SYNTHEFFECT_SETTINGS_OPTION_H
+#define SYNTHEFFECT_SETTINGS_OPTION_H
+
 #pragma once
 
 namespace syntheffect {
@@ -22,3 +25,5 @@ namespace syntheffect {
         };
     }
 }
+
+#endif

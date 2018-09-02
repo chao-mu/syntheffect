@@ -1,3 +1,6 @@
+#ifndef SYNTHEFFECT_SETTINGS_PIPELINESETTINGS_H
+#define SYNTHEFFECT_SETTINGS_PIPELINESETTINGS_H
+
 #pragma once
 
 #include <string>
@@ -14,3 +17,5 @@ namespace syntheffect {
         };
     }
 }
+
+#endif

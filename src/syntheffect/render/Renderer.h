@@ -1,3 +1,6 @@
+#ifndef SYNTHEFFECT_RENDER_RENDERER_H
+#define SYNTHEFFECT_RENDER_RENDERER_H
+
 #pragma once
 
 #include <string>
@@ -39,3 +42,5 @@ namespace syntheffect {
         };
     }
 }
+
+#endif

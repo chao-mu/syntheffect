@@ -1,3 +1,6 @@
+#ifndef SYNTHEFFECT_PARAM_PARAMS_H
+#define SYNTHEFFECT_PARAM_PARAMS_H
+
 #pragma once
 
 #include <map>
@@ -11,7 +14,7 @@ namespace syntheffect {
     namespace param {
         class Params {
             public:
-                void set(const Param p);
+                void set(Param p);
                 void setTexture(std::string name, std::function<ofTexture()> v);
                 void setTexture(std::string name, std::string target);
 
@@ -52,3 +55,5 @@ namespace syntheffect {
         };
     }
 }
+
+#endif

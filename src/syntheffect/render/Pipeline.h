@@ -1,3 +1,6 @@
+#ifndef SYNTHEFFECT_RENDER_PIPELINE_H
+#define SYNTHEFFECT_RENDER_PIPELINE_H
+
 #pragma once
 
 #include "syntheffect/graphics/Effect.h"
@@ -29,3 +32,5 @@ namespace syntheffect {
         };
     }
 }
+
+#endif

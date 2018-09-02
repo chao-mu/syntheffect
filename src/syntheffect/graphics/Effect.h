@@ -1,3 +1,6 @@
+#ifndef SYNTHEFFECT_GRAPHICS_EFFECT_H
+#define SYNTHEFFECT_GRAPHICS_EFFECT_H
+
 #pragma once
 
 #include "ofTexture.h"
@@ -23,3 +26,5 @@ namespace syntheffect {
         };
     }
 }
+
+#endif

@@ -1,3 +1,6 @@
+#ifndef SYNTHEFFECT_INPUT_INPUTMANAGER_H
+#define SYNTHEFFECT_INPUT_INPUTMANAGER_H
+
 #pragma once
 
 #include <map>
@@ -43,3 +46,5 @@ namespace syntheffect {
         };
     }
 }
+
+#endif

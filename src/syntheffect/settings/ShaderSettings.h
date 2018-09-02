@@ -1,3 +1,6 @@
+#ifndef SYNTHEFFECT_SETTINGS_SHADERSETTINGS_H
+#define SYNTHEFFECT_SETTINGS_SHADERSETTINGS_H
+
 #pragma once
 
 #include <string>
@@ -16,3 +19,5 @@ namespace syntheffect {
         };
     }
 }
+
+#endif

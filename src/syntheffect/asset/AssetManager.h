@@ -1,3 +1,6 @@
+#ifndef SYNTHEFFECT_ASSET_ASSETMANAGER_H
+#define SYNTHEFFECT_ASSET_ASSETMANAGER_H
+
 #pragma once
 
 #include <set>
@@ -39,3 +42,5 @@ namespace syntheffect {
         };
     }
 }
+
+#endif

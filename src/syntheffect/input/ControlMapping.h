@@ -1,3 +1,6 @@
+#ifndef SYNTHEFFECT_INPUT_CONTROLMAPPING_H
+#define SYNTHEFFECT_INPUT_CONTROLMAPPING_H
+
 #pragma once
 
 #include <vector>
@@ -25,3 +28,5 @@ namespace syntheffect {
         };
     }
 }
+
+#endif

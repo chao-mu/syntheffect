@@ -1,3 +1,6 @@
+#ifndef SYNTHEFFECT_ASSET_ASSET_H
+#define SYNTHEFFECT_ASSET_ASSET_H
+
 #pragma once
 
 #include <memory>
@@ -42,3 +45,5 @@ namespace syntheffect {
         };
     }
 }
+
+#endif

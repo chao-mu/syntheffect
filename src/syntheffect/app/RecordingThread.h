@@ -1,3 +1,6 @@
+#ifndef SYNTHEFFECT_APP_RECORDINGTHREAD_H
+#define SYNTHEFFECT_APP_RECORDINGTHREAD_H
+
 #include <queue>
 
 #include "ofPixels.h"
@@ -8,7 +11,7 @@ namespace syntheffect {
     namespace app {
         class RecordingThread : public ofThread {
             public:
-                void threadedFunction();
+                void threadedFunction() override;
                 void addFrame(ofPixels pixels);
                 void setup(std::string filename, int width, int height);
                 void fboBegin();
@@ -27,3 +30,5 @@ namespace syntheffect {
         };
     }
 }
+
+#endif

@@ -1,3 +1,6 @@
+#ifndef SYNTHEFFECT_SETTINGS_PROJECTSETTINGS_H
+#define SYNTHEFFECT_SETTINGS_PROJECTSETTINGS_H
+
 #pragma once
 
 #include <vector>
@@ -19,3 +22,5 @@ namespace syntheffect {
         };
     }
 }
+
+#endif

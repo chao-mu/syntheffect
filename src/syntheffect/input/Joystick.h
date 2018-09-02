@@ -1,3 +1,6 @@
+#ifndef SYNTHEFFECT_INPUT_JOYSTICK_H
+#define SYNTHEFFECT_INPUT_JOYSTICK_H
+
 #pragma once
 
 #include "ofEvent.h"
@@ -35,3 +38,5 @@ namespace syntheffect {
         };
     }
 }
+
+#endif

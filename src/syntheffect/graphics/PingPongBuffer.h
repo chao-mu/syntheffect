@@ -1,3 +1,6 @@
+#ifndef SYNTHEFFECT_GRAPHICS_PINGPONGBUFFER_H
+#define SYNTHEFFECT_GRAPHICS_PINGPONGBUFFER_H
+
 #pragma once
 
 #include <memory>
@@ -29,3 +32,5 @@ namespace syntheffect {
         };
     }
 }
+
+#endif
