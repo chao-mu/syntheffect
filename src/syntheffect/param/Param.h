@@ -37,10 +37,10 @@ namespace syntheffect {
 
             bool isVariable() const;
 
-            static Param intValue(std::string name, int v);
-            static Param floatValue(std::string name, float v, float low, float high);
-            static Param floatValue(std::string name, float v);
-            static Param boolValue(std::string name, bool v);
+            static Param intValue(const std::string& name, int v);
+            static Param floatValue(const std::string& name, float v, float low, float high);
+            static Param floatValue(const std::string& name, float v);
+            static Param boolValue(const std::string& name, bool v);
 
             Param withValue(float v) const;
             Param asDefault() const;

@@ -15,7 +15,6 @@ namespace syntheffect {
                 Effect();
 
                 virtual void drawTo(std::shared_ptr<graphics::PingPongBuffer> ping_ping) = 0;
-                void toggle();
                 void start();
                 void stop();
                 bool isActive();

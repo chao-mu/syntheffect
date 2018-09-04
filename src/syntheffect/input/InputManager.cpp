@@ -20,12 +20,6 @@ namespace syntheffect {
         }
 
         void InputManager::assignJoysticks() {
-            // Handy lookup from glfw joystick id to our ids
-            std::map<int, JoystickID> our_ids;
-            for (const auto& kv : glfw_ids_) {
-                our_ids[kv.second] = kv.first;
-            }
-
             // Build a collection of available devices
             std::vector<int> available_devices;
             for (int i=GLFW_JOYSTICK_1; i <= GLFW_JOYSTICK_LAST; i++) {

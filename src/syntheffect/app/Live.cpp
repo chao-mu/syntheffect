@@ -20,11 +20,12 @@ void setup() {
 
 namespace syntheffect {
     namespace app {
-        Live::Live(settings::ProjectSettings settings) : ofBaseApp(),  renderer_(settings.width, settings.height) {
-            beat_ = std::make_shared<ofxBeat>();
-
-            settings_ = settings;
-        }
+        Live::Live(const settings::ProjectSettings settings) :
+            ofBaseApp(),
+            settings_(settings),
+            beat_(std::make_shared<ofxBeat>()),
+            renderer_(settings.width, settings.height),
+            recording_(false) {}
 
         void Live::setup() {
             ofSetFrameRate(FPS);

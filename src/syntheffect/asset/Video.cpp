@@ -6,11 +6,11 @@
 
 namespace syntheffect {
     namespace asset {
-        Video::Video(std::string id, std::string path, float volume, ofLoopType loop) : Asset(id) {
-            path_ = path;
-            volume_ = volume;
-            loop_ = loop;
-        }
+        Video::Video(const std::string& id, const std::string& path, float volume, ofLoopType loop) :
+            Asset(id),
+            path_(path),
+            volume_(volume),
+            loop_(loop) {}
 
         void Video::setup() {
             video_.setUseTexture(true);

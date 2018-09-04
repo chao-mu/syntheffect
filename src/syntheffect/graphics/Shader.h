@@ -16,7 +16,7 @@ namespace syntheffect {
             public:
                 Shader();
                 void drawTo(std::shared_ptr<graphics::PingPongBuffer> ping_pong) override;
-                void load(std::string frag, std::string vert);
+                void load(const std::string& frag, const std::string& vert);
                 void setUniforms();
 
             private:

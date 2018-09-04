@@ -4,16 +4,14 @@
 
 namespace syntheffect {
     namespace render {
-        Pipeline::Pipeline(std::string in, std::string out) {
-            in_ = in;
-            out_ = out;
+        Pipeline::Pipeline(const std::string& in, const std::string& out) : current_id_(0), in_(in), out_(out) {
         }
 
         std::string Pipeline::getIn() {
             return in_;
         }
 
-        void Pipeline::setIn(std::string in) {
+        void Pipeline::setIn(const std::string& in) {
             in_ = in;
         }
 
@@ -21,7 +19,7 @@ namespace syntheffect {
             return out_;
         }
 
-        void Pipeline::setOut(std::string out) {
+        void Pipeline::setOut(const std::string& out) {
             out_ = out;
         }
 

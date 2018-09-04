@@ -6,9 +6,9 @@
 
 namespace syntheffect {
     namespace app {
-        void RecordingThread::setup(std::string path, int width, int height) {
-            path_ = path;
+        void RecordingThread::setup(const std::string path, int width, int height) {
             recording_buf_.allocate(width, height, GL_RGB8);
+            path_ = path;
         }
 
         int RecordingThread::getHeight() {

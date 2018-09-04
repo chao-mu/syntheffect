@@ -15,7 +15,7 @@ namespace syntheffect {
             params_[p.name] = p;
         }
 
-        const Param& Params::at(std::string name) const {
+        const Param& Params::at(const std::string& name) const {
             if (params_.count(name) == 0) {
                 throw std::out_of_range("Parameter '" + name + "' not set, but attempted to be retrieved");
             }
@@ -95,7 +95,7 @@ namespace syntheffect {
             return v;
         }
 
-        bool Params::getBool(std::string name) const {
+        bool Params::getBool(const std::string& name) const {
             if (name[0] == '!') {
                 return !getBool(name.substr(1, name.size()));
             }
@@ -114,7 +114,7 @@ namespace syntheffect {
             }
         }
 
-        int Params::getInt(std::string name) const {
+        int Params::getInt(const std::string& name) const {
             Param p = at(name);
 
             float v = resolveValue(p);
@@ -126,7 +126,7 @@ namespace syntheffect {
             }
         }
 
-        float Params::getFloat(std::string name) const {
+        float Params::getFloat(const std::string& name) const {
             Param p = at(name);
 
             float v = resolveValue(p);
@@ -139,27 +139,30 @@ namespace syntheffect {
             }
         }
 
-        ofTexture Params::getTexture(std::string name) const {
+        ofTexture Params::getTexture(const std::string& name) const {
+            std::string actual_name;
             if (texture_params_.count(name)) {
-                name = texture_params_.at(name);
+                actual_name = texture_params_.at(name);
+            } else {
+                actual_name = name;
             }
 
-            if (!textures_.count(name)) {
+            if (!textures_.count(actual_name)) {
                 throw std::out_of_range("texture with name '" + name + "' not found");
             }
 
-            return textures_.at(name)();
+            return textures_.at(actual_name)();
         }
 
-        bool Params::exists(std::string name) const {
+        bool Params::exists(const std::string& name) const {
             return params_.count(name) > 0 || textures_.count(name) > 0 || texture_params_.count(name) > 0;
         }
 
-        void Params::setTexture(std::string name, std::function<ofTexture()> v) {
+        void Params::setTexture(const std::string& name, std::function<ofTexture()> v) {
             textures_[name] = v;
         }
 
-        void Params::setTexture(std::string name, std::string target) {
+        void Params::setTexture(const std::string& name, const std::string& target) {
             texture_params_[name] = target;
         }
 

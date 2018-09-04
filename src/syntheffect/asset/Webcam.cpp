@@ -4,7 +4,7 @@
 
 namespace syntheffect {
     namespace asset {
-        Webcam::Webcam(std::string id, int device_id) : Asset(id) {
+        Webcam::Webcam(const std::string& id, const int device_id) : Asset(id) {
             device_id_ = device_id;
         }
 

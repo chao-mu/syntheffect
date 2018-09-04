@@ -8,7 +8,7 @@ namespace syntheffect {
         Shader::Shader() : Effect(), shader_() {
         }
 
-        void Shader::load(std::string frag, std::string vert) {
+        void Shader::load(const std::string& frag, const std::string& vert) {
             std::string vert_path = "shaders/vert/" + vert + ".vert";
             std::string frag_path = "shaders/frag/" + frag + ".frag";
             bool loaded = shader_.load(vert_path, frag_path);

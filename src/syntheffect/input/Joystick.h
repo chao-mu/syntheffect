@@ -19,7 +19,7 @@ namespace syntheffect {
 
         class Joystick {
             public:
-                Joystick(JoystickSettings settings);
+                explicit Joystick(const JoystickSettings& settings);
 
                 void addListener(std::function<void(JoystickPress&)> f);
                 std::map<std::string, JoystickPress> getPresses(float t, int id);

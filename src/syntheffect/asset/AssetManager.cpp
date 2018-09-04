@@ -33,7 +33,7 @@ namespace syntheffect {
             asset->setup();
         }
 
-        void AssetManager::activateAsset(std::string asset_id) {
+        void AssetManager::activateAsset(const std::string& asset_id) {
             if (!assets_by_id_.count(asset_id)) {
                 throw std::out_of_range("An asset with id '" + asset_id + "' does not exist");
             }
@@ -48,7 +48,7 @@ namespace syntheffect {
             }
         }
 
-        void AssetManager::activateGroup(std::string group) {
+        void AssetManager::activateGroup(const std::string& group) {
             if (!assets_by_group_and_stack_.count(group)) {
                 throw std::out_of_range("Asset group '" + group + "' does not exist");
             }
@@ -58,7 +58,7 @@ namespace syntheffect {
             }
         }
 
-        void AssetManager::reorderActiveStack(std::string stack, std::function<void(std::vector<std::string>&)> f) {
+        void AssetManager::reorderActiveStack(const std::string& stack, std::function<void(std::vector<std::string>&)> f) {
             if (!assets_by_stack_.count(stack)) {
                 throw std::out_of_range("Asset stack '" + stack + "' does not exist");
             }
@@ -79,20 +79,20 @@ namespace syntheffect {
             }
         }
 
-        void AssetManager::prevStackAsset(std::string stack) {
+        void AssetManager::prevStackAsset(const std::string& stack) {
             reorderActiveStack(stack, [](std::vector<std::string>& siblings) {
                 std::rotate(siblings.begin(), siblings.begin() + 1, siblings.end());
             });
         }
 
 
-        void AssetManager::nextStackAsset(std::string stack) {
+        void AssetManager::nextStackAsset(const std::string& stack) {
             reorderActiveStack(stack, [](std::vector<std::string>& siblings) {
                 std::rotate(siblings.rbegin(), siblings.rbegin() + 1, siblings.rend());
             });
         }
 
-        void AssetManager::shuffleActiveStack(std::string stack) {
+        void AssetManager::shuffleActiveStack(const std::string& stack) {
             reorderActiveStack(stack, [](std::vector<std::string>& siblings) {
                 std::random_shuffle(siblings.begin() + 1, siblings.end());
                 std::rotate(siblings.begin(), siblings.begin(), siblings.end());

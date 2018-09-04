@@ -21,12 +21,12 @@ namespace syntheffect {
                 bool isReady();
                 bool isFinished();
 
-                void activateGroup(std::string group);
-                void activateAsset(std::string asset_id);
-                void shuffleActiveStack(std::string stack);
-                void prevStackAsset(std::string stack);
-                void nextStackAsset(std::string stack);
-                void reorderActiveStack(std::string stack, std::function<void(std::vector<std::string>&)> f);
+                void activateGroup(const std::string& group);
+                void activateAsset(const std::string& asset_id);
+                void shuffleActiveStack(const std::string& stack);
+                void prevStackAsset(const std::string& stack);
+                void nextStackAsset(const std::string& stack);
+                void reorderActiveStack(const std::string& stack, std::function<void(std::vector<std::string>&)> f);
 
                 std::vector<std::shared_ptr<Asset>> getAssets();
                 std::map<std::string, std::string> getStackToAsset();

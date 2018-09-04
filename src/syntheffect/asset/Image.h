@@ -8,7 +8,7 @@ namespace syntheffect {
     namespace asset {
         class Image : public Asset {
             public:
-                Image(std::string name, std::string path);
+                Image(const std::string& name, const std::string& path);
                 void setup() override;
                 void draw(float x, float y, float width, float height) override;
                 float getWidth() override;
