@@ -37,31 +37,40 @@ in vec2 bottomTextureCoordinate;
 in vec2 bottomLeftTextureCoordinate;
 in vec2 bottomRightTextureCoordinate;
 
-vec3[9] get3x3() {
-    vec3 n[9];
+vec4[9] get3x3() {
+    vec4 n[9];
 
     // Bottom row, left to right.
-    n[0] = texture(tex0, bottomLeftTextureCoordinate).rgb;
-    n[1] = texture(tex0, bottomTextureCoordinate).rgb;
-    n[2] = texture(tex0, bottomRightTextureCoordinate).rgb;
+    n[0] = texture(tex0, bottomLeftTextureCoordinate);
+    n[1] = texture(tex0, bottomTextureCoordinate);
+    n[2] = texture(tex0, bottomRightTextureCoordinate);
 
     // Middle row, left to right.
-    n[3] = texture(tex0, leftTextureCoordinate).rgb;
-    n[4] = texture(tex0, textureCoordinate).rgb;
-    n[5] = texture(tex0, rightTextureCoordinate).rgb;
+    n[3] = texture(tex0, leftTextureCoordinate);
+    n[4] = texture(tex0, textureCoordinate);
+    n[5] = texture(tex0, rightTextureCoordinate);
 
     // Top row, left to right.
-    n[6] = texture(tex0, topLeftTextureCoordinate).rgb;
-    n[7] = texture(tex0, topTextureCoordinate).rgb;
-    n[8] = texture(tex0, topRightTextureCoordinate).rgb;
+    n[6] = texture(tex0, topLeftTextureCoordinate);
+    n[7] = texture(tex0, topTextureCoordinate);
+    n[8] = texture(tex0, topRightTextureCoordinate);
 
     return n;
+}
+
+vec3[9] rgb3x3(vec4 n[9]) {
+    vec3 rgb[9];
+    for (int i=0; i < 9; i++) {
+        rgb[i] = n[i].rgb;
+    }
+
+    return rgb;
 }
 
 float[9] luminance3x3(vec3 n[9]) {
     float lums[9];
     for (int i=0; i < 9; i++) {
-        lums[i] = luminance(n[i]);
+        lums[i] = luminance(n[i].rgb);
     }
 
     return lums;

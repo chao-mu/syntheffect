@@ -10,11 +10,11 @@ uniform float blend = 0.;
 #define REGION_SIZE 9
 
 // frag and target are in the uv of yuv (chroma).
-float calcAlpha(float current, vec3[REGION_SIZE] regionRGB, vec2 targetUV) {
+float calcAlpha(float current, vec4[REGION_SIZE] region, vec2 targetUV) {
     float diff = 0.;
     for (int i = 0; i < REGION_SIZE; i++) {
-        float du = RGB_TO_U(regionRGB[i]) - targetUV[0];
-        float dv = RGB_TO_V(regionRGB[i]) - targetUV[1];
+        float du = RGB_TO_U(region[i].rgb) - targetUV[0];
+        float dv = RGB_TO_V(region[i].rgb) - targetUV[1];
         
         diff += sqrt((du * du + dv * dv) / 2.);
     }

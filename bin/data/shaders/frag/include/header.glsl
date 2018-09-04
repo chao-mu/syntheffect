@@ -1,5 +1,8 @@
 #version 330
 
+#define PI 3.14159265359
+#define PI_HALF 1.57079632679
+
 uniform sampler2DRect tex0;
 
 uniform float time;
