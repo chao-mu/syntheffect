@@ -65,6 +65,10 @@ namespace syntheffect {
                 channels_.allocate(getLastName(pipeline->getOut()));
             }
 
+            for (const auto& kv : stack_to_asset) {
+                channels_.allocate(getLastName(kv.first));
+            }
+
             // Save previous buffers
             for (const auto& buf_name : channels_.getKeys()) {
                 // Save previous buffer

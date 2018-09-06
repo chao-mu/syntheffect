@@ -8,7 +8,7 @@
 
 namespace syntheffect {
     namespace asset {
-         void Parser::addAssets(AssetManager& m, std::string path) {
+         void Parser::addAssets(AssetManager& m, const std::string& path) {
             ofXml xml;
 
             if (!xml.load(path)) {
@@ -20,20 +20,29 @@ namespace syntheffect {
                 throw std::runtime_error(path + " is missing <assets> section");
             }
 
+            xml = assets_search.getFirst();
+
+            std::string root = xml::Util::getAttribute<std::string>(xml, "root", false, "");
+            if (root.empty()) {
+                root = ofFilePath::getEnclosingDirectory(path);
+            } else if (!ofFilePath::isAbsolute(root)) {
+                std::string proj_dir = ofFilePath::getEnclosingDirectory(path);
+                root = ofFilePath::join(proj_dir, root);
+            }
+
             // Iterate over pipeline
-            for (const auto& child : assets_search.getFirst().getChildren()) {
+            for (const auto& child : xml.getChildren()) {
                std::string el_name = child.getName();
                 if (el_name == "assetGroup") {
-                    addAssetGroup(m, child, path);
+                    addAssetGroup(m, child, root);
                 } else {
                     throw std::runtime_error("Expecting assetGroup, got <" + el_name + ">");
                 }
             }
          }
 
-         void Parser::addAssetGroup(AssetManager& m, const ofXml& xml, std::string settings_path) {
+         void Parser::addAssetGroup(AssetManager& m, const ofXml& xml, const std::string& root) {
              std::string group = xml::Util::getAttribute<std::string>(xml, "name", false, "");
-             std::string root = ofFilePath::getEnclosingDirectory(settings_path);
 
              for (const auto& child : xml.getChildren()) {
                  std::string el_name = child.getName();
@@ -63,9 +72,9 @@ namespace syntheffect {
              return std::make_shared<Webcam>(id, device_id);
          }
 
-         std::shared_ptr<Video> Parser::parseVideoAsset(AssetManager& m, const ofXml& xml, std::string root) {
+         std::shared_ptr<Video> Parser::parseVideoAsset(AssetManager& m, const ofXml& xml, const std::string& root) {
              std::string id = xml::Util::getAttribute<std::string>(xml, "id", true, "");
-             std::string path = ofFilePath::join(root, xml::Util::getAttribute<std::string>(xml, "path", true, ""));
+             std::string path = joinIfRelative(root, xml::Util::getAttribute<std::string>(xml, "path", true, ""));
              float volume = xml::Util::getAttribute<float>(xml, "volume", false, 0);
 
              std::string loop_raw = xml::Util::getAttribute<std::string>(xml, "loop", false, "normal");
@@ -83,11 +92,19 @@ namespace syntheffect {
              return std::make_shared<Video>(id, path, volume, loop_type);
          }
 
-         std::shared_ptr<Image> Parser::parseImageAsset(AssetManager& m, const ofXml& xml, std::string root) {
+         std::shared_ptr<Image> Parser::parseImageAsset(AssetManager& m, const ofXml& xml, const std::string& root) {
              std::string id = xml::Util::getAttribute<std::string>(xml, "id", true, "");
-             std::string path = ofFilePath::join( root, xml::Util::getAttribute<std::string>(xml, "path", true, ""));
+             std::string path = ofFilePath::join(root, xml::Util::getAttribute<std::string>(xml, "path", true, ""));
 
              return std::make_shared<Image>(id, path);
+         }
+
+         std::string Parser::joinIfRelative(const std::string& root, const std::string& path) {
+             if (ofFilePath::isAbsolute(path)) {
+                 return path;
+             }
+
+             return ofFilePath::join(root, path);
          }
     }
 }

@@ -76,6 +76,12 @@ namespace syntheffect {
                 v = ofNoise(v);
                 from_low = 0;
                 from_high = 1;
+            } else if (p.func == TriangleFunc) {
+                float decimal;
+                float fract = std::modf(v, &decimal);
+                v = 1 - std::abs(fmod(v, 2) - 1);
+                from_low = 0;
+                from_high = 1;
             } else if (p.func == SinFunc) {
                 from_low = -1;
                 from_high = 1;

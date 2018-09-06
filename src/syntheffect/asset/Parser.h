@@ -14,12 +14,13 @@ namespace syntheffect {
     namespace asset {
         class Parser {
             public:
-                static void addAssets(AssetManager& m, std::string path);
+                static void addAssets(AssetManager& m, const std::string& path);
 
-                static void addAssetGroup(AssetManager& m, const ofXml& xml, std::string settings_path);
-                static std::shared_ptr<Image> parseImageAsset(AssetManager& m, const ofXml& xml, std::string root);
-                static std::shared_ptr<Video> parseVideoAsset(AssetManager& m, const ofXml& xml, std::string root);
+                static void addAssetGroup(AssetManager& m, const ofXml& xml, const std::string& settings_path);
+                static std::shared_ptr<Image> parseImageAsset(AssetManager& m, const ofXml& xml, const std::string& root);
+                static std::shared_ptr<Video> parseVideoAsset(AssetManager& m, const ofXml& xml, const std::string& root);
                 static std::shared_ptr<Webcam> parseWebcamAsset(AssetManager& m, const ofXml& xml);
+                static std::string joinIfRelative(const std::string& root, const std::string& path);
         };
     }
 }

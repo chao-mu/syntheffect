@@ -22,9 +22,9 @@ namespace syntheffect {
     namespace app {
         Live::Live(const settings::ProjectSettings settings) :
             ofBaseApp(),
+            renderer_(settings.width, settings.height),
             settings_(settings),
             beat_(std::make_shared<ofxBeat>()),
-            renderer_(settings.width, settings.height),
             recording_(false) {}
 
         void Live::setup() {

@@ -48,6 +48,8 @@ namespace syntheffect {
                     p.func = NoiseFunc;
                 } else if (func == "cos") {
                     p.func = CosFunc;
+                } else if (func == "triangle") {
+                    p.func = TriangleFunc;
                 } else if (func == "sin") {
                     p.func = SinFunc;
                 } else {

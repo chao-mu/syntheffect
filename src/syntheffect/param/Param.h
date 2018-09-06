@@ -19,7 +19,7 @@ namespace syntheffect {
         };
 
         enum ParamFunc {
-            IdentityFunc, NoiseFunc, CosFunc, SinFunc
+            IdentityFunc, NoiseFunc, CosFunc, SinFunc, TriangleFunc
         };
 
         struct Param {
