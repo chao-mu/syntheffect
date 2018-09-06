@@ -26,6 +26,21 @@
         0, -1, 0 \
     )
 
+#define DEFINE_GET_3X3(func_name, tex) \
+    vec4[9] ## func_name ## () { \
+        vec4 n[9]; \
+        n[0] = texture( ## tex ## , bottomLeftTextureCoordinate); \
+        n[1] = texture( ## tex ## , bottomTextureCoordinate); \
+        n[2] = texture( ## tex ## , bottomRightTextureCoordinate); \
+        n[3] = texture( ## tex ## , leftTextureCoordinate); \
+        n[4] = texture( ## tex ## , textureCoordinate); \
+        n[5] = texture( ## tex ## , rightTextureCoordinate); \
+        n[6] = texture( ## tex ## , topLeftTextureCoordinate); \
+        n[7] = texture( ## tex ## , topTextureCoordinate); \
+        n[8] = texture( ## tex ## , topRightTextureCoordinate); \
+        return n; \
+    }
+ 
 in vec2 leftTextureCoordinate;
 in vec2 rightTextureCoordinate;
 
@@ -37,26 +52,7 @@ in vec2 bottomTextureCoordinate;
 in vec2 bottomLeftTextureCoordinate;
 in vec2 bottomRightTextureCoordinate;
 
-vec4[9] get3x3() {
-    vec4 n[9];
-
-    // Bottom row, left to right.
-    n[0] = texture(tex0, bottomLeftTextureCoordinate);
-    n[1] = texture(tex0, bottomTextureCoordinate);
-    n[2] = texture(tex0, bottomRightTextureCoordinate);
-
-    // Middle row, left to right.
-    n[3] = texture(tex0, leftTextureCoordinate);
-    n[4] = texture(tex0, textureCoordinate);
-    n[5] = texture(tex0, rightTextureCoordinate);
-
-    // Top row, left to right.
-    n[6] = texture(tex0, topLeftTextureCoordinate);
-    n[7] = texture(tex0, topTextureCoordinate);
-    n[8] = texture(tex0, topRightTextureCoordinate);
-
-    return n;
-}
+DEFINE_GET_3X3(get3x3, tex0)
 
 vec3[9] rgb3x3(vec4 n[9]) {
     vec3 rgb[9];
@@ -67,7 +63,7 @@ vec3[9] rgb3x3(vec4 n[9]) {
     return rgb;
 }
 
-float[9] luminance3x3(vec3 n[9]) {
+float[9] luminance3x3(vec4 n[9]) {
     float lums[9];
     for (int i=0; i < 9; i++) {
         lums[i] = luminance(n[i].rgb);
@@ -89,9 +85,9 @@ float applyKernel(mat3 kernel, float[9] n) {
     return result;
 }
 
-vec3 applyKernel(mat3 kernel, vec3[9] n) {
-    vec3 result = vec3(0);
-
+vec4 applyKernel(mat3 kernel, vec4[9] n) {
+    vec4 result = vec4(0);
+    
     _applyKernelSums(kernel, n);
 
     return result;

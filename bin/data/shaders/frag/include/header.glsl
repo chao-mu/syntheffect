@@ -30,11 +30,12 @@ out vec4 outputColor;
 
 in vec2 textureCoordinate;
 
-#define RGB_TO_Y(rgb) (0.257 * rgb[0]) + (0.504 * rgb[1]) + (0.098 * rgb[2]) + (16/255.)
-#define RGB_TO_U(rgb) (0.439 * rgb[0]) - (0.368 * rgb[1]) - (0.071 * rgb[2]) + (128/255.)
-#define RGB_TO_V(rgb) -(0.148 * rgb[0]) - (0.291 * rgb[1]) + (0.439 * rgb[2]) + (128/255.)
-
 // https://en.wikipedia.org/wiki/YUV
+#define RGB_TO_Y(rgb) (0.299 * rgb[0]) + (0.587 * rgb[1]) + (0.114 * rgb[2])
+#define RGB_TO_U(rgb) (-0.147 * rgb[0]) - (0.289 * rgb[1]) + (0.436 * rgb[2])
+#define RGB_TO_V(rgb) (0.615 * rgb[0]) - (0.515 * rgb[1]) - (0.101 * rgb[2])
+
+// YUV888 https://en.wikipedia.org/wiki/YUV
 #define RGB_TO_YUV \
     mat3( \
         0.299, 0.587, 0.114, \
@@ -42,12 +43,29 @@ in vec2 textureCoordinate;
         0.615, -0.51499, -0.10001 \
     )
 
+// https://en.wikipedia.org/wiki/YUV
+#define YUV_TO_RGB \
+    mat3( \
+            1, 0, 1.4, \
+            1, -0.343, -0.711, \
+            1, 1.765, 0 \
+    )
+
+
+
 vec2 rgb2chroma(vec3 rgb) {
     return vec2(RGB_TO_U(rgb), RGB_TO_V(rgb));
 }
 
-vec3 rgb2hsv(vec3 c)
-{
+vec3 rgb2yuv(vec3 rgb) {
+    return rgb * RGB_TO_YUV;
+}
+
+vec3 yuv2rgb(vec3 yuv) {
+    return yuv * YUV_TO_RGB;
+}
+
+vec3 rgb2hsv(vec3 c) {
     vec4 K = vec4(0.0, -1.0 / 3.0, 2.0 / 3.0, -1.0);
     vec4 p = mix(vec4(c.bg, K.wz), vec4(c.gb, K.xy), step(c.b, c.g));
     vec4 q = mix(vec4(p.xyw, c.r), vec4(c.r, p.yzx), step(p.x, c.r));
@@ -58,8 +76,7 @@ vec3 rgb2hsv(vec3 c)
     return vec3(abs(q.z + (q.w - q.y) / (6.0 * d + e)), d / (q.x + e), q.x);
 }
 
-vec3 hsv2rgb(vec3 c)
-{
+vec3 hsv2rgb(vec3 c) {
     vec4 K = vec4(1.0, 2.0 / 3.0, 1.0 / 3.0, 3.0);
     vec3 p = abs(fract(c.xxx + K.xyz) * 6.0 - K.www);
 
@@ -67,8 +84,7 @@ vec3 hsv2rgb(vec3 c)
 }
 
 // https://www.shadertoy.com/view/MsS3Wc 
-vec3 hsv2rgb_smooth( in vec3 c )
-{
+vec3 hsv2rgb_smooth( in vec3 c ) {
     vec3 rgb = clamp( abs(mod(c.x*6.0+vec3(0.0,4.0,2.0),6.0)-3.0)-1.0, 0.0, 1.0 );
 
 	rgb = rgb*rgb*(3.0-2.0*rgb); // cubic smoothing	
@@ -78,8 +94,7 @@ vec3 hsv2rgb_smooth( in vec3 c )
 
 
 // From the book of shaders
-mat2 rotate2d(float angle)
-{
+mat2 rotate2d(float angle) {
     return mat2(cos(angle),-sin(angle),
                 sin(angle),cos(angle));
 }
