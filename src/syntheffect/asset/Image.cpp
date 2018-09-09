@@ -4,7 +4,7 @@
 
 namespace syntheffect {
     namespace asset {
-        Image::Image(const std::string& id, const std::string& path) : Asset(id), path_(path) {
+        Image::Image(const std::string& id, const std::string& path) : Drawable(id), path_(path) {
         }
 
         void Image::setup() {

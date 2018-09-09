@@ -2,11 +2,11 @@
 
 #include "ofImage.h"
 
-#include "syntheffect/asset/Asset.h"
+#include "syntheffect/asset/Drawable.h"
 
 namespace syntheffect {
     namespace asset {
-        class Image : public Asset {
+        class Image : public Drawable {
             public:
                 Image(const std::string& name, const std::string& path);
                 void setup() override;

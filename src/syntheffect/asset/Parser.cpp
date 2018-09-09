@@ -46,23 +46,33 @@ namespace syntheffect {
 
              for (const auto& child : xml.getChildren()) {
                  std::string el_name = child.getName();
-                 std::shared_ptr<Asset> asset;
 
                  if (el_name == "webcam") {
-                     asset = parseWebcamAsset(m, child);
+                     addDrawable(m, child, group, parseWebcamAsset(m, child));
                  } else if (el_name == "image") {
-                     asset = parseImageAsset(m, child, root);
+                     addDrawable(m, child, group, parseImageAsset(m, child, root));
                  } else if (el_name == "video") {
-                     asset = parseVideoAsset(m, child, root);
+                     addDrawable(m, child, group, parseVideoAsset(m, child, root));
+                 } else if (el_name == "audio") {
+                     addAudio(m, child, group, parseAudioFileAsset(m, child, root));
                  } else {
                      throw std::runtime_error("Expected <image>, <video>, or <webcam>, got <" + el_name + ">");
                  }
-
-                 asset->setGroup(group);
-                 asset->setStack(child.getAttribute("stack").getValue());
-
-                 m.addAsset(asset);
              }
+         }
+
+         void Parser::addDrawable(AssetManager& m, const ofXml& xml, const std::string& group, std::shared_ptr<Drawable> asset) {
+                 asset->setGroup(group);
+                 asset->setStack(xml.getAttribute("stack").getValue());
+
+                 m.addDrawable(asset);
+         }
+
+         void Parser::addAudio(AssetManager& m, const ofXml& xml, const std::string& group, std::shared_ptr<Audio> asset) {
+                 asset->setGroup(group);
+                 asset->setStack(xml.getAttribute("stack").getValue());
+
+                 m.addAudio(asset);
          }
 
          std::shared_ptr<Webcam> Parser::parseWebcamAsset(AssetManager& m, const ofXml& xml) {
@@ -70,6 +80,15 @@ namespace syntheffect {
              int device_id = xml::Util::getAttribute<int>(xml, "device", false, 0);
 
              return std::make_shared<Webcam>(id, device_id);
+         }
+
+         std::shared_ptr<Audio> Parser::parseAudioFileAsset(AssetManager& m, const ofXml& xml, const std::string& root) {
+             std::string id = xml::Util::getAttribute<std::string>(xml, "id", true, "");
+             std::string path = joinIfRelative(root, xml::Util::getAttribute<std::string>(xml, "path", true, ""));
+             float volume = xml::Util::getAttribute<float>(xml, "volume", false, 1);
+             bool loop = xml::Util::getAttribute<bool>(xml, "loop", false, false);
+
+             return std::make_shared<Audio>(id, path, volume, loop);
          }
 
          std::shared_ptr<Video> Parser::parseVideoAsset(AssetManager& m, const ofXml& xml, const std::string& root) {

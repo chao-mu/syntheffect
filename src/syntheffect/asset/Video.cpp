@@ -7,44 +7,55 @@
 namespace syntheffect {
     namespace asset {
         Video::Video(const std::string& id, const std::string& path, float volume, ofLoopType loop) :
-            Asset(id),
+            Drawable(id),
             path_(path),
             volume_(volume),
             loop_(loop) {}
 
         void Video::setup() {
-            video_.setUseTexture(true);
-            if (!video_.load(path_)) {
+            player_.setUseTexture(true);
+            if (!player_.load(path_)) {
                 throw std::runtime_error("Error loading video with path " + path_);
             }
 
-            video_.setLoopState(loop_);
-            video_.setVolume(volume_);
-            video_.play();
+            player_.setLoopState(loop_);
+            player_.setVolume(volume_);
         }
 
         bool Video::isFrameNew() {
-            return video_.isFrameNew();
+            return player_.isFrameNew();
         }
 
         void Video::update(float t) {
-            video_.update();
+            player_.update();
         }
 
         void Video::draw(float x, float y, float width, float height) {
-            video_.draw(x, y, width, height);
+            player_.draw(x, y, width, height);
         }
 
         bool Video::isReady() {
-            return video_.isInitialized();
+            return player_.isInitialized();
         }
 
         float Video::getHeight() {
-            return video_.getHeight();
+            return player_.getHeight();
         }
 
         float Video::getWidth() {
-            return video_.getWidth();
+            return player_.getWidth();
+        }
+
+        void Video::restart() {
+            player_.setPosition(0);
+        }
+
+        void Video::play() {
+            player_.play();
+        }
+
+        void Video::pause() {
+            player_.setPaused(true);
         }
     }
 }

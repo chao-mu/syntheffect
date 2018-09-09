@@ -13,7 +13,7 @@
 #include "syntheffect/graphics/PingPongBufferMap.h"
 #include "syntheffect/param/Params.h"
 #include "syntheffect/settings/ProjectSettings.h"
-#include "syntheffect/asset/Asset.h"
+#include "syntheffect/asset/Drawable.h"
 
 namespace syntheffect {
     namespace render {
@@ -27,7 +27,7 @@ namespace syntheffect {
                 int getWidth();
                 int getHeight();
 
-                void update(param::Params& params, const std::vector<std::shared_ptr<asset::Asset>>& assets);
+                void update(param::Params& params, const std::vector<std::shared_ptr<asset::Drawable>>& assets);
 
                 void saveImage(const std::string& path);
                 void draw(int width, int height);

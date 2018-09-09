@@ -2,11 +2,11 @@
 
 #include "ofVideoGrabber.h"
 
-#include "syntheffect/asset/Asset.h"
+#include "syntheffect/asset/Drawable.h"
 
 namespace syntheffect {
     namespace asset {
-        class Webcam : public Asset {
+        class Webcam : public Drawable {
             public:
                 Webcam(const std::string& path, int device_id);
                 void setup() override;

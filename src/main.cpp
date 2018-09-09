@@ -19,7 +19,6 @@ int main(int argc, const char *argv[]){
 
     TCLAP::ValueArg<std::string> outArg("o", "out", "Output video", false, "", "string", cmd);
     TCLAP::ValueArg<std::string> projectArg("p", "project", "project path", true, "", "string", cmd);
-    TCLAP::ValueArg<float> volumeArg("s", "volume", "volume between 0 and 1", false, 0, "float", cmd);
     TCLAP::SwitchArg fsArg("f", "fullscreen", "set window to fullscreen", cmd);
 
     try {

@@ -8,8 +8,6 @@
 
 #include "ofBaseApp.h"
 
-#include "ofxBeat.h"
-
 #include "syntheffect/render/Renderer.h"
 #include "syntheffect/asset/AssetManager.h"
 #include "syntheffect/param/Param.h"
@@ -29,7 +27,7 @@ namespace syntheffect {
                 void draw() override;
                 void exit() override;
                 void keyPressed(int c) override;
-                void audioIn(ofSoundBuffer& buf) override;
+                //void audioIn(ofSoundBuffer& buf) override;
 
                 void handleControlState(const input::ControlState& state);
 
@@ -41,7 +39,6 @@ namespace syntheffect {
                 input::InputManager input_manager_;
 
                 settings::ProjectSettings settings_;
-                std::shared_ptr<ofxBeat> beat_;
 
                 ofSoundStream sound_stream_;
                 RecordingThread recorder_;

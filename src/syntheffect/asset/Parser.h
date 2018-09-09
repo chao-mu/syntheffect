@@ -19,8 +19,11 @@ namespace syntheffect {
                 static void addAssetGroup(AssetManager& m, const ofXml& xml, const std::string& settings_path);
                 static std::shared_ptr<Image> parseImageAsset(AssetManager& m, const ofXml& xml, const std::string& root);
                 static std::shared_ptr<Video> parseVideoAsset(AssetManager& m, const ofXml& xml, const std::string& root);
+                static std::shared_ptr<Audio> parseAudioFileAsset(AssetManager& m, const ofXml& xml, const std::string& root);
                 static std::shared_ptr<Webcam> parseWebcamAsset(AssetManager& m, const ofXml& xml);
                 static std::string joinIfRelative(const std::string& root, const std::string& path);
+                static void addDrawable(AssetManager& m, const ofXml& xml, const std::string& group, std::shared_ptr<Drawable> asset);
+                static void addAudio(AssetManager& m, const ofXml& xml, const std::string& group, std::shared_ptr<Audio> asset);
         };
     }
 }

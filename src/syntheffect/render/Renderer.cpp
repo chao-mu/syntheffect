@@ -45,7 +45,7 @@ namespace syntheffect {
             }
         }
 
-        void Renderer::update(param::Params& params, const std::vector<std::shared_ptr<asset::Asset>>& assets) {
+        void Renderer::update(param::Params& params, const std::vector<std::shared_ptr<asset::Drawable>>& assets) {
             // Create handy lookup
             std::map<std::string, std::string> stack_to_asset;
             for (auto const& a : assets) {

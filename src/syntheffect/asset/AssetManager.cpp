@@ -21,16 +21,36 @@ namespace syntheffect {
                 throw std::runtime_error("Asset id '" + id + "' collides with stack name");
             }
 
-            if (assets_by_stack_[stack].empty() || stack.empty()) {
+            if (stack.empty() || assets_by_stack_[stack].empty()) {
                 asset->setActive(true);
+                asset->play();
             }
 
             assets_by_id_[id] = asset;
             assets_by_stack_[stack].push_back(id);
             assets_by_group_[group].push_back(id);
             assets_by_group_and_stack_[group][stack].push_back(id);
+        }
 
+        ofBaseSoundOutput& AssetManager::getSoundOutput() {
+            return sound_output_;
+        }
+
+        void AssetManager::addDrawable(std::shared_ptr<Drawable> asset) {
             asset->setup();
+            drawables_by_id_[asset->getID()] = asset;
+            addAsset(asset);
+        }
+
+        void AssetManager::addAudio(std::shared_ptr<Audio> asset) {
+            asset->setup();
+            asset->getSoundObject().connectTo(sound_analyzer_).connectTo(sound_output_);
+            audio_by_id_[asset->getID()] = asset;
+            addAsset(asset);
+        }
+
+        void AssetManager::copyParamsTo(param::Params& p) {
+            sound_analyzer_.copyParamsTo(p);
         }
 
         void AssetManager::activateAsset(const std::string& asset_id) {
@@ -43,7 +63,15 @@ namespace syntheffect {
                 asset->setActive(true);
             } else {
                 for (const auto& other_id : assets_by_stack_.at(asset->getStack())) {
-                    assets_by_id_.at(other_id)->setActive(other_id == asset_id);
+                    auto other_asset = assets_by_id_.at(other_id);
+                    if (other_id == asset_id) {
+                        other_asset->setActive(true);
+                        other_asset->play();
+                    } else {
+                        other_asset->setActive(false);
+                        other_asset->pause();
+                        other_asset->restart();
+                    }
                 }
             }
         }
@@ -101,14 +129,14 @@ namespace syntheffect {
 
         void AssetManager::update(float t) {
             // Update assets
-            for (auto asset : getAssets()) {
-                asset->update(t);
+            for (const auto& kv : assets_by_id_) {
+                kv.second->update(t);
             }
         }
 
         bool AssetManager::isReady() {
-            for (auto asset : getAssets()) {
-                if (!asset->isReady()) {
+            for (const auto& kv : assets_by_id_) {
+                if (!kv.second->isReady()) {
                     return false;
                 }
             }
@@ -116,9 +144,9 @@ namespace syntheffect {
             return true;
         }
 
-        std::vector<std::shared_ptr<Asset>> AssetManager::getAssets() {
-            std::vector<std::shared_ptr<Asset>> assets;
-            for (const auto& kv : assets_by_id_) {
+        std::vector<std::shared_ptr<Drawable>> AssetManager::getDrawables() {
+            std::vector<std::shared_ptr<Drawable>> assets;
+            for (const auto& kv : drawables_by_id_) {
                 assets.push_back(kv.second);
             }
 

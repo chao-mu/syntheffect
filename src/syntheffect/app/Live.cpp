@@ -24,7 +24,6 @@ namespace syntheffect {
             ofBaseApp(),
             renderer_(settings.width, settings.height),
             settings_(settings),
-            beat_(std::make_shared<ofxBeat>()),
             recording_(false) {}
 
         void Live::setup() {
@@ -39,32 +38,22 @@ namespace syntheffect {
                 ofHideCursor();
             #endif
 
-            /* Commening out old code that will only work on Mac, keeping in case of wanting  to be cross platform
-            std::vector<ofSoundDevice> sound_devices = sound_stream_.getMatchingDevices("ma++ ingalls for Cycling '74: Soundflower", 2, 2);
-            if (sound_devices.size() < 1) {
-                ofLogWarning() << "Soundflower device not found, sound features not enabled";
-            } else {
-                ofSoundDevice device = sound_devices[0];
-                ofSoundStreamSettings sound_settings;
-                sound_settings.setInDevice(device);
-                sound_settings.setOutDevice(device);
-                sound_settings.setInListener(this);
-                sound_settings.numInputChannels = device.inputChannels;
-                sound_settings.numOutputChannels = device.outputChannels;
-                sound_settings.sampleRate = 44100;;
-
-                sound_settings.bufferSize = beat_->getBufferSize();
-
-                ofSoundStreamSetup(sound_settings);
-            }
-            */
-
             // Input manager
             input::Parser::addInputs(input_manager_, settings_.inputs_path);
             ofAddListener(input_manager_.state_events, this, &Live::handleControlState);
 
+
             // Asset manager
             asset::Parser::addAssets(asset_manager_, settings_.assets_path);
+
+            ofSoundStreamSettings sound_settings;
+            sound_settings.numInputChannels = 0;
+            sound_settings.numOutputChannels = 2;
+            sound_settings.sampleRate = 44100;
+            sound_settings.bufferSize = 256;
+            sound_settings.numBuffers = 1;
+            sound_stream_.setup(sound_settings);
+            sound_stream_.setOutput(asset_manager_.getSoundOutput());
 
             // Renderer
             renderer_.setup();
@@ -117,14 +106,6 @@ namespace syntheffect {
             recorder_.waitForThread();
         }
 
-        void Live::audioIn(ofSoundBuffer& buf) {
-            float *input = &buf.getBuffer()[0];
-            size_t buffer_size = buf.getNumFrames();
-            size_t channels = buf.getNumChannels();
-
-            beat_->audioReceived(input, buffer_size, channels);
-        }
-
         void Live::update() {
             float t = ofGetElapsedTimef();
 
@@ -132,22 +113,15 @@ namespace syntheffect {
 
             input_manager_.update(t);
 
-            /*
-            beat_->update(ofGetElapsedTimeMillis());
-            effect_params->float_params["time"] = ofGetElapsedTimef();
-
-            effect_params->float_params["kick"] = beat_->kick();
-            effect_params->float_params["snare"] = beat_->snare();
-            effect_params->float_params["hihat"] = beat_->hihat();
-            */
-
             asset_manager_.update(t);
             if (asset_manager_.isReady()) {
                 if (asset_manager_.isFinished()) {
                     ofExit();
                 }
 
-                renderer_.update(params_, asset_manager_.getAssets());
+                asset_manager_.copyParamsTo(params_);
+
+                renderer_.update(params_, asset_manager_.getDrawables());
 
                 if (recording_) {
                     recordFrame();

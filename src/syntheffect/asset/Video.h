@@ -2,11 +2,11 @@
 
 #include "ofVideoPlayer.h"
 
-#include "syntheffect/asset/Asset.h"
+#include "syntheffect/asset/Drawable.h"
 
 namespace syntheffect {
     namespace asset {
-        class Video : public Asset {
+        class Video : public Drawable {
            public:
                 Video(const std::string& name, const std::string& path, float volume, ofLoopType loop=OF_LOOP_NONE);
                 void setup() override;
@@ -17,10 +17,14 @@ namespace syntheffect {
                 bool isReady() override;
                 bool isFrameNew() override;
 
+                void restart() override;
+                void play() override;
+                void pause() override;
+
             private:
                 std::string path_;
                 float volume_;
-                ofVideoPlayer video_;
+                ofVideoPlayer player_;
                 ofLoopType loop_;
         };
     }
