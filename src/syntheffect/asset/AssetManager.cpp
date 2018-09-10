@@ -8,6 +8,10 @@
 
 namespace syntheffect {
     namespace asset {
+        void AssetManager::setup(size_t buffer_size) {
+            sound_analyzer_.setup(buffer_size);
+        }
+
         void AssetManager::addAsset(std::shared_ptr<Asset> asset) {
             std::string id = asset->getID();
             std::string stack = asset->getStack();

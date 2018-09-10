@@ -42,18 +42,20 @@ namespace syntheffect {
             input::Parser::addInputs(input_manager_, settings_.inputs_path);
             ofAddListener(input_manager_.state_events, this, &Live::handleControlState);
 
-
-            // Asset manager
-            asset::Parser::addAssets(asset_manager_, settings_.assets_path);
-
             ofSoundStreamSettings sound_settings;
             sound_settings.numInputChannels = 0;
             sound_settings.numOutputChannels = 2;
             sound_settings.sampleRate = 44100;
-            sound_settings.bufferSize = 256;
+            sound_settings.bufferSize = 512;
             sound_settings.numBuffers = 1;
             sound_stream_.setup(sound_settings);
             sound_stream_.setOutput(asset_manager_.getSoundOutput());
+
+            asset_manager_.setup(sound_settings.bufferSize);
+
+            // Asset manager
+            asset::Parser::addAssets(asset_manager_, settings_.assets_path);
+
 
             // Renderer
             renderer_.setup();

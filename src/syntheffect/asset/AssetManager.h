@@ -19,6 +19,7 @@ namespace syntheffect {
     namespace asset {
         class AssetManager {
             public:
+                void setup(size_t buffer_size);
                 void update(float t);
 
                 bool isReady();
