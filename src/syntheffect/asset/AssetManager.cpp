@@ -25,15 +25,13 @@ namespace syntheffect {
                 throw std::runtime_error("Asset id '" + id + "' collides with stack name");
             }
 
-            if (stack.empty() || assets_by_stack_[stack].empty()) {
-                asset->setActive(true);
-                asset->play();
+            assets_by_id_[id] = asset;
+            if (!stack.empty()) {
+                assets_by_stack_[stack].push_back(id);
+                assets_by_group_and_stack_[group][stack].push_back(id);
             }
 
-            assets_by_id_[id] = asset;
-            assets_by_stack_[stack].push_back(id);
             assets_by_group_[group].push_back(id);
-            assets_by_group_and_stack_[group][stack].push_back(id);
         }
 
         ofBaseSoundOutput& AssetManager::getSoundOutput() {
@@ -65,6 +63,7 @@ namespace syntheffect {
             auto asset = assets_by_id_.at(asset_id);
             if (asset->getStack().empty()) {
                 asset->setActive(true);
+                asset->play();
             } else {
                 for (const auto& other_id : assets_by_stack_.at(asset->getStack())) {
                     auto other_asset = assets_by_id_.at(other_id);
@@ -135,6 +134,22 @@ namespace syntheffect {
             // Update assets
             for (const auto& kv : assets_by_id_) {
                 kv.second->update(t);
+            }
+
+            // Ensure there is an asset active for each stack
+            for (const auto& kv : assets_by_id_) {
+                auto& asset = kv.second;
+                if (asset->getStack().empty() && !asset->isActive()) {
+                    activateAsset(asset->getID());
+                }
+            }
+
+            for (const auto& kv : assets_by_stack_) {
+                auto asset_ids = kv.second;
+                auto asset = assets_by_id_.at(asset_ids.front());
+                if (!asset->isActive()) {
+                    activateAsset(asset->getID());
+                }
             }
         }
 

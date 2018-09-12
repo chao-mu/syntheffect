@@ -2,7 +2,7 @@
 
 namespace syntheffect {
     namespace asset {
-        Asset::Asset(const std::string id) : id_(id) {
+        Asset::Asset(const std::string id) : id_(id), active_(false) {
         }
 
         bool Asset::isReady() {

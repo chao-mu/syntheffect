@@ -2,8 +2,6 @@
 
 #include <stdexcept>
 
-#include "ofLog.h"
-
 namespace syntheffect {
     namespace asset {
         Video::Video(const std::string& id, const std::string& path, float volume, ofLoopType loop) :
