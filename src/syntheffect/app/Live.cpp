@@ -56,7 +56,6 @@ namespace syntheffect {
             // Asset manager
             asset::Parser::addAssets(asset_manager_, settings_.assets_path);
 
-
             // Renderer
             renderer_.setup();
             renderer_.setPipelines(settings_.pipelines);

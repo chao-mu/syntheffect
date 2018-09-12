@@ -6,6 +6,7 @@
 #include "ofFileUtils.h"
 
 #include "syntheffect/app/Live.h"
+#include "syntheffect/app/Studio.h"
 #include "syntheffect/xml/Parser.h"
 #include "syntheffect/settings/ProjectSettings.h"
 
@@ -20,6 +21,7 @@ int main(int argc, const char *argv[]){
     TCLAP::ValueArg<std::string> outArg("o", "out", "Output video", false, "", "string", cmd);
     TCLAP::ValueArg<std::string> projectArg("p", "project", "project path", true, "", "string", cmd);
     TCLAP::SwitchArg fsArg("f", "fullscreen", "set window to fullscreen", cmd);
+    TCLAP::SwitchArg studioArg("s", "studio", "open project studio", cmd);
 
     try {
         cmd.parse(argc, argv);
@@ -41,7 +43,7 @@ int main(int argc, const char *argv[]){
         win_settings.windowMode = OF_FULLSCREEN;
     }
 
-    ofCreateWindow(win_settings);
+    auto display_window = ofCreateWindow(win_settings);
 
     syntheffect::xml::Parser p;
     std::string settings_path = projectArg.getValue();
@@ -52,8 +54,17 @@ int main(int argc, const char *argv[]){
     syntheffect::settings::ProjectSettings settings = p.parseProject(settings_path);
     settings.out_path = out_path;
 
-    auto app = make_shared<syntheffect::app::Live>(settings);
-    ofRunApp(app);
+    auto app = std::make_shared<syntheffect::app::Live>(settings);
+    ofRunApp(display_window, app);
+
+    if (studioArg.getValue()) {
+        win_settings.setPosition(ofVec2f(100,0));
+        win_settings.windowMode = OF_WINDOW;
+        auto studio_window = ofCreateWindow(win_settings);
+        ofRunApp(studio_window, std::make_shared<syntheffect::app::Studio>());
+    }
+
+    ofRunMainLoop();
 
     return 0;
 }

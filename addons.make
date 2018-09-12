@@ -1,2 +1,5 @@
-ofxBeat
 ofxTimeMeasurements
+ofxSoundObjects
+ofxAudioFile
+ofxFft
+ofxDatGui
