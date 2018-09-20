@@ -8,11 +8,14 @@
 #include "ofLog.h"
 
 #define MAX_PARAMS_DEEP 100
+#define PASSED_SUFFIX "_passed"
 
 namespace syntheffect {
     namespace param {
         void Params::set(Param p) {
             params_[p.name] = p;
+            Param passed = Param::boolValue(p.name + PASSED_SUFFIX, true);
+            params_[passed.name] = passed;
         }
 
         const Param& Params::at(const std::string& name) const {
@@ -77,8 +80,6 @@ namespace syntheffect {
                 from_low = 0;
                 from_high = 1;
             } else if (p.func == TriangleFunc) {
-                float decimal;
-                float fract = std::modf(v, &decimal);
                 v = 1 - std::abs(fmod(v, 2) - 1);
                 from_low = 0;
                 from_high = 1;
@@ -166,10 +167,12 @@ namespace syntheffect {
 
         void Params::setTexture(const std::string& name, std::function<ofTexture()> v) {
             textures_[name] = v;
+            set(Param::boolValue(name + PASSED_SUFFIX, true));
         }
 
         void Params::setTexture(const std::string& name, const std::string& target) {
             texture_params_[name] = target;
+            set(Param::boolValue(name + PASSED_SUFFIX, true));
         }
 
         bool Params::isFloat(const Param& p) const {
@@ -245,3 +248,4 @@ namespace syntheffect {
 }
 
 #undef MAX_PARAMS_DEEP
+#undef PASSED_SUFFIX
