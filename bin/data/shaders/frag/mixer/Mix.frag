@@ -38,9 +38,8 @@ float mixWithMethod(float left, float right, float amount) {
     return 0;
 }
 
-vec4 mainFrag()
+void mainFrag(inout vec4 left)
 {
-    vec4 left = texture(tex0, textureCoordinate);
     vec4 right = texture(secondTex, textureCoordinate);
 
     if (redEnabled) {
@@ -54,8 +53,6 @@ vec4 mainFrag()
     if (blueEnabled) {
         left.b = mixWithMethod(left.b, right.b, amount);
     }
-
-    return left;
 }
 
 #pragma include "../include/footer.glsl"

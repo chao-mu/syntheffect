@@ -3,12 +3,12 @@
 uniform float x = 0.;
 uniform float y = 0.;
 
-vec4 mainFrag()
+void mainFrag(inout vec4 col)
 {
     vec2 off = vec2(x, y) * resolution;
     vec2 coords = mod(textureCoordinate + off, resolution);
     
-    return texture(tex0, coords);
+    col = texture(tex0, coords);
 }
 
 #pragma include "../include/footer.glsl"

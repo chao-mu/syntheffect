@@ -1,9 +1,10 @@
 #pragma include "../include/header.glsl"
 
 void mainFrag(inout vec4 col) {
-    vec4 n[9] = get3x3();
-
-    col = applyKernel(KERNEL_BOX_BLUR, n) / 9;
+    float sum = col.r + col.g + col.b;
+    col.r = col.r / sum;
+    col.g = col.g / sum;
+    col.b = col.b / sum;
 }
 
 #pragma include "../include/footer.glsl"

@@ -1,9 +1,11 @@
 #pragma include "../include/header.glsl"
 
 void mainFrag(inout vec4 col) {
-    vec4 n[9] = get3x3();
-
-    col = applyKernel(KERNEL_BOX_BLUR, n) / 9;
+    vec3 yuv = rgb2yuv(col.rgb);
+    yuv.z += yuv.y * 0.5;
+    yuv.y = 0.0;
+    
+    col.rgb = yuv2rgb(yuv);
 }
 
 #pragma include "../include/footer.glsl"

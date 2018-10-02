@@ -1,5 +1,7 @@
 #version 330
 
+#pragma include "../../3rdparty/ColorSpaces.inc.glsl"
+
 #define PI 3.14159265359
 #define PI_HALF 1.57079632679
 
@@ -10,88 +12,30 @@ uniform vec2 resolution;
 
 uniform bool enabled = true;
 
-uniform bool greyscaleEnabled = false;
-
-uniform bool inversionEnabled = false;
-uniform bool inversionClamp = false;
-uniform float inversionAdjustment = 1.;
-
-uniform bool stepEnabled = false;
-uniform float stepThreshold = 0.5;
-
-uniform bool multiplyOriginalEnabled = false;
-
-uniform bool rangeAdjustEnabled = true;
-uniform float rangeAdjustHigh = 1.;
-
 uniform float mixture = 1.;
+uniform float channel1Mix = 1.;
+uniform float channel2Mix = 1.;
+uniform float channel3Mix = 1.;
+uniform float channel4Mix = 1.;
+uniform bool invert = false;
+
+uniform sampler2DRect maskTex;
+uniform vec2 maskTex_resolution;
+uniform bool maskTex_passed = false;
+uniform bool maskInvert = false;
+uniform int maskChannel;
 
 out vec4 outputColor;
 
 in vec2 textureCoordinate;
 
-// https://en.wikipedia.org/wiki/YUV
-#define RGB_TO_Y(rgb) (0.299 * rgb[0]) + (0.587 * rgb[1]) + (0.114 * rgb[2])
-#define RGB_TO_U(rgb) (-0.147 * rgb[0]) - (0.289 * rgb[1]) + (0.436 * rgb[2])
-#define RGB_TO_V(rgb) (0.615 * rgb[0]) - (0.515 * rgb[1]) - (0.101 * rgb[2])
+#define GET_OTHER_TEXTURE(texName) \
+    texture( ## texName ## , otherTextureCoordinate( ## texName ## _resolution))
 
-// YUV888 https://en.wikipedia.org/wiki/YUV
-#define RGB_TO_YUV \
-    mat3( \
-        0.299, 0.587, 0.114, \
-        -0.14713, -0.28886, 0.436, \
-        0.615, -0.51499, -0.10001 \
-    )
-
-// https://en.wikipedia.org/wiki/YUV
-#define YUV_TO_RGB \
-    mat3( \
-            1, 0, 1.4, \
-            1, -0.343, -0.711, \
-            1, 1.765, 0 \
-    )
-
-
-
-vec2 rgb2chroma(vec3 rgb) {
-    return vec2(RGB_TO_U(rgb), RGB_TO_V(rgb));
-}
-
-vec3 rgb2yuv(vec3 rgb) {
-    return rgb * RGB_TO_YUV;
-}
-
-vec3 yuv2rgb(vec3 yuv) {
-    return yuv * YUV_TO_RGB;
-}
-
-vec3 rgb2hsv(vec3 c) {
-    vec4 K = vec4(0.0, -1.0 / 3.0, 2.0 / 3.0, -1.0);
-    vec4 p = mix(vec4(c.bg, K.wz), vec4(c.gb, K.xy), step(c.b, c.g));
-    vec4 q = mix(vec4(p.xyw, c.r), vec4(c.r, p.yzx), step(p.x, c.r));
-
-    float d = q.x - min(q.w, q.y);
-    float e = 1.0e-10;
-
-    return vec3(abs(q.z + (q.w - q.y) / (6.0 * d + e)), d / (q.x + e), q.x);
-}
-
-vec3 hsv2rgb(vec3 c) {
-    vec4 K = vec4(1.0, 2.0 / 3.0, 1.0 / 3.0, 3.0);
-    vec3 p = abs(fract(c.xxx + K.xyz) * 6.0 - K.www);
-
-    return c.z * mix(K.xxx, clamp(p - K.xxx, 0.0, 1.0), c.y);
-}
-
-// https://www.shadertoy.com/view/MsS3Wc 
-vec3 hsv2rgb_smooth( in vec3 c ) {
-    vec3 rgb = clamp( abs(mod(c.x*6.0+vec3(0.0,4.0,2.0),6.0)-3.0)-1.0, 0.0, 1.0 );
-
-	rgb = rgb*rgb*(3.0-2.0*rgb); // cubic smoothing	
-
-	return c.z * mix( vec3(1.0), rgb, c.y);
-}
-
+#define DEFINE_TEXTURE(name) \
+    uniform sampler2DRect name; \
+    uniform bool name ## _passed; \
+    uniform vec2 name ## _resolution; 
 
 // From the book of shaders
 mat2 rotate2d(float angle) {
@@ -121,6 +65,12 @@ vec2 normalize_0to1(vec2 coords, vec2 res) {
 // translate coordinates in range 0 to 1 to texture coordinates.
 vec2 denormalize_0to1(vec2 uv, vec2 res) {
     return uv * res;
+}
+
+vec2 otherTextureCoordinate(vec2 otherResolution) {
+    return vec2(
+            (textureCoordinate.x * otherResolution.x) / resolution.x,
+            (textureCoordinate.y * otherResolution.y) / resolution.y);
 }
 
 // Multiple the result of this function call to rotate the coordinates by the given angle.

@@ -1,10 +1,9 @@
 #pragma include "../include/header.glsl"
-#pragma include "../include/convolution_3x3.glsl"
 
-vec4 mainFrag() {
-    vec3 n[9] = get3x3();
+void mainFrag(inout vec4 col) {
+    vec4 n[9] = get3x3();
 
-    return vec4(applyKernel(KERNEL_SHARPEN, n), n[4].a);
+    col = applyKernel(KERNEL_SHARPEN, n);
 }
 
 #pragma include "../include/footer.glsl"

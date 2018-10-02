@@ -1,12 +1,12 @@
 #pragma include "../include/header.glsl"
 
-vec4 mainFrag() {
+void mainFrag(inout vec4 col) {
     vec4 n[9] = get3x3();
 
-    vec4 a = applyKernel(KERNEL_SCHARR_X, n);
-    vec4 b = applyKernel(KERNEL_SCHARR_Y, n);
+    vec3 a = applyKernel(KERNEL_SCHARR_X, n).rgb;
+    vec3 b = applyKernel(KERNEL_SCHARR_Y, n).rgb;
 
-	return sqrt((a * a) + (b * b));
+	col = vec4(sqrt((a * a) + (b * b)), n[4].a);
 }
 
 #pragma include "../include/footer.glsl"
