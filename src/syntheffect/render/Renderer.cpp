@@ -14,12 +14,12 @@
 
 namespace syntheffect {
     namespace render {
-        Renderer::Renderer(int width, int height) : channels_(width, height, GL_RGBA) {
+        Renderer::Renderer(int width, int height) : width_(width), height_(height), channels_(GL_RGBA) {
         }
 
         void Renderer::setup() {
-            channels_.allocate(CHANNEL_OUT);
-            channels_.allocate(getLastName(CHANNEL_OUT));
+            channels_.get_or_allocate(CHANNEL_OUT, width_, height_);
+            channels_.get_or_allocate(getLastName(CHANNEL_OUT), width_, height_);
         }
 
         void Renderer::setPipelines(const std::vector<settings::PipelineSettings>& pipelines) {
@@ -49,24 +49,33 @@ namespace syntheffect {
             // Create handy lookup
             std::map<std::string, std::string> stack_to_asset;
             for (auto const& a : assets) {
-                if (a->isActive()) {
+                if (!a->getStack().empty() && a->isActive()) {
                     stack_to_asset[a->getStack()] = a->getID();
                 }
             }
 
             // Initialize channels that have not been allocated yet
             for (const auto& a : assets) {
-                channels_.allocate(a->getID());
-                channels_.allocate(getLastName(a->getID()));
+                channels_.get_or_allocate(a->getID(), a->getWidth(), a->getHeight());
+                channels_.get_or_allocate(getLastName(a->getID()), a->getWidth(), a->getHeight());
             }
 
             for (const auto& pipeline : pipelines_) {
-                channels_.allocate(pipeline->getOut());
-                channels_.allocate(getLastName(pipeline->getOut()));
+                int width = width_;
+                int height = height_;
+
+                if (channels_.exists(pipeline->getIn())) {
+                    auto source_buf = channels_.at(pipeline->getIn());
+                    width = source_buf->getWidth();
+                    height = source_buf->getHeight();
+                }
+
+                channels_.get_or_allocate(pipeline->getOut(), width, height);
+                channels_.get_or_allocate(getLastName(pipeline->getOut()), width, height);
             }
 
             for (const auto& kv : stack_to_asset) {
-                channels_.allocate(getLastName(kv.first));
+                channels_.get_or_allocate(getLastName(kv.first), width_, height_);
             }
 
             // Save previous buffers
@@ -77,10 +86,10 @@ namespace syntheffect {
                 }
 
                 std::string last_buf_name = getLastName(buf_name);
-                std::shared_ptr<graphics::PingPongBuffer> chan = channels_.get(last_buf_name);
+                std::shared_ptr<graphics::PingPongBuffer> chan = channels_.at(last_buf_name);
                 chan->begin();
                 ofClear(0);
-                channels_.get(buf_name)->drawable()->draw(0, 0);
+                channels_.at(buf_name)->drawable()->draw(0, 0);
                 chan->end();
             }
 
@@ -93,7 +102,7 @@ namespace syntheffect {
                 params.set(param::Param::boolValue("$" + id + "-new_frame", is_new));
                 new_frames[id] = is_new;
 
-                std::shared_ptr<graphics::PingPongBuffer> chan = channels_.get(id);
+                std::shared_ptr<graphics::PingPongBuffer> chan = channels_.at(id);
                 chan->begin();
                 ofClear(0);
                 a->drawScaleCenter(chan->getWidth(), chan->getHeight());
@@ -108,13 +117,13 @@ namespace syntheffect {
 
             // Set texture parameters for channels
             for (const auto& buf_name : channels_.getKeys()) {
-                auto chan = channels_.get(buf_name);
+                auto chan = channels_.at(buf_name);
                 params.setTexture(buf_name, [chan]() { return chan->drawable()->getTexture(); });
             }
 
             // Set texture parameters for stacks
             for (const auto& kv : stack_to_asset) {
-                auto chan = channels_.get(kv.second);
+                auto chan = channels_.at(kv.second);
                 params.setTexture(kv.first, [chan]() { return chan->drawable()->getTexture(); });
             }
 
@@ -130,8 +139,8 @@ namespace syntheffect {
                 std::string in_name = lookupName(stack_to_asset, pipeline->getIn());
                 std::string out_name = lookupName(stack_to_asset, pipeline->getOut());
 
-                std::shared_ptr<graphics::PingPongBuffer> in = channels_.get(in_name);
-                std::shared_ptr<graphics::PingPongBuffer> out = channels_.get(out_name);
+                std::shared_ptr<graphics::PingPongBuffer> in = channels_.at(in_name);
+                std::shared_ptr<graphics::PingPongBuffer> out = channels_.at(out_name);
 
                 pipeline->drawTo(in, out);
             }
@@ -150,13 +159,13 @@ namespace syntheffect {
         }
 
         void Renderer::draw(int width, int height) {
-            auto out = asset::PingPongChannel({CHANNEL_OUT}, channels_.get(CHANNEL_OUT));
+            auto out = asset::PingPongChannel({CHANNEL_OUT}, channels_.at(CHANNEL_OUT));
             out.drawScaleCenter(width, height);
         }
 
         void Renderer::saveImage(const std::string& path) {
             ofPixels pixels;
-            channels_.get(CHANNEL_OUT)->drawable()->readToPixels(pixels);
+            channels_.at(CHANNEL_OUT)->drawable()->readToPixels(pixels);
 
             ofImage image;
             image.setFromPixels(pixels);

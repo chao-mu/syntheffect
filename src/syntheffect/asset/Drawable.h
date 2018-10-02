@@ -20,6 +20,7 @@ namespace syntheffect {
                 virtual bool isFrameNew();
 
                 void drawScaleCenter(float dest_w, float dest_h);
+                static void drawScaleCenter(float w, float h, float dest_w, float dest_h, std::function<void(float, float, float, float)> draw);
         };
     }
 }

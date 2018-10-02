@@ -2,6 +2,8 @@
 
 #include "ofGraphics.h"
 
+#include "syntheffect/asset/Drawable.h"
+
 namespace syntheffect {
     namespace render {
         Pipeline::Pipeline(const std::string& in, const std::string& out) : current_id_(0), in_(in), out_(out) {
@@ -23,12 +25,14 @@ namespace syntheffect {
             out_ = out;
         }
 
-
         void Pipeline::drawTo(std::shared_ptr<graphics::PingPongBuffer> buf_in, std::shared_ptr<graphics::PingPongBuffer> buf_out) {
             // Replace buf out with the contents of buf in so we can apply effects
             buf_out->begin();
             ofClear(0);
-            buf_in->drawable()->draw(0, 0);
+
+            asset::Drawable::drawScaleCenter(buf_in->getWidth(), buf_in->getHeight(), buf_out->getWidth(), buf_out->getHeight(),
+                    [buf_in](float x, float y, float w, float h) { buf_in->drawable()->draw(x, y, w, h); });
+
             buf_out->end();
 
             // Apply effects to buf out (which starts as buf in)

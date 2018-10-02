@@ -1,5 +1,7 @@
 #include "syntheffect/asset/AssetManager.h"
 
+#include "boost/filesystem.hpp"
+
 #include "ofUtils.h"
 
 #include "syntheffect/asset/Video.h"
@@ -136,7 +138,7 @@ namespace syntheffect {
                 kv.second->update(t);
             }
 
-            // Ensure there is an asset active for each stack
+            // Ensure there assets with no stacks are active
             for (const auto& kv : assets_by_id_) {
                 auto& asset = kv.second;
                 if (asset->getStack().empty() && !asset->isActive()) {
@@ -144,6 +146,7 @@ namespace syntheffect {
                 }
             }
 
+            // Ensure there is an asset active for each stack
             for (const auto& kv : assets_by_stack_) {
                 auto asset_ids = kv.second;
                 auto asset = assets_by_id_.at(asset_ids.front());

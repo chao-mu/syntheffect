@@ -25,6 +25,7 @@ namespace syntheffect {
             std::string root = xml::Util::getAttribute<std::string>(xml, "root", false, "");
             if (root.empty()) {
                 root = ofFilePath::getEnclosingDirectory(path);
+                ofLogNotice("assets::Parser", "root was empty: %s", root.c_str());
             } else if (!ofFilePath::isAbsolute(root)) {
                 std::string proj_dir = ofFilePath::getEnclosingDirectory(path);
                 root = ofFilePath::join(proj_dir, root);

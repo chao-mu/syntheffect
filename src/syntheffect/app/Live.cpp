@@ -146,7 +146,9 @@ namespace syntheffect {
 
         void Live::keyPressed(int c) {
             if (c == 'p') {
-                renderer_.saveImage("out-" + ofGetTimestampString() + ".png");
+                const std::string& path = ofFilePath::join(settings_.out_dir, "out-" + ofGetTimestampString() + ".png");
+                ofDirectory::createDirectory(path);
+                renderer_.saveImage(path);
             } else if (c == 'q') {
                 ofExit();
             }

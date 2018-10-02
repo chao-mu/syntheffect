@@ -33,6 +33,8 @@ namespace syntheffect {
                 void draw(int width, int height);
 
             private:
+                int width_;
+                int height_;
                 std::vector<std::shared_ptr<Pipeline>> pipelines_;
                 std::map<std::string, std::string> channel_aliases_;
                 graphics::PingPongBufferMap channels_;

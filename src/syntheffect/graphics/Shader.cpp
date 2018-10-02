@@ -34,6 +34,7 @@ namespace syntheffect {
             int tex_count = 1;
             for (const auto& kv : params.getTextures()) {
                 shader_.setUniformTexture(kv.first, kv.second, tex_count++);
+                shader_.setUniform2f(kv.first + "_resolution", kv.second.getWidth(), kv.second.getHeight());
             }
         }
 

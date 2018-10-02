@@ -4,18 +4,8 @@
 
 namespace syntheffect {
     namespace graphics {
-        PingPongBufferMap::PingPongBufferMap(int width, int height, int internal_format) : buffers_() {
-            width_ = width;
-            height_ = height;
+        PingPongBufferMap::PingPongBufferMap(int internal_format) : buffers_() {
             internal_format_ = internal_format;
-        }
-
-        int PingPongBufferMap::getHeight() {
-            return height_;
-        }
-
-        int PingPongBufferMap::getWidth() {
-            return width_;
         }
 
         std::vector<std::string> PingPongBufferMap::getKeys() {
@@ -27,20 +17,26 @@ namespace syntheffect {
             return keys;
         }
 
-        void PingPongBufferMap::allocate(std::string key) {
-            if (buffers_.count(key) > 0) {
-                return;
+        bool PingPongBufferMap::exists(std::string key) {
+            return buffers_.count(key) > 0;
+        }
+
+        std::shared_ptr<PingPongBuffer> PingPongBufferMap::get_or_allocate(std::string key, int width, int height) {
+            if (exists(key)) {
+                return at(key);
             }
 
             std::shared_ptr<PingPongBuffer> buf = std::make_shared<PingPongBuffer>();
-            buf->allocate(width_, height_, internal_format_);
+            buf->allocate(width, height, internal_format_);
             buffers_[key] = buf;
+
+            return buf;
         }
 
 
-        std::shared_ptr<PingPongBuffer> PingPongBufferMap::get(std::string key) {
+        std::shared_ptr<PingPongBuffer> PingPongBufferMap::at(std::string key) {
             if (buffers_.count(key) == 0) {
-                throw std::runtime_error("Accessing non-existent buffer with key '" + key + "'");
+                throw std::out_of_range("Accessing non-existent buffer with key '" + key + "'");
             }
 
             return buffers_.at(key);

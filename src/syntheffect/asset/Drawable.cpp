@@ -12,8 +12,11 @@ namespace syntheffect {
         }
 
         void Drawable::drawScaleCenter(float dest_width, float dest_height) {
-            float w = getWidth();
-            float h = getHeight();
+            drawScaleCenter(getWidth(), getHeight(), dest_width, dest_height,
+                    [this](float x, float y, float w, float h) { this->draw(x, y, w, h); });
+        }
+
+        void Drawable::drawScaleCenter(float w, float h, float dest_width, float dest_height, std::function<void(float, float, float, float)> draw) {
 
             float aspect = w / h;
             float dest_aspect = dest_width / dest_height;

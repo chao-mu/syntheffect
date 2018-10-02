@@ -41,6 +41,8 @@ namespace syntheffect {
             proj.width = Util::getAttribute<int>(xml, "width", false, 1280);
             proj.height = Util::getAttribute<int>(xml, "height", false, 720);
 
+            proj.out_dir = ofFilePath::join(ofFilePath::getEnclosingDirectory(path), "rendered");
+
             return proj;
          }
 
