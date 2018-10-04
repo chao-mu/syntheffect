@@ -1,24 +1,20 @@
 #pragma include "../include/header.glsl"
 
-uniform sampler2DRect secondTex;
+uniform sampler2DRect right;
 
 uniform bool addAlpha = false;
 uniform bool addRGB = true;
 
-vec4 mainFrag()
-{
-    vec4 left = texture(tex0, textureCoordinate);
-    vec4 right = texture(secondTex, textureCoordinate);
-    
+void mainFrag(inout vec4 leftCol) {
+    vec4 rightCol = texture(right, textureCoordinate);
+
     if (addAlpha) {
-        left.a += right.a
-    }
-    
-    if (addRGB) {
-        left.rgb += right.rgb;
+        leftCol.a += rightCol.a
     }
 
-    return left;
+    if (addRGB) {
+        leftCol.rgb += rightCol.rgb;
+    }
 }
 
 #pragma include "../include/footer.glsl"

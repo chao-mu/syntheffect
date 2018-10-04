@@ -1,12 +1,12 @@
 //  Not my content.
-//  Adaption  of https://www.shadertoy.com/view/MsXSz4  
+//  Adaption  of https://www.shadertoy.com/view/MsXSz4
 #pragma include "../include/header.glsl"
 
-uniform int radius = 9; 
+uniform int radius = 9;
 
-vec4 mainFrag() {
+void mainFrag(inout vec4 col) {
     float n = float((radius + 1) * (radius + 1));
-    int i; 
+    int i;
     int j;
     vec3 m0 = vec3(0.0); vec3 m1 = vec3(0.0); vec3 m2 = vec3(0.0); vec3 m3 = vec3(0.0);
     vec3 s0 = vec3(0.0); vec3 s1 = vec3(0.0); vec3 s2 = vec3(0.0); vec3 s3 = vec3(0.0);
@@ -44,7 +44,7 @@ vec4 mainFrag() {
         }
     }
 
-    
+
     vec3 color = vec3(0.);
 
     float min_sigma2 = 1e+2;
@@ -83,8 +83,8 @@ vec4 mainFrag() {
         min_sigma2 = sigma2;
         color = m3;
     }
-    
-    return vec4(color, 1);
+
+    col = vec4(color, 1);
 }
 
 #pragma include "../include/footer.glsl"

@@ -29,13 +29,26 @@ out vec4 outputColor;
 
 in vec2 textureCoordinate;
 
-#define GET_OTHER_TEXTURE(texName) \
-    texture( ## texName ## , otherTextureCoordinate( ## texName ## _resolution))
+#define DESC(s) #s
 
-#define DEFINE_TEXTURE(name) \
+#define DEFINE_OUTPUT_CHANNEL(num, name, desc)
+
+#define GET_OTHER_TEXTURE(texName) \
+    texture(texName ## , otherTextureCoordinate(texName ## _resolution))
+
+#define DEFINE_INPUT_TEXTURE(name, desc) \
     uniform sampler2DRect name; \
     uniform bool name ## _passed; \
-    uniform vec2 name ## _resolution; 
+    uniform vec2 name ## _resolution;
+
+#define DEFINE_INPUT_TEXTURE_CHANNEL(texName, name, i, def, desc) \
+    float get_ ## texName ## _ ## name ## (vec4 channels) { \
+        if (!texName ## _passed) { \
+            return def; \
+        } \
+        return channels[i]; \
+    }
+
 
 // From the book of shaders
 mat2 rotate2d(float angle) {
@@ -95,14 +108,14 @@ vec2 denormalize_1to1(vec2 uv) {
 // Produce a 1 if the provided value is <= 0, with a small transitional blur
 #define S(v) smoothstep(blur, 0., v)
 
-// Draw (return 1) a circle at the origin with the radius of r. 
+// Draw (return 1) a circle at the origin with the radius of r.
 #define circle(U, r) S(length(U) - r)
 
 // Draw (return 1) a crescent made from two overlapping circles.
 // The overlap is controlled by the provided offset. The two radiuses are determined by r.
 #define crescent(U, offset, r) circle(U, r) - circle( U - vec2(offset,0), r)
 
-// Draw a line segment of length and width. 
+// Draw a line segment of length and width.
 #define segment(U, len, width)  S( abs(U.x)-width ) * S( abs(U.y)-len )
 
 */

@@ -83,6 +83,11 @@ namespace syntheffect {
                 throw std::runtime_error("Missing 'out' attribute in pipeline element");
             }
 
+            ofXml::Search search = xml.find("*");
+            if (search.empty()) {
+                return;
+            }
+
             settings::PipelineSettings pipeline;
             pipeline.in = in;
             pipeline.out = out;

@@ -19,15 +19,15 @@ uniform float high = 1;
 uniform float bandRotation = 0;
 uniform float bleed = 0;
 
-DEFINE_TEXTURE(input0)
-DEFINE_TEXTURE(input1)
-DEFINE_TEXTURE(input2)
-DEFINE_TEXTURE(input3)
-DEFINE_TEXTURE(input4)
-DEFINE_TEXTURE(input5)
-DEFINE_TEXTURE(input6)
-DEFINE_TEXTURE(input7)
-DEFINE_TEXTURE(inputDefault)
+DEFINE_INPUT_TEXTURE(input0, DESC("input 1"))
+DEFINE_INPUT_TEXTURE(input1, DESC("input 2"))
+DEFINE_INPUT_TEXTURE(input2, DESC("input 3"))
+DEFINE_INPUT_TEXTURE(input3, DESC("input 4"))
+DEFINE_INPUT_TEXTURE(input4, DESC("input 5"))
+DEFINE_INPUT_TEXTURE(input5, DESC("input 6"))
+DEFINE_INPUT_TEXTURE(input6, DESC("input 7"))
+DEFINE_INPUT_TEXTURE(input7, DESC("input 8"))
+DEFINE_INPUT_TEXTURE(inputDefault, DESC("input chosen when input not defined"))
 
 void mainFrag(inout vec4 col) {
     //float amp = texture(amplitudeTex, textureCoordinate).x;

@@ -77,7 +77,7 @@
 # add a runtime path to search for those shared libraries, since they aren't 
 # incorporated directly into the final executable application binary.
 # TODO: should this be a default setting?
- PROJECT_LDFLAGS= `pkg-config --libs yaml-cpp` -L/usr/local/opt/openssl/lib
+PROJECT_LDFLAGS= `pkg-config --libs yaml-cpp` -L/usr/local/opt/openssl/lib
 #
 ################################################################################
 # PROJECT DEFINES

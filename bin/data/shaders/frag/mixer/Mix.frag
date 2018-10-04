@@ -1,6 +1,6 @@
 #pragma include "../include/header.glsl"
 
-uniform sampler2DRect secondTex;
+uniform sampler2DRect right;
 uniform float amount = 0.5;
 
 uniform bool redEnabled = true;
@@ -40,7 +40,7 @@ float mixWithMethod(float left, float right, float amount) {
 
 void mainFrag(inout vec4 left)
 {
-    vec4 right = texture(secondTex, textureCoordinate);
+    vec4 right = texture(right, textureCoordinate);
 
     if (redEnabled) {
         left.r = mixWithMethod(left.r, right.r, amount);

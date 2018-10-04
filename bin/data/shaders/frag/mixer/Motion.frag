@@ -1,17 +1,17 @@
 #pragma include "../include/header.glsl"
 
-uniform sampler2DRect secondTex;
+uniform sampler2DRect last;
 uniform float threshold = 0.1;
 
-void mainFrag(inout vec4 col)
+void mainFrag(inout vec4 left)
 {
     vec4 new = texture(tex0, textureCoordinate);
-    vec4 old = texture(secondTex, textureCoordinate);
-    
+    vec4 old = texture(last, textureCoordinate);
+
     if (abs(luminance(new.rgb) - luminance(old.rgb)) > threshold) {
-        col = new;
+        left = new;
     } else {
-        col = old;
+        left = old;
     }
 }
 
