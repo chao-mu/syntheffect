@@ -9,7 +9,7 @@ void mainFrag(inout vec4 leftCol) {
     vec4 rightCol = texture(right, textureCoordinate);
 
     if (addAlpha) {
-        leftCol.a += rightCol.a
+        leftCol.a += rightCol.a;
     }
 
     if (addRGB) {
