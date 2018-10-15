@@ -35,6 +35,7 @@ namespace syntheffect {
             proj.assets_path = ofFilePath::join(root, Util::getAttribute<std::string>(xml, "assets", false, "assets.xml"));
             proj.pipelines_path = ofFilePath::join(root, Util::getAttribute<std::string>(xml, "pipelines", false, "pipelines.xml"));
             proj.inputs_path = ofFilePath::join(root, Util::getAttribute<std::string>(xml, "inputs", false, "inputs.xml"));
+            proj.rack_path = ofFilePath::join(root, Util::getAttribute<std::string>(xml, "rack", false, "rack.yml"));
 
             proj.pipelines = parsePipelines(proj.pipelines_path);
 

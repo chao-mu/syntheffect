@@ -4,6 +4,7 @@
 #include <tclap/CmdLine.h>
 
 #include "ofFileUtils.h"
+#include "ofMain.h"
 
 #include "syntheffect/app/Live.h"
 #include "syntheffect/app/Studio.h"
@@ -61,7 +62,7 @@ int main(int argc, const char *argv[]){
         win_settings.setPosition(ofVec2f(100,0));
         win_settings.windowMode = OF_WINDOW;
         auto studio_window = ofCreateWindow(win_settings);
-        ofRunApp(studio_window, std::make_shared<syntheffect::app::Studio>());
+        //ofRunApp(studio_window, std::make_shared<syntheffect::app::Studio>());
     }
 
     ofRunMainLoop();

@@ -1,0 +1,35 @@
+#ifndef SYNTHEFFECT_RACK_MODULE
+#define SYNTHEFFECT_RACK_MODULE
+
+#include <string>
+#include <vector>
+#include <utility>
+#include <map>
+#include <memory>
+
+#include "syntheffect/rack/Channel.h"
+
+namespace syntheffect {
+    namespace rack {
+        class Module {
+            public:
+                Module(const std::string& id);
+                virtual void setup(int width, int height, int internal_format) = 0;
+                virtual void start();
+                virtual bool isReady();
+                virtual void update(float t) = 0;
+
+                void setInput(const std::string& name, std::shared_ptr<Channel> channel);
+
+                std::shared_ptr<Channel> getOutput(const std::string& name);
+
+                const std::string id_;
+
+            protected:
+                std::map<std::string, std::shared_ptr<Channel>> output_channels_;
+                std::map<std::string, std::shared_ptr<Channel>> input_channels_;
+        };
+    }
+}
+
+#endif

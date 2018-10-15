@@ -1,3 +1,4 @@
+/*
 #include "syntheffect/app/Studio.h"
 
 namespace syntheffect {
@@ -25,3 +26,4 @@ namespace syntheffect {
         }
     }
 }
+*/

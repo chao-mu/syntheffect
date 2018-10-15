@@ -65,28 +65,28 @@ const mat3 XYZ_2_RGB = (mat3(
      0.0556434,-0.2040259, 1.0572252
 ));
 
-// Used to convert from YUV to RGB according to the weights given in BT.601 
+// Used to convert from YUV to RGB according to the weights given in BT.601
 const mat3 YUV_BT601_2_RGB = (mat3(
     0.299, 0.587, 0.144,
     -0.14713, -0.28886, 0.436,
     0.615, -0.51499, -0.10001
 ));
 
-// Used to convert from RGB to YUV according to the weights given in BT.601 
+// Used to convert from RGB to YUV according to the weights given in BT.601
 const mat3 RGB_2_YUV_BT601 = (mat3(
     1, 0, 1.13983,
     1, -0.39465, -0.58060,
     1, 2.03211, 0
 ));
 
-// Used to convert from YUV to RGB according to the weights given in BT.709 
+// Used to convert from YUV to RGB according to the weights given in BT.709
 const mat3 YUV_BT709_2_RGB = (mat3(
     0.216, 0.7152, 0.0722,
     -0.09991, -0.33609, 0.436,
     0.615, -0.55861, -0.05639
 ));
 
-// Used to convert from RGB to YUV according to the weights given in BT.709 
+// Used to convert from RGB to YUV according to the weights given in BT.709
 const mat3 RGB_2_YUV_BT709 = (mat3(
     1, 0, 1.28033,
     1, -0.21482, -0.38059,
@@ -289,9 +289,9 @@ vec3 yuv_bt709_to_rgb(vec3 yuv) {
     return YUV_BT709_2_RGB * yuv;
 }
 
-// Returns the chrominance according to RGB_2_YCBCR, translated to range [0, 1]
-vec2 rgb_to_ycbcr_chroma(vec3 rgb) {
-    return vec2(dot(RGB_2_YCBCR[1], rgb), dot(RGB_2_YCBCR[2], rgb)) + 0.5;
+// RGB to YCbCr, shifting Cb and Cr to [0, 1]
+vec3 rgb_to_ycbcr(vec3 rgb) {
+    return (rgb * RGB_2_YCBCR) + vec3(0.0, 0.5, 0.5);
 }
 
 // Additional conversions converting to rgb first and then to the desired
@@ -383,3 +383,12 @@ vec3 hue_to_yuv_bt709(float hue)  { return rgb_to_yuv_bt709(hue_to_rgb(hue)); }
 vec3 hsv_to_yuv_bt709(vec3 hsv)   { return rgb_to_yuv_bt709(hsv_to_rgb(hsv)); }
 vec3 hsl_to_yuv_bt709(vec3 hsl)   { return rgb_to_yuv_bt709(hsl_to_rgb(hsl)); }
 vec3 hcy_to_yuv_bt709(vec3 hcy)   { return rgb_to_yuv_bt709(hcy_to_rgb(hcy)); }
+
+// YCbCr (shifting Cb and Cr to [0, 1])
+vec3 srgb_to_ycbcr(vec3 srgb) { return rgb_to_ycbcr(srgb_to_rgb(srgb)); }
+vec3 xyz_to_ycbcr(vec3 xyz)   { return rgb_to_ycbcr(xyz_to_rgb(xyz)); }
+vec3 xyY_to_ycbcr(vec3 xyY)   { return rgb_to_ycbcr(xyY_to_rgb(xyY)); }
+vec3 hue_to_ycbcr(float hue)  { return rgb_to_ycbcr(hue_to_rgb(hue)); }
+vec3 hsv_to_ycbcr(vec3 hsv)   { return rgb_to_ycbcr(hsv_to_rgb(hsv)); }
+vec3 hsl_to_ycbcr(vec3 hsl)   { return rgb_to_ycbcr(hsl_to_rgb(hsl)); }
+vec3 hcy_to_ycbcr(vec3 hcy)   { return rgb_to_ycbcr(hcy_to_rgb(hcy)); }

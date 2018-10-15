@@ -1,3 +1,4 @@
+/*
 #ifndef SYNTHEFFECT_APP_STUDIO
 #define SYNTHEFFECT_APP_STUDIO
 
@@ -21,3 +22,4 @@ namespace syntheffect {
     }
 }
 #endif
+*/

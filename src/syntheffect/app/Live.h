@@ -7,9 +7,9 @@
 #include <memory>
 
 #include "ofBaseApp.h"
+#include "ofSoundStream.h"
 
-#include "syntheffect/render/Renderer.h"
-#include "syntheffect/asset/AssetManager.h"
+#include "syntheffect/rack/Rack.h"
 #include "syntheffect/param/Param.h"
 #include "syntheffect/input/InputManager.h"
 #include "syntheffect/app/RecordingThread.h"
@@ -30,13 +30,13 @@ namespace syntheffect {
                 //void audioIn(ofSoundBuffer& buf) override;
 
                 void handleControlState(const input::ControlState& state);
+                void screenshot();
 
             private:
                 void recordFrame();
 
-                asset::AssetManager asset_manager_;
-                render::Renderer renderer_;
                 input::InputManager input_manager_;
+                rack::Rack rack_;
 
                 settings::ProjectSettings settings_;
 

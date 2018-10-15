@@ -15,6 +15,7 @@ namespace syntheffect {
             std::string inputs_path;
             std::string out_path;
             std::string out_dir;
+            std::string rack_path;
 
             int width;
             int height;
