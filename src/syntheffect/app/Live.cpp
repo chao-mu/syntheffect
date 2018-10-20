@@ -11,10 +11,10 @@
 #include "syntheffect/input/Parser.h"
 #include "syntheffect/asset/Drawable.h"
 
-#define FPS 60
+#define FPS 30
 
 void setup() {
-    TIME_SAMPLE_SET_FRAMERATE(FPS);
+    //TIME_SAMPLE_SET_FRAMERATE(FPS);
 }
 
 namespace syntheffect {
@@ -86,14 +86,14 @@ namespace syntheffect {
 
             params_.set(param::Param::floatValue("time", t));
 
-            TS_START("input_manager_.update");
-            input_manager_.update(t);
-            TS_STOP("input_manager_.update");
+            TS_START_NIF("rack_.updateUnready");
+            bool all_ready = rack_.updateUnready(t);
+            TS_STOP_NIF("rack_.updateUnready");
+            if (all_ready) {
+                TS_START_NIF("rack_.update");
+                rack_.update(t);
+                TS_STOP_NIF("rack_.update");
 
-            TS_START("rack_.update");
-            rack_.update(t);
-            TS_STOP("rack_.update");
-            if (rack_.isReady()) {
                 if (recording_) {
                     recordFrame();
                 }
@@ -101,9 +101,11 @@ namespace syntheffect {
         }
 
         void Live::draw() {
+            TS_START("rack_.draw");
             ofTexture& tex = rack_.getTexture();
             asset::Drawable::drawScaleCenter(tex.getWidth(), tex.getHeight(), ofGetWindowWidth(), ofGetWindowHeight(),
                     [tex](float x, float y, float w, float h) { tex.draw(x, y, w, h); });
+            TS_STOP("rack_.draw");
 
             ofSetWindowTitle("fps: " + std::to_string(ofGetFrameRate()));
         }

@@ -6,6 +6,8 @@
 #include "ofLog.h"
 #include "ofPoint.h"
 
+#include "ofxTimeMeasurements.h"
+
 #include "syntheffect/rack/Channel.h"
 
 #define CHANNELS_PER_TEX 3
@@ -28,14 +30,11 @@ namespace syntheffect {
 
             YAML::Node outputs = settings["outputs"];
             for (std::size_t i=CHANNELS_PER_TEX, j=1; i <= outputs.size(); i += CHANNELS_PER_TEX) {
-                ofLogNotice("Shader", "creating");
                 outputs_.createAndAttachTexture(internal_format, j++);
             }
 
             for (std::size_t i=0; i < outputs.size(); i++) {
                 int texture_idx = (i / CHANNELS_PER_TEX);
-
-                ofLogNotice("Shader", "name=%s i=%zu tex_idx=%d mod=%zu", outputs[i].as<std::string>().c_str(), i, texture_idx, i % CHANNELS_PER_TEX);
                 output_channels_[outputs[i].as<std::string>()] = std::make_shared<Channel>(outputs_.getTexture(texture_idx), i % CHANNELS_PER_TEX);
             }
 
@@ -102,12 +101,20 @@ namespace syntheffect {
                     shader_.setUniform1i(name + "ChannelIdx", -1);
                     shader_.setUniform1i(name + "PropertyPassed", 0);
                 }
+
+                std::string multiplier_name = name + "_multiplier";
+                shader_.setUniform1f(multiplier_name, getInputConstant(multiplier_name, 1));
+
+                std::string shift_name = name + "_shift";
+                shader_.setUniform1f(shift_name, getInputConstant(shift_name, 0));
             }
 
             shader_.setUniform1f("time", t);
             shader_.setUniform2f("resolution", outputs_.getWidth(), outputs_.getHeight());
 
+            TS_START("Shader::update mesh_.draw");
             mesh_.draw();
+            TS_STOP("Shader::update mesh_.draw");
 
             shader_.end();
             outputs_.end();

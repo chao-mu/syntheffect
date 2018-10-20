@@ -4,12 +4,15 @@
 #include "yaml-cpp/yaml.h"
 
 #include "ofGraphics.h"
+#include "ofxTimeMeasurements.h"
 
 #include "syntheffect/rack/Video.h"
 #include "syntheffect/rack/Shader.h"
+#include "syntheffect/rack/Global.h"
 
 #define VIDEO_MODULE "video"
 #define OUT_ID "out"
+#define GLOBAL_ID "global"
 
 namespace syntheffect {
     namespace rack {
@@ -21,6 +24,8 @@ namespace syntheffect {
             fbo_.begin();
             ofClear(0);
             fbo_.end();
+
+            modules_[GLOBAL_ID] = std::make_shared<Global>(GLOBAL_ID);
 
             YAML::Node settings = YAML::LoadFile(path_);
 
@@ -76,7 +81,7 @@ namespace syntheffect {
                     continue;
                 }
 
-                ofLogNotice("Rack", "processing inputs for " + to_module_id);
+                //ofLogNotice("Rack", "processing inputs for " + to_module_id);
 
                 for (const auto& kv : properties["inputs"]) {
                     const std::string to_channel_id = kv.first.as<std::string>();
@@ -106,7 +111,7 @@ namespace syntheffect {
 
                         auto from_module = modules_.at(from_module_id);
 
-                        ofLogNotice("Rack", "Setting  input "  + from_module_id + "." + from_channel_id);
+                        //ofLogNotice("Rack", "Setting  input "  + from_module_id + "." + from_channel_id);
                         to_module->setInput(to_channel_id, from_module->getOutput(from_channel_id));
                     }
                 }
@@ -117,9 +122,8 @@ namespace syntheffect {
             modules_[module->id_] = module;
         }
 
-        void Rack::update(float t) {
-            // Update those not ready;
-            bool all_ready = true;
+        bool Rack::updateUnready(float t) {
+           bool all_ready = true;
             for (const auto& kv : modules_) {
                 if (!kv.second->isReady()) {
                     kv.second->update(t);
@@ -127,13 +131,20 @@ namespace syntheffect {
                 }
             }
 
-            if (!all_ready) {
-                return;
-            }
+            return all_ready;
+        }
 
+        void Rack::update(float t) {
+            TS_START("Rack::update update children");
+            // Update global first
+            auto global = modules_.at(GLOBAL_ID);
+            global->update(t);
             for (const auto& kv : modules_) {
-                kv.second->update(t);
+                if (kv.second != global) {
+                    kv.second->update(t);
+                }
             }
+            TS_STOP("Rack::update update children");
 
             auto out = modules_.at(OUT_ID);
             auto r = out->getOutput("red");
@@ -157,22 +168,6 @@ namespace syntheffect {
             }
         }
 
-        bool Rack::isReady() {
-            if (is_ready_) {
-                return true;
-            }
-
-            for (const auto& kv : modules_) {
-                if (!kv.second->isReady()) {
-                    return false;
-                }
-            }
-
-            is_ready_ = true;
-
-            return true;
-        }
-
         ofTexture& Rack::getTexture() {
             return fbo_.getTexture();
         }
@@ -182,3 +177,4 @@ namespace syntheffect {
 #undef COMPOSITE_MODULE
 #undef VIDEO_MODULE
 #undef OUT_NAME
+#undef GLOBAL_NAME

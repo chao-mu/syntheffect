@@ -20,6 +20,7 @@ namespace syntheffect {
                 virtual void update(float t) = 0;
 
                 void setInput(const std::string& name, std::shared_ptr<Channel> channel);
+                float getInputConstant(const std::string& name, float def);
 
                 std::shared_ptr<Channel> getOutput(const std::string& name);
 

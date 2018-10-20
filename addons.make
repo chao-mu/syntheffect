@@ -2,4 +2,3 @@ ofxTimeMeasurements
 ofxSoundObjects
 ofxAudioFile
 ofxFft
-ofxDatGui

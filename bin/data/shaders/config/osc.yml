@@ -1,0 +1,14 @@
+frag: "Osc"
+vert: "Passthrough"
+
+inputs:
+    - freq
+    - multiplier
+    - shift
+    - vertical
+
+outputs:
+    - sine
+    - triangle
+    - square
+    - sawtooth

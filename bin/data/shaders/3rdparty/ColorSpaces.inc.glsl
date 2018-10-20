@@ -33,6 +33,7 @@ https://en.wikipedia.org/wiki/SRGB
 
 Some are from:
 http://www.chilliant.com/rgb2hsv.html
+https://www.fourcc.org/fccyvrgb.php
 */
 
 
@@ -63,42 +64,6 @@ const mat3 XYZ_2_RGB = (mat3(
      3.2404542,-1.5371385,-0.4985314,
     -0.9692660, 1.8760108, 0.0415560,
      0.0556434,-0.2040259, 1.0572252
-));
-
-// Used to convert from YUV to RGB according to the weights given in BT.601
-const mat3 YUV_BT601_2_RGB = (mat3(
-    0.299, 0.587, 0.144,
-    -0.14713, -0.28886, 0.436,
-    0.615, -0.51499, -0.10001
-));
-
-// Used to convert from RGB to YUV according to the weights given in BT.601
-const mat3 RGB_2_YUV_BT601 = (mat3(
-    1, 0, 1.13983,
-    1, -0.39465, -0.58060,
-    1, 2.03211, 0
-));
-
-// Used to convert from YUV to RGB according to the weights given in BT.709
-const mat3 YUV_BT709_2_RGB = (mat3(
-    0.216, 0.7152, 0.0722,
-    -0.09991, -0.33609, 0.436,
-    0.615, -0.55861, -0.05639
-));
-
-// Used to convert from RGB to YUV according to the weights given in BT.709
-const mat3 RGB_2_YUV_BT709 = (mat3(
-    1, 0, 1.28033,
-    1, -0.21482, -0.38059,
-    1, 2.12798, 0
-));
-
-// RGB to YCbCr - ITU-R Recommendation 624-4 System B,G
-// Y is [0, 1], Cb and Cr are [-0.5, 0.5]
-const mat3 RGB_2_YCBCR = (mat3(
-    0.299, 0.587, 0.114, // Y
-    -0.169, -0.331, 0.500,  // Cb
-    0.500, -0.419, -0.081 // Cr
 ));
 
 const vec3 LUMA_COEFFS = vec3(0.2126, 0.7152, 0.0722);
@@ -273,26 +238,25 @@ vec3 rgb_to_hcy(vec3 rgb)
     return vec3(HCV.x, HCV.y, Y);
 }
 
-vec3 rgb_to_yuv_bt601(vec3 rgb) {
-    return RGB_2_YUV_BT601 * rgb;
-}
-
-vec3 yuv_bt601_to_rgb(vec3 yuv) {
-    return YUV_BT601_2_RGB * yuv;
-}
-
-vec3 rgb_to_yuv_bt709(vec3 rgb) {
-    return RGB_2_YUV_BT709 * rgb;
-}
-
-vec3 yuv_bt709_to_rgb(vec3 yuv) {
-    return YUV_BT709_2_RGB * yuv;
-}
-
-// RGB to YCbCr, shifting Cb and Cr to [0, 1]
+// RGB to YCbCr, ranges [0, 1]
 vec3 rgb_to_ycbcr(vec3 rgb) {
-    return (rgb * RGB_2_YCBCR) + vec3(0.0, 0.5, 0.5);
+    float y = 0.299 * rgb.r + 0.587 * rgb.g + 0.114 * rgb.b;
+    float cb = (rgb.b - y) * 0.565;
+    float cr = (rgb.r - y) * 0.713;
+
+    return vec3(y, cb, cr);
 }
+
+// YCbCr to RGB
+vec3 ycbcr_to_rgb(vec3 yuv) {
+    return vec3(
+        yuv.x + 1.403 * yuv.z,
+        yuv.x - 0.344 * yuv.y - 0.714 * yuv.z,
+        yuv.x + 1.770 * yuv.y
+    );
+}
+
+
 
 // Additional conversions converting to rgb first and then to the desired
 // color space.
@@ -304,8 +268,7 @@ vec3 hue_to_srgb(float hue) { return rgb_to_srgb(hue_to_rgb(hue)); }
 vec3 hsv_to_srgb(vec3 hsv)  { return rgb_to_srgb(hsv_to_rgb(hsv)); }
 vec3 hsl_to_srgb(vec3 hsl)  { return rgb_to_srgb(hsl_to_rgb(hsl)); }
 vec3 hcy_to_srgb(vec3 hcy)  { return rgb_to_srgb(hcy_to_rgb(hcy)); }
-vec3 yuv_bt601_to_srgb(vec3 yuv)  { return rgb_to_srgb(yuv_bt601_to_rgb(yuv)); }
-vec3 yuv_bt709_to_srgb(vec3 yuv)  { return rgb_to_srgb(yuv_bt709_to_rgb(yuv)); }
+vec3 ycbcr_to_srgb(vec3 yuv)  { return rgb_to_srgb(ycbcr_to_rgb(yuv)); }
 
 // To xyz
 vec3 srgb_to_xyz(vec3 srgb) { return rgb_to_xyz(srgb_to_rgb(srgb)); }
@@ -313,8 +276,7 @@ vec3 hue_to_xyz(float hue)  { return rgb_to_xyz(hue_to_rgb(hue)); }
 vec3 hsv_to_xyz(vec3 hsv)   { return rgb_to_xyz(hsv_to_rgb(hsv)); }
 vec3 hsl_to_xyz(vec3 hsl)   { return rgb_to_xyz(hsl_to_rgb(hsl)); }
 vec3 hcy_to_xyz(vec3 hcy)   { return rgb_to_xyz(hcy_to_rgb(hcy)); }
-vec3 yuv_bt601_to_xyz(vec3 yuv)   { return rgb_to_xyz(yuv_bt601_to_rgb(yuv)); }
-vec3 yuv_bt709_to_xyz(vec3 yuv)   { return rgb_to_xyz(yuv_bt709_to_rgb(yuv)); }
+vec3 ycbcr_to_xyz(vec3 yuv)   { return rgb_to_xyz(ycbcr_to_rgb(yuv)); }
 
 // To xyY
 vec3 srgb_to_xyY(vec3 srgb) { return rgb_to_xyY(srgb_to_rgb(srgb)); }
@@ -322,8 +284,7 @@ vec3 hue_to_xyY(float hue)  { return rgb_to_xyY(hue_to_rgb(hue)); }
 vec3 hsv_to_xyY(vec3 hsv)   { return rgb_to_xyY(hsv_to_rgb(hsv)); }
 vec3 hsl_to_xyY(vec3 hsl)   { return rgb_to_xyY(hsl_to_rgb(hsl)); }
 vec3 hcy_to_xyY(vec3 hcy)   { return rgb_to_xyY(hcy_to_rgb(hcy)); }
-vec3 yuv_bt601_to_xyY(vec3 yuv)   { return rgb_to_xyY(yuv_bt601_to_rgb(yuv)); }
-vec3 yuv_bt709_to_xyY(vec3 yuv)   { return rgb_to_xyY(yuv_bt709_to_rgb(yuv)); }
+vec3 ycbcr_to_xyY(vec3 yuv)   { return rgb_to_xyY(ycbcr_to_rgb(yuv)); }
 
 // To HCV
 vec3 srgb_to_hcv(vec3 srgb) { return rgb_to_hcv(srgb_to_rgb(srgb)); }
@@ -333,8 +294,7 @@ vec3 hue_to_hcv(float hue)  { return rgb_to_hcv(hue_to_rgb(hue)); }
 vec3 hsv_to_hcv(vec3 hsv)   { return rgb_to_hcv(hsv_to_rgb(hsv)); }
 vec3 hsl_to_hcv(vec3 hsl)   { return rgb_to_hcv(hsl_to_rgb(hsl)); }
 vec3 hcy_to_hcv(vec3 hcy)   { return rgb_to_hcv(hcy_to_rgb(hcy)); }
-vec3 yuv_bt601_to_hcv(vec3 yuv)   { return rgb_to_hcy(yuv_bt601_to_rgb(yuv)); }
-vec3 yuv_bt709_to_hcv(vec3 yuv)   { return rgb_to_hcy(yuv_bt709_to_rgb(yuv)); }
+vec3 ycbcr_to_hcv(vec3 yuv)   { return rgb_to_hcy(ycbcr_to_rgb(yuv)); }
 
 // To HSV
 vec3 srgb_to_hsv(vec3 srgb) { return rgb_to_hsv(srgb_to_rgb(srgb)); }
@@ -343,8 +303,7 @@ vec3 xyY_to_hsv(vec3 xyY)   { return rgb_to_hsv(xyY_to_rgb(xyY)); }
 vec3 hue_to_hsv(float hue)  { return rgb_to_hsv(hue_to_rgb(hue)); }
 vec3 hsl_to_hsv(vec3 hsl)   { return rgb_to_hsv(hsl_to_rgb(hsl)); }
 vec3 hcy_to_hsv(vec3 hcy)   { return rgb_to_hsv(hcy_to_rgb(hcy)); }
-vec3 yuv_bt601_to_hsv(vec3 yuv)   { return rgb_to_hsv(yuv_bt601_to_rgb(yuv)); }
-vec3 yuv_bt709_to_hsv(vec3 yuv)   { return rgb_to_hsv(yuv_bt709_to_rgb(yuv)); }
+vec3 ycbcr_to_hsv(vec3 yuv)   { return rgb_to_hsv(ycbcr_to_rgb(yuv)); }
 
 // To HSL
 vec3 srgb_to_hsl(vec3 srgb) { return rgb_to_hsl(srgb_to_rgb(srgb)); }
@@ -353,8 +312,7 @@ vec3 xyY_to_hsl(vec3 xyY)   { return rgb_to_hsl(xyY_to_rgb(xyY)); }
 vec3 hue_to_hsl(float hue)  { return rgb_to_hsl(hue_to_rgb(hue)); }
 vec3 hsv_to_hsl(vec3 hsv)   { return rgb_to_hsl(hsv_to_rgb(hsv)); }
 vec3 hcy_to_hsl(vec3 hcy)   { return rgb_to_hsl(hcy_to_rgb(hcy)); }
-vec3 yuv_bt601_to_hsl(vec3 yuv)   { return rgb_to_hsl(yuv_bt601_to_rgb(yuv)); }
-vec3 yuv_bt709_to_hsl(vec3 yuv)   { return rgb_to_hsl(yuv_bt709_to_rgb(yuv)); }
+vec3 ycbcr_to_hsl(vec3 yuv)   { return rgb_to_hsl(ycbcr_to_rgb(yuv)); }
 
 // To HCY
 vec3 srgb_to_hcy(vec3 srgb) { return rgb_to_hcy(srgb_to_rgb(srgb)); }
@@ -363,28 +321,9 @@ vec3 xyY_to_hcy(vec3 xyY)   { return rgb_to_hcy(xyY_to_rgb(xyY)); }
 vec3 hue_to_hcy(float hue)  { return rgb_to_hcy(hue_to_rgb(hue)); }
 vec3 hsv_to_hcy(vec3 hsv)   { return rgb_to_hcy(hsv_to_rgb(hsv)); }
 vec3 hsl_to_hcy(vec3 hsl)   { return rgb_to_hcy(hsl_to_rgb(hsl)); }
-vec3 yuv_bt601_to_hcy(vec3 yuv)   { return rgb_to_hcy(yuv_bt601_to_rgb(yuv)); }
-vec3 yuv_bt709_to_hcy(vec3 yuv)   { return rgb_to_hcy(yuv_bt709_to_rgb(yuv)); }
+vec3 ycbcr_to_hcy(vec3 yuv)   { return rgb_to_hcy(ycbcr_to_rgb(yuv)); }
 
-// YUV BT.601
-vec3 srgb_to_yuv_bt601(vec3 srgb) { return rgb_to_yuv_bt601(srgb_to_rgb(srgb)); }
-vec3 xyz_to_yuv_bt601(vec3 xyz)   { return rgb_to_yuv_bt601(xyz_to_rgb(xyz)); }
-vec3 xyY_to_yuv_bt601(vec3 xyY)   { return rgb_to_yuv_bt601(xyY_to_rgb(xyY)); }
-vec3 hue_to_yuv_bt601(float hue)  { return rgb_to_yuv_bt601(hue_to_rgb(hue)); }
-vec3 hsv_to_yuv_bt601(vec3 hsv)   { return rgb_to_yuv_bt601(hsv_to_rgb(hsv)); }
-vec3 hsl_to_yuv_bt601(vec3 hsl)   { return rgb_to_yuv_bt601(hsl_to_rgb(hsl)); }
-vec3 hcy_to_yuv_bt601(vec3 hcy)   { return rgb_to_yuv_bt601(hcy_to_rgb(hcy)); }
-
-// YUV BT.709
-vec3 srgb_to_yuv_bt709(vec3 srgb) { return rgb_to_yuv_bt709(srgb_to_rgb(srgb)); }
-vec3 xyz_to_yuv_bt709(vec3 xyz)   { return rgb_to_yuv_bt709(xyz_to_rgb(xyz)); }
-vec3 xyY_to_yuv_bt709(vec3 xyY)   { return rgb_to_yuv_bt709(xyY_to_rgb(xyY)); }
-vec3 hue_to_yuv_bt709(float hue)  { return rgb_to_yuv_bt709(hue_to_rgb(hue)); }
-vec3 hsv_to_yuv_bt709(vec3 hsv)   { return rgb_to_yuv_bt709(hsv_to_rgb(hsv)); }
-vec3 hsl_to_yuv_bt709(vec3 hsl)   { return rgb_to_yuv_bt709(hsl_to_rgb(hsl)); }
-vec3 hcy_to_yuv_bt709(vec3 hcy)   { return rgb_to_yuv_bt709(hcy_to_rgb(hcy)); }
-
-// YCbCr (shifting Cb and Cr to [0, 1])
+// YCbCr
 vec3 srgb_to_ycbcr(vec3 srgb) { return rgb_to_ycbcr(srgb_to_rgb(srgb)); }
 vec3 xyz_to_ycbcr(vec3 xyz)   { return rgb_to_ycbcr(xyz_to_rgb(xyz)); }
 vec3 xyY_to_ycbcr(vec3 xyY)   { return rgb_to_ycbcr(xyY_to_rgb(xyY)); }

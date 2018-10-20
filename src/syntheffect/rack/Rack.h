@@ -18,7 +18,7 @@ namespace syntheffect {
                 void setup(int width, int height, int internal_format=GL_RGBA);
                 void start();
                 void update(float t);
-                bool isReady();
+                bool updateUnready(float t);
 
                 ofTexture& getTexture();
 

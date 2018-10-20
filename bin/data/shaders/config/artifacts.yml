@@ -1,0 +1,12 @@
+frag: "Artifacts"
+vert: "Passthrough"
+inputs:
+    - "red"
+    - "green"
+    - "blue"
+    - "blood"
+    - "bloodMultiplier"
+outputs:
+    - "red"
+    - "green"
+    - "blue"

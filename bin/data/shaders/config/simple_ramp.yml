@@ -1,0 +1,5 @@
+frag: "SimpleRamp"
+vert: "Passthrough"
+outputs:
+    - "h"
+    - "v"

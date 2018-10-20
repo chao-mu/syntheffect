@@ -1,0 +1,15 @@
+frag: "RGBToYCbCr"
+vert: "Passthrough"
+
+inputs:
+    - "red"
+    - "green"
+    - "blue"
+      
+outputs:
+    - "luma"
+    - "cb"
+    - "cr"
+    - "hue"
+    - "saturation"
+    - "value"

@@ -1,0 +1,15 @@
+frag: "Displace"
+vert: "Passthrough"
+
+inputs:
+    - in1
+    - in2
+    - in3
+    - displaceH
+    - displaceV
+    - displaceGain
+
+outputs:
+    - out1
+    - out2
+    - out3
