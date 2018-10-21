@@ -9,9 +9,11 @@
 #include "syntheffect/rack/Shader.h"
 #include "syntheffect/rack/Global.h"
 #include "syntheffect/rack/Joystick.h"
+#include "syntheffect/rack/Carousel.h"
 
 #define VIDEO_MODULE "video"
 #define JOYSTICK_MODULE "joystick"
+#define CAROUSEL_MODULE "carousel"
 #define OUT_ID "out"
 #define GLOBAL_ID "global"
 
@@ -35,6 +37,7 @@ namespace syntheffect {
             }
 
             const std::string rack_dir = ofFilePath::getEnclosingDirectory(path_);
+            std::map<std::string, YAML::Node> carousels;
 
             // Add all modules
             for (const auto& kv : settings) {
@@ -56,8 +59,9 @@ namespace syntheffect {
                         path = ofFilePath::join(rack_dir, path);
                     }
 
-
                     addModule(std::make_shared<Video>(id, path));
+                } else if (type == CAROUSEL_MODULE) {
+                    carousels[id] = properties;
                 } else if (type == JOYSTICK_MODULE) {
                     if (!properties["device"]) {
                         throw std::runtime_error(
@@ -74,6 +78,30 @@ namespace syntheffect {
 
                     addModule(std::make_shared<Shader>(id, path));
                 }
+            }
+
+            // Process now that all modules have been added. Currently doesn't support carousels with carousel children, boo
+            for (const auto& id_and_properties : carousels) {
+                auto id = id_and_properties.first;
+                auto properties = id_and_properties.second;
+
+                if (!properties["modules"]) {
+                    throw std::runtime_error("No modules specified for module with id '" + id + "'. Use the property 'modules'.");
+                }
+
+                std::vector<std::shared_ptr<Module>> children;
+                for (const auto node : properties["modules"]) {
+                    std::string child_id = node.as<std::string>();
+
+                    if (!modules_.count(child_id)) {
+                        throw std::runtime_error(
+                                "Module with id '" + id + "' specified non-existent module id '" + child_id + "'");
+                    }
+
+                    children.push_back(modules_.at(child_id));
+                }
+
+                addModule(std::make_shared<Carousel>(id, children));
             }
 
             for (const auto& kv : modules_) {
@@ -93,8 +121,6 @@ namespace syntheffect {
                 if (!properties["inputs"]) {
                     continue;
                 }
-
-                //ofLogNotice("Rack", "processing inputs for " + to_module_id);
 
                 for (const auto& kv : properties["inputs"]) {
                     const std::string to_channel_id = kv.first.as<std::string>();
@@ -124,7 +150,6 @@ namespace syntheffect {
 
                         auto from_module = modules_.at(from_module_id);
 
-                        //ofLogNotice("Rack", "Setting  input "  + from_module_id + "." + from_channel_id);
                         to_module->setInput(to_channel_id, from_module->getOutput(from_channel_id));
                     }
                 }
@@ -190,6 +215,7 @@ namespace syntheffect {
 }
 
 #undef COMPOSITE_MODULE
+#undef CAROUSEL_MODULE
 #undef VIDEO_MODULE
 #undef OUT_NAME
 #undef GLOBAL_NAME

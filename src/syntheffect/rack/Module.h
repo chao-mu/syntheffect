@@ -14,19 +14,20 @@ namespace syntheffect {
         class Module {
             public:
                 Module(const std::string& id);
-                virtual void setup(int width, int height, int internal_format) = 0;
+                virtual void setup(int width, int height, int internal_format);
                 virtual void start();
                 virtual bool isReady();
                 virtual void update(float t) = 0;
 
                 void setInput(const std::string& name, std::shared_ptr<Channel> channel);
-                float getInputConstant(const std::string& name, float def);
 
-                std::shared_ptr<Channel> getOutput(const std::string& name);
+                virtual std::shared_ptr<Channel> getOutput(const std::string& name);
 
                 const std::string id_;
 
             protected:
+                float getInputConstant(const std::string& name, float def);
+
                 std::map<std::string, std::shared_ptr<Channel>> output_channels_;
                 std::map<std::string, std::shared_ptr<Channel>> input_channels_;
         };

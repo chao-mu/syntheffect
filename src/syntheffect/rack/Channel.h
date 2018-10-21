@@ -10,6 +10,8 @@ namespace syntheffect {
                 Channel(ofTexture& texture, int idx);
                 Channel(float v);
 
+                void copyTo(Channel& channel);
+
                 ofTexture* texture_;
                 int idx_;
                 float value_;

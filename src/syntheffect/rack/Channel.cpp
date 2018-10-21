@@ -7,5 +7,11 @@ namespace syntheffect {
 
         Channel::Channel(float v) : texture_(nullptr), idx_(-1), value_(v) {
         }
+
+        void Channel::copyTo(Channel& channel) {
+            channel.texture_ = texture_;
+            channel.value_ = value_;
+            channel.idx_ = idx_;
+        }
     }
 }
