@@ -15,23 +15,19 @@
 #define VIDEO_MODULE "video"
 #define JOYSTICK_MODULE "joystick"
 #define AUDIO_ANALYZER_MODULE "audio_analyzer"
+#define GLOBAL_MODULE "global"
 #define CAROUSEL_MODULE "carousel"
 #define OUT_ID "out"
 #define GLOBAL_ID "global"
+
+#define DEFAULT_WIDTH 1280
+#define DEFAULT_HEIGHT 720
 
 namespace syntheffect {
     namespace rack {
         Rack::Rack(const std::string& path) : path_(path), is_ready_(false) {}
 
-        void Rack::setup(int width, int height, size_t audio_buffer_size, int internal_format) {
-            fbo_.allocate(width, height, internal_format);
-            fbo_.getTexture().setTextureMinMagFilter(GL_LINEAR, GL_LINEAR);
-            fbo_.begin();
-            ofClear(0);
-            fbo_.end();
-
-            modules_[GLOBAL_ID] = std::make_shared<Global>(GLOBAL_ID);
-
+        void Rack::setup(size_t audio_buffer_size, int internal_format) {
             YAML::Node settings = YAML::LoadFile(path_);
 
             if (!settings[OUT_ID]) {
@@ -40,6 +36,8 @@ namespace syntheffect {
 
             const std::string rack_dir = ofFilePath::getEnclosingDirectory(path_);
             std::map<std::string, YAML::Node> carousels;
+
+            std::shared_ptr<Global> global;
 
             // Add all modules
             for (const auto& kv : settings) {
@@ -51,6 +49,11 @@ namespace syntheffect {
                 }
 
                 const std::string type = properties["module"].as<std::string>();
+
+                if (id  == GLOBAL_ID && type != GLOBAL_MODULE)  {
+                    throw std::runtime_error("global module must have module type global");
+                }
+
                 if (type == VIDEO_MODULE) {
                     if (!properties["path"]) {
                         throw std::runtime_error("No path specified for module with id '" + id + "'. Use the property 'path'.");
@@ -75,6 +78,19 @@ namespace syntheffect {
                     auto audio = std::make_shared<AudioAnalyzer>(id, path, audio_buffer_size);
                     audio->connectTo(sound_output_);
                     addModule(audio);
+                } else if (type == GLOBAL_MODULE) {
+                    int width = DEFAULT_WIDTH;
+                    if (properties["width"]) {
+                        width = properties["width"].as<int>();
+                    }
+
+                    int height = DEFAULT_HEIGHT;
+                    if (properties["height"]) {
+                        height = properties["height"].as<int>();
+                    }
+
+                    global = std::make_shared<Global>(id, width, height);
+                    addModule(global);
                 } else if (type == CAROUSEL_MODULE) {
                     carousels[id] = properties;
                 } else if (type == JOYSTICK_MODULE) {
@@ -94,12 +110,16 @@ namespace syntheffect {
                         throw std::runtime_error("module type '" + type + "' is invalid.");
                     }
 
-
                     addModule(std::make_shared<Shader>(id, path));
                 }
             }
 
-            // Process now that all modules have been added. Currently doesn't support carousels with carousel children, boo
+            if (global.get() == nullptr) {
+                global = std::make_shared<Global>(GLOBAL_ID, DEFAULT_WIDTH, DEFAULT_HEIGHT);
+                addModule(global);
+            }
+
+            // Process carousels now that all modules have been added. Currently doesn't support carousels with carousel children, boo
             for (const auto& id_and_properties : carousels) {
                 auto id = id_and_properties.first;
                 auto properties = id_and_properties.second;
@@ -122,6 +142,16 @@ namespace syntheffect {
 
                 addModule(std::make_shared<Carousel>(id, children));
             }
+
+
+            int width = global->width_;
+            int height = global->height_;
+            fbo_.allocate(width, height, internal_format);
+            fbo_.getTexture().setTextureMinMagFilter(GL_LINEAR, GL_LINEAR);
+            fbo_.begin();
+            ofClear(0);
+            fbo_.end();
+
 
             for (const auto& kv : modules_) {
                 kv.second->setup(width, height, internal_format);
@@ -173,6 +203,14 @@ namespace syntheffect {
                     }
                 }
             }
+        }
+
+        int Rack::getWidth() {
+            return fbo_.getWidth();
+        }
+
+        int Rack::getHeight() {
+            return fbo_.getHeight();
         }
 
         ofBaseSoundOutput& Rack::getSoundOutput() {
@@ -241,5 +279,8 @@ namespace syntheffect {
 #undef COMPOSITE_MODULE
 #undef CAROUSEL_MODULE
 #undef VIDEO_MODULE
+#undef GLOBAL_MODULE
 #undef OUT_NAME
 #undef GLOBAL_NAME
+#undef DEFAULT_WIDTH
+#undef DEFAULT_HEIGHT

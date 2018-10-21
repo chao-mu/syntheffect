@@ -6,9 +6,7 @@
 
 #include "ofxTimeMeasurements.h"
 
-#include "syntheffect/param/Param.h"
-#include "syntheffect/settings/ProjectSettings.h"
-#include "syntheffect/asset/Drawable.h"
+#include "syntheffect/graphics/Util.h"
 
 #define FPS 30
 
@@ -18,10 +16,11 @@ void setup() {
 
 namespace syntheffect {
     namespace app {
-        Live::Live(const settings::ProjectSettings settings) :
+        Live::Live(const std::string& rack_path, const std::string& out_path) :
             ofBaseApp(),
-            rack_(settings.rack_path),
-            settings_(settings),
+            rack_(rack_path),
+            out_path_(out_path),
+            rack_path_(rack_path),
             recording_(false) {}
 
         void Live::setup() {
@@ -45,12 +44,12 @@ namespace syntheffect {
             sound_stream_.setup(sound_settings);
             sound_stream_.setOutput(rack_.getSoundOutput());
 
-            rack_.setup(settings_.width, settings_.height, sound_settings.bufferSize);
+            rack_.setup(sound_settings.bufferSize);
             rack_.start();
 
-            if (settings_.out_path != "") {
+            if (out_path_ != "") {
                 recording_ = true;
-                recorder_.setup(settings_.out_path, settings_.width, settings_.height);
+                recorder_.setup(out_path_, rack_.getWidth(), rack_.getHeight());
                 recorder_.startThread();
             } else {
                 recording_ = false;
@@ -81,7 +80,7 @@ namespace syntheffect {
         void Live::draw() {
             TS_START("rack_.draw");
             ofTexture& tex = rack_.getTexture();
-            asset::Drawable::drawScaleCenter(tex.getWidth(), tex.getHeight(), ofGetWindowWidth(), ofGetWindowHeight(),
+            graphics::Util::drawScaleCenter(tex.getWidth(), tex.getHeight(), ofGetWindowWidth(), ofGetWindowHeight(),
                     [tex](float x, float y, float w, float h) { tex.draw(x, y, w, h); });
             TS_STOP("rack_.draw");
 
@@ -98,8 +97,9 @@ namespace syntheffect {
         }
 
         void Live::screenshot() {
-            ofDirectory::createDirectory(settings_.out_dir);
-            const std::string path = ofFilePath::join(settings_.out_dir, "out-" + ofGetTimestampString() + ".png");
+            const std::string out_dir = ofFilePath::getEnclosingDirectory(rack_path_);
+            ofDirectory::createDirectory(out_dir);
+            const std::string path = ofFilePath::join(out_dir, "out-" + ofGetTimestampString() + ".png");
 
             ofPixels pixels;
             rack_.getTexture().readToPixels(pixels);

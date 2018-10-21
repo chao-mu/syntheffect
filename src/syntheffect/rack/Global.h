@@ -7,10 +7,13 @@ namespace syntheffect {
     namespace rack {
         class Global : public Module {
             public:
-                Global(const std::string& id);
+                Global(const std::string& id, int width, int height);
 
                 virtual void update(float t) override;
                 virtual void setup(int width, int height, int internal_format) override;
+
+                const int width_;
+                const int height_;
         };
     }
 }

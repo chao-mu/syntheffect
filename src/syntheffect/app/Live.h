@@ -10,15 +10,13 @@
 #include "ofSoundStream.h"
 
 #include "syntheffect/rack/Rack.h"
-#include "syntheffect/param/Param.h"
 #include "syntheffect/app/RecordingThread.h"
-#include "syntheffect/settings/ProjectSettings.h"
 
 namespace syntheffect {
     namespace app {
         class Live : public ofBaseApp {
             public:
-                explicit Live(settings::ProjectSettings settings);
+                Live(const std::string& rack_path, const std::string& out_path);
 
             protected:
                 void setup() override;
@@ -33,9 +31,10 @@ namespace syntheffect {
             private:
                 void recordFrame();
 
-                rack::Rack rack_;
+                const std::string out_path_;
+                const std::string rack_path_;
 
-                settings::ProjectSettings settings_;
+                rack::Rack rack_;
 
                 ofSoundStream sound_stream_;
                 RecordingThread recorder_;

@@ -8,8 +8,6 @@
 
 #include "syntheffect/app/Live.h"
 #include "syntheffect/app/Studio.h"
-#include "syntheffect/xml/Parser.h"
-#include "syntheffect/settings/ProjectSettings.h"
 
 #define IMAGE_EXTS { "jpg", "png", "tiff", "jpeg", "bmp" }
 
@@ -20,7 +18,7 @@ int main(int argc, const char *argv[]){
     TCLAP::CmdLine cmd("Syntheffect - Magical magic magic");
 
     TCLAP::ValueArg<std::string> outArg("o", "out", "Output video", false, "", "string", cmd);
-    TCLAP::ValueArg<std::string> projectArg("p", "project", "project path", true, "", "string", cmd);
+    TCLAP::ValueArg<std::string> projectArg("p", "project", "path to rack file", true, "", "string", cmd);
     TCLAP::SwitchArg fsArg("f", "fullscreen", "set window to fullscreen", cmd);
     TCLAP::SwitchArg studioArg("s", "studio", "open project studio", cmd);
 
@@ -36,6 +34,11 @@ int main(int argc, const char *argv[]){
         out_path = ofFilePath::getAbsolutePath(outArg.getValue(), false);
     }
 
+    std::string project_path;
+    if (!projectArg.getValue().empty()) {
+        project_path = ofFilePath::getAbsolutePath(projectArg.getValue(), false);
+    }
+
     ofGLFWWindowSettings win_settings;
     win_settings.setGLVersion(3, 3); // OpenGL 3,3 #version 330
     win_settings.setPosition(ofVec2f(0,0));
@@ -46,16 +49,7 @@ int main(int argc, const char *argv[]){
 
     auto display_window = ofCreateWindow(win_settings);
 
-    syntheffect::xml::Parser p;
-    std::string settings_path = projectArg.getValue();
-    if (!ofFilePath::isAbsolute(settings_path)) {
-        settings_path = ofFilePath::join(ofFilePath::getCurrentWorkingDirectory(), settings_path);
-    }
-
-    syntheffect::settings::ProjectSettings settings = p.parseProject(settings_path);
-    settings.out_path = out_path;
-
-    auto app = std::make_shared<syntheffect::app::Live>(settings);
+    auto app = std::make_shared<syntheffect::app::Live>(project_path, out_path);
     ofRunApp(display_window, app);
 
     if (studioArg.getValue()) {

@@ -2,7 +2,7 @@
 
 #include <stdexcept>
 
-#include "syntheffect/asset/Drawable.h"
+#include "syntheffect/graphics/Util.h"
 
 namespace syntheffect {
     namespace rack {
@@ -45,7 +45,7 @@ namespace syntheffect {
             player_.update();
 
             outputs_.begin();
-            asset::Drawable::drawScaleCenter(player_.getWidth(), player_.getHeight(), outputs_.getWidth(), outputs_.getHeight(),
+            graphics::Util::drawScaleCenter(player_.getWidth(), player_.getHeight(), outputs_.getWidth(), outputs_.getHeight(),
                     [this](float x, float y, float w, float h) { player_.draw(x, y, w, h); });
             outputs_.end();
         }

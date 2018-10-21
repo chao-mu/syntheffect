@@ -20,7 +20,7 @@ namespace syntheffect {
             public:
                 Rack(const std::string& path);
 
-                void setup(int width, int height, size_t audio_buffer_size, int internal_format=GL_RGBA);
+                void setup(size_t audio_buffer_size, int internal_format=GL_RGBA);
                 void start();
                 void update(float t);
                 bool updateUnready(float t);
@@ -30,6 +30,9 @@ namespace syntheffect {
                 void addModule(std::shared_ptr<Module> module);
 
                 ofBaseSoundOutput& getSoundOutput();
+
+                int getWidth();
+                int getHeight();
 
             private:
                 std::map<std::string, std::shared_ptr<Module>> modules_;
@@ -42,6 +45,7 @@ namespace syntheffect {
                 JoystickManager joy_manager_;
 
                 ofxSoundOutput sound_output_;
+
         };
     }
 }
