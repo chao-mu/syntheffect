@@ -3,7 +3,6 @@
 #include "yaml-cpp/yaml.h"
 
 #include "ofGraphics.h"
-#include "ofLog.h"
 #include "ofPoint.h"
 
 #include "ofxTimeMeasurements.h"

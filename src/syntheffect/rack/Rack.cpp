@@ -10,9 +10,11 @@
 #include "syntheffect/rack/Global.h"
 #include "syntheffect/rack/Joystick.h"
 #include "syntheffect/rack/Carousel.h"
+#include "syntheffect/rack/AudioAnalyzer.h"
 
 #define VIDEO_MODULE "video"
 #define JOYSTICK_MODULE "joystick"
+#define AUDIO_ANALYZER_MODULE "audio_analyzer"
 #define CAROUSEL_MODULE "carousel"
 #define OUT_ID "out"
 #define GLOBAL_ID "global"
@@ -21,7 +23,7 @@ namespace syntheffect {
     namespace rack {
         Rack::Rack(const std::string& path) : path_(path), is_ready_(false) {}
 
-        void Rack::setup(int width, int height, int internal_format) {
+        void Rack::setup(int width, int height, size_t audio_buffer_size, int internal_format) {
             fbo_.allocate(width, height, internal_format);
             fbo_.getTexture().setTextureMinMagFilter(GL_LINEAR, GL_LINEAR);
             fbo_.begin();
@@ -60,6 +62,19 @@ namespace syntheffect {
                     }
 
                     addModule(std::make_shared<Video>(id, path));
+                } else if (type == AUDIO_ANALYZER_MODULE) {
+                    if (!properties["path"]) {
+                        throw std::runtime_error("No path specified for module with id '" + id + "'. Use the property 'path'.");
+                    }
+
+                    std::string path = properties["path"].as<std::string>();
+                    if (!ofFilePath::isAbsolute(path)) {
+                        path = ofFilePath::join(rack_dir, path);
+                    }
+
+                    auto audio = std::make_shared<AudioAnalyzer>(id, path, audio_buffer_size);
+                    audio->connectTo(sound_output_);
+                    addModule(audio);
                 } else if (type == CAROUSEL_MODULE) {
                     carousels[id] = properties;
                 } else if (type == JOYSTICK_MODULE) {
@@ -75,6 +90,10 @@ namespace syntheffect {
                     addModule(joy);
                 } else {
                     const std::string path = "shaders/config/" + type + ".yml";
+                    if (!ofFile::doesFileExist(path)) {
+                        throw std::runtime_error("module type '" + type + "' is invalid.");
+                    }
+
 
                     addModule(std::make_shared<Shader>(id, path));
                 }
@@ -155,6 +174,11 @@ namespace syntheffect {
                 }
             }
         }
+
+        ofBaseSoundOutput& Rack::getSoundOutput() {
+            return sound_output_;
+        }
+
 
         void Rack::addModule(std::shared_ptr<Module> module) {
             modules_[module->id_] = module;

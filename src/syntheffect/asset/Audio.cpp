@@ -15,7 +15,7 @@ namespace syntheffect {
 
         void Audio::setup() {
             if (!player_.load(boost::filesystem::path(path_))) {
-                throw std::runtime_error("Error loading video with path " + path_);
+                throw std::runtime_error("error loading video with path " + path_);
             }
 
             player_.setLoop(loop_);

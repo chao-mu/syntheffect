@@ -43,8 +43,9 @@ namespace syntheffect {
             sound_settings.bufferSize = 512;
             sound_settings.numBuffers = 1;
             sound_stream_.setup(sound_settings);
+            sound_stream_.setOutput(rack_.getSoundOutput());
 
-            rack_.setup(settings_.width, settings_.height);
+            rack_.setup(settings_.width, settings_.height, sound_settings.bufferSize);
             rack_.start();
 
             if (settings_.out_path != "") {

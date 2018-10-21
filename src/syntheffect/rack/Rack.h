@@ -7,6 +7,8 @@
 #include "ofTexture.h"
 #include "ofFbo.h"
 
+#include "ofxSoundObject.h"
+
 #include "yaml-cpp/yaml.h"
 
 #include "syntheffect/rack/Module.h"
@@ -18,7 +20,7 @@ namespace syntheffect {
             public:
                 Rack(const std::string& path);
 
-                void setup(int width, int height, int internal_format=GL_RGBA);
+                void setup(int width, int height, size_t audio_buffer_size, int internal_format=GL_RGBA);
                 void start();
                 void update(float t);
                 bool updateUnready(float t);
@@ -26,6 +28,8 @@ namespace syntheffect {
                 ofTexture& getTexture();
 
                 void addModule(std::shared_ptr<Module> module);
+
+                ofBaseSoundOutput& getSoundOutput();
 
             private:
                 std::map<std::string, std::shared_ptr<Module>> modules_;
@@ -36,6 +40,8 @@ namespace syntheffect {
                 bool is_ready_;
 
                 JoystickManager joy_manager_;
+
+                ofxSoundOutput sound_output_;
         };
     }
 }
