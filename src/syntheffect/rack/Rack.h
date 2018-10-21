@@ -7,7 +7,10 @@
 #include "ofTexture.h"
 #include "ofFbo.h"
 
+#include "yaml-cpp/yaml.h"
+
 #include "syntheffect/rack/Module.h"
+#include "syntheffect/rack/JoystickManager.h"
 
 namespace syntheffect {
     namespace rack {
@@ -32,6 +35,7 @@ namespace syntheffect {
 
                 bool is_ready_;
 
+                JoystickManager joy_manager_;
         };
     }
 }

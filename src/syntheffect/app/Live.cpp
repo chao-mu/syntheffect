@@ -8,7 +8,6 @@
 
 #include "syntheffect/param/Param.h"
 #include "syntheffect/settings/ProjectSettings.h"
-#include "syntheffect/input/Parser.h"
 #include "syntheffect/asset/Drawable.h"
 
 #define FPS 30
@@ -37,10 +36,6 @@ namespace syntheffect {
                 ofHideCursor();
             #endif
 
-            // Input manager
-            input::Parser::addInputs(input_manager_, settings_.inputs_path);
-            ofAddListener(input_manager_.state_events, this, &Live::handleControlState);
-
             ofSoundStreamSettings sound_settings;
             sound_settings.numInputChannels = 0;
             sound_settings.numOutputChannels = 2;
@@ -61,30 +56,12 @@ namespace syntheffect {
             }
         }
 
-        void Live::handleControlState(const input::ControlState& state) {
-            if (state.pressed) {
-                for (const auto& p : state.mapping.pressed_param) {
-                    if (p.variable_value == "press_time") {
-                        params_.set(p.withValue(state.pressed_time));
-                    } else {
-                        params_.set(p);
-                    }
-                }
-            } else {
-                for (const auto& p : state.mapping.unpressed_param) {
-                    params_.set(p);
-                }
-            }
-        }
-
         void Live::exit() {
             recorder_.waitForThread();
         }
 
         void Live::update() {
             float t = ofGetElapsedTimef();
-
-            params_.set(param::Param::floatValue("time", t));
 
             TS_START_NIF("rack_.updateUnready");
             bool all_ready = rack_.updateUnready(t);

@@ -1,7 +1,6 @@
 #include "syntheffect/rack/Rack.h"
 
 #include "boost/lexical_cast.hpp"
-#include "yaml-cpp/yaml.h"
 
 #include "ofGraphics.h"
 #include "ofxTimeMeasurements.h"
@@ -9,8 +8,10 @@
 #include "syntheffect/rack/Video.h"
 #include "syntheffect/rack/Shader.h"
 #include "syntheffect/rack/Global.h"
+#include "syntheffect/rack/Joystick.h"
 
 #define VIDEO_MODULE "video"
+#define JOYSTICK_MODULE "joystick"
 #define OUT_ID "out"
 #define GLOBAL_ID "global"
 
@@ -47,7 +48,7 @@ namespace syntheffect {
                 const std::string type = properties["module"].as<std::string>();
                 if (type == VIDEO_MODULE) {
                     if (!properties["path"]) {
-                        throw std::runtime_error("No path specified for video module with id '" + id + "'. Use the property 'module'.");
+                        throw std::runtime_error("No path specified for module with id '" + id + "'. Use the property 'path'.");
                     }
 
                     std::string path = properties["path"].as<std::string>();
@@ -55,7 +56,19 @@ namespace syntheffect {
                         path = ofFilePath::join(rack_dir, path);
                     }
 
+
                     addModule(std::make_shared<Video>(id, path));
+                } else if (type == JOYSTICK_MODULE) {
+                    if (!properties["device"]) {
+                        throw std::runtime_error(
+                                "No device type specified for module with id '" + id + "'. Use the property 'device'.");
+                    }
+
+                    const std::string device = properties["device"].as<std::string>();
+
+                    auto joy = std::make_shared<Joystick>(id, device);
+                    joy_manager_.addJoystick(joy);
+                    addModule(joy);
                 } else {
                     const std::string path = "shaders/config/" + type + ".yml";
 
@@ -135,6 +148,8 @@ namespace syntheffect {
         }
 
         void Rack::update(float t) {
+            joy_manager_.update(t);
+
             TS_START("Rack::update update children");
             // Update global first
             auto global = modules_.at(GLOBAL_ID);

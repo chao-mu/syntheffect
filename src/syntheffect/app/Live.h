@@ -11,7 +11,6 @@
 
 #include "syntheffect/rack/Rack.h"
 #include "syntheffect/param/Param.h"
-#include "syntheffect/input/InputManager.h"
 #include "syntheffect/app/RecordingThread.h"
 #include "syntheffect/settings/ProjectSettings.h"
 
@@ -29,13 +28,11 @@ namespace syntheffect {
                 void keyPressed(int c) override;
                 //void audioIn(ofSoundBuffer& buf) override;
 
-                void handleControlState(const input::ControlState& state);
                 void screenshot();
 
             private:
                 void recordFrame();
 
-                input::InputManager input_manager_;
                 rack::Rack rack_;
 
                 settings::ProjectSettings settings_;
@@ -44,8 +41,6 @@ namespace syntheffect {
                 RecordingThread recorder_;
 
                 bool recording_;
-
-                param::Params params_;
         };
     }
 }

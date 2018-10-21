@@ -13,10 +13,10 @@ buttons:
     9: "start"
     
 fake_buttons_negative:
-    up: "dir_x"
-    left: "dir_y"
+    up: "dir_y"
+    left: "dir_x"
     
 
 fake_buttons_positive:
-    down: "dir_x"
-    right: "dir_y"
+    down: "dir_y"
+    right: "dir_x"
