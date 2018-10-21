@@ -1,0 +1,18 @@
+frag: "ColorEncoder"
+vert: "Passthrough"
+
+inputs:
+    - red
+    - redInvert
+    - redBias
+    - green
+    - greenInvert
+    - greenBias
+    - blue
+    - blueInvert
+    - blueBias
+
+outputs:
+    - red
+    - green
+    - blue

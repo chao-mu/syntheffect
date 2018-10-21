@@ -6,6 +6,7 @@ ffmpeg \
     -video_size $2 \
     -framerate 30 \
     -i $1 \
+    -ss 0.33 \
     -c:v libx264 \
     -preset slow \
     -crf 18 \

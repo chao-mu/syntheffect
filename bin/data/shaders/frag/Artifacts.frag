@@ -5,8 +5,7 @@
 DEFINE_INPUT(red, 0., DESC("red component"))
 DEFINE_INPUT(green, 0., DESC("green component"))
 DEFINE_INPUT(blue, 0., DESC("blue component"))
-DEFINE_INPUT(blood, 1., DESC("how much bleed yo want, multiplied by blood multiplier and the blood"))
-DEFINE_INPUT(bloodMultiplier, 1., DESC("amplifies blood input"))
+DEFINE_INPUT(blood, 1., DESC("how much bleed yo want"))
 
 DEFINE_OUTPUT_1(red, DESC("red component"))
 DEFINE_OUTPUT_2(green, DESC("green component"))
@@ -19,7 +18,7 @@ void main() {
     vec2 uv = textureCoordinate - vec2(0, 1);
     vec3 yuv2 = rgb_to_ycbcr(vec3(input_red(uv), input_green(uv), input_blue(uv)));
 
-    float blood_factor = input_blood() * input_bloodMultiplier();
+    float blood_factor = input_blood();
     float luma_blood  = (yuv.x - yuv2.x) * blood_factor;
     float chroma_blood = length(yuv.yz - yuv.yz) * blood_factor;
 
