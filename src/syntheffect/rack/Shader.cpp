@@ -1,5 +1,7 @@
 #include "syntheffect/rack/Shader.h"
 
+#include <math.h>
+
 #include "yaml-cpp/yaml.h"
 
 #include "ofGraphics.h"
@@ -10,10 +12,11 @@
 #include "syntheffect/rack/Channel.h"
 
 #define CHANNELS_PER_TEX 3
+#define ACCUMULATOR_IDX 0
 
 namespace syntheffect {
     namespace rack {
-        Shader::Shader(const std::string& id, const std::string& path) : Module(id), path_(path) {
+        Shader::Shader(const std::string& id, const std::string& path) : Module(id), path_(path), first_pass_(true) {
         }
 
         void Shader::setup(int width, int height, int internal_format) {
@@ -28,14 +31,17 @@ namespace syntheffect {
             }
 
             YAML::Node outputs = settings["outputs"];
-            for (std::size_t i=CHANNELS_PER_TEX, j=1; i <= outputs.size(); i += CHANNELS_PER_TEX) {
-                outputs_.createAndAttachTexture(internal_format, j++);
+            float max_textures = std::ceil(((float) outputs.size()) / (float) CHANNELS_PER_TEX);
+            for (std::size_t i=0; i < max_textures; i++) {
+                outputs_.createAndAttachTexture(internal_format, i + 1);
             }
 
             for (std::size_t i=0; i < outputs.size(); i++) {
-                int texture_idx = (i / CHANNELS_PER_TEX);
+                int texture_idx = (i / CHANNELS_PER_TEX) + 1;
                 output_channels_[outputs[i].as<std::string>()] = std::make_shared<Channel>(outputs_.getTexture(texture_idx), i % CHANNELS_PER_TEX);
             }
+
+            accumulator_.allocate(width, height, internal_format);
 
             std::string frag = "Passthrough";
             if (settings["frag"]) {
@@ -70,6 +76,9 @@ namespace syntheffect {
 
         void Shader::update(float t) {
             std::map<ofTexture*, int> textures;
+
+            ofTexture& accum = accumulator_.dest().getTexture();
+            outputs_.attachTexture(accum, accum.getTextureData().glInternalFormat, ACCUMULATOR_IDX);
 
             outputs_.begin();
             outputs_.activateAllDrawBuffers();
@@ -109,7 +118,10 @@ namespace syntheffect {
             }
 
             shader_.setUniform1f("time", t);
+
             shader_.setUniform2f("resolution", outputs_.getWidth(), outputs_.getHeight());
+            shader_.setUniformTexture("accumulatorIn", accumulator_.source(), idx++);
+            shader_.setUniform1i("firstPass", first_pass_ ? 1 : 0);
 
             TS_START("Shader::update mesh_.draw");
             mesh_.draw();
@@ -117,6 +129,14 @@ namespace syntheffect {
 
             shader_.end();
             outputs_.end();
+
+            accumulator_.swap();
+
+            first_pass_ = false;
+        }
+
+        bool Shader::isReady() {
+            return outputs_.isAllocated() && accumulator_.isAllocated();
         }
     }
 }

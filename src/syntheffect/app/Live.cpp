@@ -1,7 +1,5 @@
 #include "syntheffect/app/Live.h"
 
-#include "GLFW/glfw3.h"
-
 #include "ofGraphics.h"
 
 #include "ofxTimeMeasurements.h"
@@ -11,7 +9,7 @@
 #define FPS 30
 
 void setup() {
-    //TIME_SAMPLE_SET_FRAMERATE(FPS);
+    TIME_SAMPLE_SET_FRAMERATE(FPS);
 }
 
 namespace syntheffect {
@@ -36,11 +34,23 @@ namespace syntheffect {
             #endif
 
             ofSoundStreamSettings sound_settings;
-            sound_settings.numInputChannels = 0;
+            // this is here because jack was causing long delays or freezing at the start of video player,
+            // with isNewFrame always returning false after the first frame. Even I uninstalled jack,
+            // this app was still trying to use it and therefore failing.
+#ifdef TARGET_LINUX
+            ofLogNotice("Live", "Notice: Jack currently not supported on Linux");
+            auto devices = sound_stream_.getDeviceList(ofSoundDevice::Api::PULSE);
+            if (devices.size() > 0) {
+                ofLogNotice("Live", "Using PulseAudio...");
+                sound_settings.setOutDevice(devices[0]);
+                sound_settings.setInDevice(devices[0]);
+            }
+#endif
+            sound_settings.numInputChannels = 2;
             sound_settings.numOutputChannels = 2;
             sound_settings.sampleRate = 44100;
             sound_settings.bufferSize = 512;
-            sound_settings.numBuffers = 1;
+            sound_settings.numBuffers = 4;
             sound_stream_.setup(sound_settings);
             sound_stream_.setOutput(rack_.getSoundOutput());
 
@@ -78,8 +88,8 @@ namespace syntheffect {
         }
 
         void Live::draw() {
-            TS_START("rack_.draw");
             ofTexture& tex = rack_.getTexture();
+            TS_START("rack_.draw");
             graphics::Util::drawScaleCenter(tex.getWidth(), tex.getHeight(), ofGetWindowWidth(), ofGetWindowHeight(),
                     [tex](float x, float y, float w, float h) { tex.draw(x, y, w, h); });
             TS_STOP("rack_.draw");
@@ -99,7 +109,7 @@ namespace syntheffect {
         void Live::screenshot() {
             const std::string out_dir = ofFilePath::getEnclosingDirectory(rack_path_);
             ofDirectory::createDirectory(out_dir);
-            const std::string path = ofFilePath::join(out_dir, "out-" + ofGetTimestampString() + ".png");
+            const std::string path = ofFilePath::join(ofFilePath::join(out_dir, "rendered"), "out-" + ofGetTimestampString() + ".png");
 
             ofPixels pixels;
             rack_.getTexture().readToPixels(pixels);

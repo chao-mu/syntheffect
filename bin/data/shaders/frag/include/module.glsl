@@ -1,7 +1,7 @@
 #version 330
 
 #define PI 3.14159265359
-#define PI_HALF 1.57079632679
+#define PI_HALF 1.5707963
 
 #define DESC(s) #s
 
@@ -53,42 +53,45 @@
     }
 
 #define DEFINE_OUTPUT_1(name, desc) \
-    layout (location = 0) out vec4 output0; \
+    layout (location = 1) out vec4 output0; \
     DEFINE_OUTPUT_X(0, 0, name, desc)
 #define DEFINE_OUTPUT_2(name, desc) DEFINE_OUTPUT_X(0, 1, name, desc)
 #define DEFINE_OUTPUT_3(name, desc) DEFINE_OUTPUT_X(0, 2, name, desc)
 
 #define DEFINE_OUTPUT_4(name, desc) \
-    layout (location = 1) out vec4 output1; \
+    layout (location = 2) out vec4 output1; \
     DEFINE_OUTPUT_X(1, 0, name, desc)
 #define DEFINE_OUTPUT_5(name, desc) DEFINE_OUTPUT_X(1, 1, name, desc)
 #define DEFINE_OUTPUT_6(name, desc) DEFINE_OUTPUT_X(1, 2, name, desc)
 
 #define DEFINE_OUTPUT_7(name, desc) \
-    layout (location = 2) out vec4 output2; \
+    layout (location = 3) out vec4 output2; \
     DEFINE_OUTPUT_X(2, 0, name, desc)
 #define DEFINE_OUTPUT_8(name, desc) DEFINE_OUTPUT_X(2, 1, name, desc)
 #define DEFINE_OUTPUT_9(name, desc) DEFINE_OUTPUT_X(2, 2, name, desc)
 
 #define DEFINE_OUTPUT_10(name, desc) \
-    layout (location = 3) out vec4 output3; \
+    layout (location = 4) out vec4 output3; \
     DEFINE_OUTPUT_X(3, 0, name, desc)
 #define DEFINE_OUTPUT_11(name, desc) DEFINE_OUTPUT_X(3, 1, name, desc)
 #define DEFINE_OUTPUT_12(name, desc) DEFINE_OUTPUT_X(3, 2, name, desc)
 
 #define DEFINE_OUTPUT_13(name, desc) \
-    layout (location = 4) out vec4 output4; \
+    layout (location = 5) out vec4 output4; \
     DEFINE_OUTPUT_X(4, 0, name, desc)
 #define DEFINE_OUTPUT_14(name, desc) DEFINE_OUTPUT_X(4, 1, name, desc)
 #define DEFINE_OUTPUT_15(name, desc) DEFINE_OUTPUT_X(4, 2, name, desc)
 
 #define DEFINE_OUTPUT_16(name, desc) \
-    layout (location = 5) out vec4 output5; \
+    layout (location = 6) out vec4 output5; \
     DEFINE_OUTPUT_X(5, 0, name, desc)
 #define DEFINE_OUTPUT_17(name, desc) DEFINE_OUTPUT_X(5, 1, name, desc)
 #define DEFINE_OUTPUT_18(name, desc) DEFINE_OUTPUT_X(5, 2, name, desc)
 
+#define HALF_PI 1.5707963
+
 uniform float time;
+uniform bool firstPass;
 
 uniform sampler2DRect inputs0;
 uniform sampler2DRect inputs1;
@@ -101,10 +104,25 @@ uniform sampler2DRect inputs7;
 uniform sampler2DRect inputs8;
 uniform sampler2DRect inputs9;
 
+uniform sampler2DRect accumulatorIn;
+layout (location = 0) out vec4 accumulatorOut;
+
 in vec2 textureCoordinate;
 
 uniform vec2 resolution;
 
+vec3 input_accumulator(vec2 coords) {
+    return texture(accumulatorIn, coords).xyz;
+}
+
+vec3 input_accumulator() {
+    return input_accumulator(textureCoordinate);
+}
+
+void output_accumulator(vec3 val) {
+    accumulatorOut.xyz = val;
+    accumulatorOut.w = 1.;
+}
 
 // translate texture coordinates to -1 to 1.
 vec2 get_uv_1to1() {
@@ -114,4 +132,8 @@ vec2 get_uv_1to1() {
 // translate coordinates in range -1 to 1 to texture coordinates.
 vec2 from_uv_1to1(vec2 uv) {
     return ((uv * resolution.y) + resolution.xy) / 2.;
+}
+
+float map(float value, float min1, float max1, float min2, float max2) {
+    return ((value - min1) / (max1 - min1)) * (max2 - min2) + min2;
 }

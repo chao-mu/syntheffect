@@ -152,7 +152,6 @@ namespace syntheffect {
             ofClear(0);
             fbo_.end();
 
-
             for (const auto& kv : modules_) {
                 kv.second->setup(width, height, internal_format);
             }
@@ -224,12 +223,16 @@ namespace syntheffect {
 
         bool Rack::updateUnready(float t) {
            bool all_ready = true;
-            for (const auto& kv : modules_) {
-                if (!kv.second->isReady()) {
-                    kv.second->update(t);
-                    all_ready = false;
-                }
-            }
+           if (!getTexture().isAllocated()) {
+               all_ready = false;
+           }
+
+           for (const auto& kv : modules_) {
+               if (!kv.second->isReady()) {
+                   kv.second->update(t);
+                   all_ready = false;
+               }
+           }
 
             return all_ready;
         }

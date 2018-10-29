@@ -17,15 +17,12 @@ namespace syntheffect {
                 float getHeight();
                 float getWidth();
 
-                void begin();
-                void end();
-                void drawTo(std::shared_ptr<PingPongBuffer> buff, int x=0, int y=0);
+                ofFbo& dest();
+                ofFbo& source();
 
-                std::shared_ptr<ofFbo> drawable();
-
-            private:
                 void swap();
 
+            private:
                 std::shared_ptr<ofFbo> src_;
                 std::shared_ptr<ofFbo> dest_;
                 bool receiving_;

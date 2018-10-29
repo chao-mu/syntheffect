@@ -8,6 +8,7 @@
 #include "ofMesh.h"
 
 #include "syntheffect/rack/Module.h"
+#include "syntheffect/graphics/PingPongBuffer.h"
 
 namespace syntheffect {
     namespace rack {
@@ -17,6 +18,7 @@ namespace syntheffect {
 
                 virtual void setup(int width, int height, int internal_format) override;
                 virtual void update(float t) override;
+                virtual bool isReady() override;
 
             private:
                 ofShader shader_;
@@ -26,6 +28,8 @@ namespace syntheffect {
                 std::vector<std::string> input_names_;
 
                 const std::string path_;
+                graphics::PingPongBuffer accumulator_;
+                bool first_pass_;
         };
     }
 }

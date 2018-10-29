@@ -1,7 +1,5 @@
 #include "syntheffect/rack/Module.h"
 
-#include "ofLog.h"
-
 namespace syntheffect {
     namespace rack {
         Module::Module(const std::string& id) : id_(id) {
@@ -21,8 +19,6 @@ namespace syntheffect {
             if (!output_channels_.count(name)) {
                 throw std::runtime_error("Module " + id_ + " does not have output " + name);
             }
-
-            //ofLogNotice("Module", "name=%s", name.c_str());
 
             return output_channels_.at(name);
         }

@@ -10,7 +10,7 @@
 
 #define LOG_JOYSTICK false
 
-#ifdef LOG_JOYSTICK
+#if LOG_JOYSTICK
 #include "ofLog.h"
 #endif
 
@@ -23,7 +23,9 @@ namespace syntheffect {
         }
 
         void Joystick::connect(int glfw_id) {
+#if LOG_JOYSTICK
             ofLogNotice("Joystick", "Connected joystick: %s", device_.c_str());
+#endif
             glfw_id_ = glfw_id;
         }
 
@@ -143,9 +145,9 @@ namespace syntheffect {
 
                 setJoystickOutput(name, pressed, t, v);
 
-                if (LOG_JOYSTICK) {
+#if LOG_JOYSTICK
                     ofLogNotice("Joystick", "axis=%d name=%s raw=%f translated=%f adjusted=%i pressed=%i", i, name.c_str(), axes[i], v, adjusted, pressed);
-                }
+#endif
             }
 
             int button_count;
@@ -159,9 +161,9 @@ namespace syntheffect {
                 bool pressed = buttons[i] == GLFW_PRESS;
                 setJoystickOutput(name, pressed, t, pressed ? 1 : 0);
 
-                if (LOG_JOYSTICK) {
+#if LOG_JOYSTICK
                     ofLogNotice("Joystick", "button=%d name=%s pressed=%i", i, name.c_str(), pressed);
-                }
+#endif
             }
 
             for (const auto& kv : fake_buttons_negative_) {

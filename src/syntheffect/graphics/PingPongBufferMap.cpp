@@ -1,7 +1,5 @@
 #include "syntheffect/graphics/PingPongBufferMap.h"
 
-#include "ofLog.h"
-
 namespace syntheffect {
     namespace graphics {
         PingPongBufferMap::PingPongBufferMap(int internal_format) : buffers_() {

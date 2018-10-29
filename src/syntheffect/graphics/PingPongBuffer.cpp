@@ -22,12 +22,6 @@ namespace syntheffect {
             }
         }
 
-        void PingPongBuffer::drawTo(std::shared_ptr<PingPongBuffer> buff, int x, int y) {
-            buff->begin();
-            drawable()->draw(x, y);
-            buff->end();
-        }
-
         float PingPongBuffer::getWidth() {
             return src_->getWidth();
         }
@@ -40,22 +34,19 @@ namespace syntheffect {
             return src_->isAllocated() && dest_->isAllocated();
         }
 
-        void PingPongBuffer::begin() {
-            swap();
-            receiving_ = true;
-            dest_->begin();
+        ofFbo& PingPongBuffer::source() {
+            return *src_.get();
         }
 
-        void PingPongBuffer::end() {
-            receiving_ = false;
-            dest_->end();
-        }
-
-        std::shared_ptr<ofFbo> PingPongBuffer::drawable() {
-            return receiving_ ? src_ : dest_;
+        ofFbo& PingPongBuffer::dest() {
+            return *dest_.get();
         }
 
         void PingPongBuffer::swap() {
+            source().begin();
+            dest().draw(0, 0);
+            source().end();
+
             src_.swap(dest_);
         }
     }
