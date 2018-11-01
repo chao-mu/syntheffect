@@ -1,4 +1,4 @@
-#include "syntheffect/rack/Video.h"
+#include "syntheffect/rack/Webcam.h"
 
 #include <stdexcept>
 
@@ -6,18 +6,15 @@
 
 namespace syntheffect {
     namespace rack {
-        Video::Video(const std::string& id, const std::string& path) : Module(id), path_(path) {
+        Webcam::Webcam(const std::string& id) : Module(id) {
         }
 
-        void Video::setup(int width, int height, int internal_format) {
+        void Webcam::setup(int width, int height, int internal_format) {
             player_.setUseTexture(true);
 
-            if (!player_.load(path_)) {
-                throw std::runtime_error("Error loading video with path " + path_);
+            if (!player_.setup(width, height)) {
+                throw std::runtime_error("Error loading webcam");
             }
-
-            player_.setLoopState(OF_LOOP_NORMAL);
-            player_.setVolume(0);
 
             outputs_.allocate(width, height, internal_format);
 
@@ -39,11 +36,7 @@ namespace syntheffect {
             output_channels_["frame_new"] = std::make_shared<Channel>(1);
         }
 
-        void Video::start() {
-            player_.play();
-        }
-
-        void Video::update(float /* t */) {
+        void Webcam::update(float /* t */) {
             player_.update();
 
             output_channels_["frame_new"]->value_ = player_.isFrameNew() ? 1 : 0;
@@ -54,7 +47,7 @@ namespace syntheffect {
             outputs_.end();
         }
 
-        bool Video::isReady() {
+        bool Webcam::isReady() {
             return player_.isInitialized();
         }
     }

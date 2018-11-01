@@ -9,10 +9,12 @@
 #include "syntheffect/rack/Shader.h"
 #include "syntheffect/rack/Global.h"
 #include "syntheffect/rack/Joystick.h"
+#include "syntheffect/rack/Webcam.h"
 #include "syntheffect/rack/Carousel.h"
 #include "syntheffect/rack/AudioAnalyzer.h"
 
 #define VIDEO_MODULE "video"
+#define WEBCAM_MODULE "webcam"
 #define JOYSTICK_MODULE "joystick"
 #define AUDIO_ANALYZER_MODULE "audio_analyzer"
 #define GLOBAL_MODULE "global"
@@ -78,6 +80,8 @@ namespace syntheffect {
                     auto audio = std::make_shared<AudioAnalyzer>(id, path, audio_buffer_size);
                     audio->connectTo(sound_output_);
                     addModule(audio);
+                } else if (type == WEBCAM_MODULE) {
+                    addModule(std::make_shared<Webcam>(id));
                 } else if (type == GLOBAL_MODULE) {
                     int width = DEFAULT_WIDTH;
                     if (properties["width"]) {
