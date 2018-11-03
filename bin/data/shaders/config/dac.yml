@@ -1,0 +1,9 @@
+frag: DAC
+inputs:
+- in1
+- in2
+- in3
+outputs:
+- value
+vert: Passthrough
+

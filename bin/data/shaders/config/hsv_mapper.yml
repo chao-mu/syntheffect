@@ -1,15 +1,14 @@
-frag: "HSVMapper"
-vert: "Passthrough"
-
+frag: HSVMapper
 inputs:
-    - "hue"
-    - "saturation"
-    - "value"
-
+- hue
+- saturation
+- value
 outputs:
-    - "red"
-    - "green"
-    - "blue"
-    - "luma"
-    - "cb"
-    - "cr"
+- red
+- green
+- blue
+- luma
+- cb
+- cr
+vert: Passthrough
+

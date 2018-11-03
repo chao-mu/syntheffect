@@ -1,15 +1,14 @@
-frag: "RGBToYCbCr"
-vert: "Passthrough"
-
+frag: RGBMapper
 inputs:
-    - "red"
-    - "green"
-    - "blue"
-      
+- red
+- green
+- blue
 outputs:
-    - "luma"
-    - "cb"
-    - "cr"
-    - "hue"
-    - "saturation"
-    - "value"
+- luma
+- cb
+- cr
+- hue
+- saturation
+- value
+vert: Passthrough
+

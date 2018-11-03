@@ -1,14 +1,14 @@
-frag: "Osc"
-vert: "Passthrough"
-
+frag: Osc
 inputs:
-    - freq
-    - multiplier
-    - shift
-    - vertical
-
+- freq
+- freqMod
+- amplitude
+- shift
+- vertical
+- phase
 outputs:
-    - sine
-    - triangle
-    - square
-    - sawtooth
+- sine
+- sawtooth
+- arcsine
+vert: Passthrough
+

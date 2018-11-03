@@ -1,12 +1,11 @@
 #!/bin/bash
- #    -ss 0.833 \
+ # -ss 0.033 \
 ffmpeg \
     -f rawvideo \
     -pixel_format rgb24 \
     -video_size $2 \
     -framerate 30 \
     -i $1 \
-    -ss 0.33 \
     -c:v libx264 \
     -preset slow \
     -crf 18 \

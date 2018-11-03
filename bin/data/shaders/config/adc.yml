@@ -1,0 +1,11 @@
+frag: ADC
+inputs:
+- value
+- invert
+- bias
+outputs:
+- out1
+- out2
+- out3
+vert: Passthrough
+

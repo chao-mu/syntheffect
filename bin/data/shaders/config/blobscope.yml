@@ -1,0 +1,9 @@
+frag: Blobscope
+inputs:
+- speed
+- shapes
+- sharpness
+outputs:
+- value
+vert: Passthrough
+

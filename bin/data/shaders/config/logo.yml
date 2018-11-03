@@ -1,0 +1,6 @@
+frag: Logo
+inputs: []
+outputs:
+- value
+vert: Passthrough
+
