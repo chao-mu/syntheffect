@@ -8,7 +8,6 @@
 #include "ofMesh.h"
 
 #include "syntheffect/rack/Module.h"
-#include "syntheffect/graphics/PingPongBuffer.h"
 
 namespace syntheffect {
     namespace rack {
@@ -25,10 +24,10 @@ namespace syntheffect {
                 ofMesh mesh_;
 
                 ofFbo outputs_;
+                std::vector<ofFbo> last_outputs_;
                 std::vector<std::string> input_names_;
 
                 const std::string path_;
-                graphics::PingPongBuffer accumulator_;
                 bool first_pass_;
         };
     }

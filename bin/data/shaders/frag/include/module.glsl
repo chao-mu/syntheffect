@@ -5,6 +5,8 @@
 
 #define DESC(s) #s
 
+#define NO_DEFAULT 0.0
+
 #define DEFINE_INPUT(name, def, desc) \
     uniform int name ## TexIdx; \
     uniform int name ## ChannelIdx; \
@@ -44,51 +46,51 @@
     \
     float input_ ## name ## () { \
         return input_ ## name ## (textureCoordinate); \
+    } \
+    bool passed_ ## name ## () { \
+        return name ## PropertyPassed || name ## TexIdx >= 0; \
     }
 
-#define DEFINE_OUTPUT_X(tex_idx, channel_idx, name, desc) \
+#define _DEFINE_OUTPUT(tex_idx, channel_idx, name, desc) \
     void output_ ## name ## (float x) { \
         output ## tex_idx ## [channel_idx] = x; \
         output ## tex_idx ## [3] = 1.0; \
+    } \
+    float last_output_ ## name(vec2 coords) { \
+        return texture(lastOutput ## tex_idx, coords)[channel_idx]; \
+    } \
+    float last_output_ ## name() { \
+        return last_output_ ## name(textureCoordinate); \
     }
 
-#define DEFINE_OUTPUT_1(name, desc) \
-    layout (location = 1) out vec4 output0; \
-    DEFINE_OUTPUT_X(0, 0, name, desc)
-#define DEFINE_OUTPUT_2(name, desc) DEFINE_OUTPUT_X(0, 1, name, desc)
-#define DEFINE_OUTPUT_3(name, desc) DEFINE_OUTPUT_X(0, 2, name, desc)
+#define _DEFINE_OUTPUT_FIRST(tex_idx, channel_idx, name, desc) \
+    uniform sampler2DRect lastOutput ## tex_idx; \
+    layout (location = tex_idx) out vec4 output ## tex_idx; \
+    _DEFINE_OUTPUT(tex_idx, channel_idx, name, desc)
 
-#define DEFINE_OUTPUT_4(name, desc) \
-    layout (location = 2) out vec4 output1; \
-    DEFINE_OUTPUT_X(1, 0, name, desc)
-#define DEFINE_OUTPUT_5(name, desc) DEFINE_OUTPUT_X(1, 1, name, desc)
-#define DEFINE_OUTPUT_6(name, desc) DEFINE_OUTPUT_X(1, 2, name, desc)
+#define DEFINE_OUTPUT_1(name, desc) _DEFINE_OUTPUT_FIRST(0, 0, name, desc)
+#define DEFINE_OUTPUT_2(name, desc) _DEFINE_OUTPUT(0, 1, name, desc)
+#define DEFINE_OUTPUT_3(name, desc) _DEFINE_OUTPUT(0, 2, name, desc)
 
-#define DEFINE_OUTPUT_7(name, desc) \
-    layout (location = 3) out vec4 output2; \
-    DEFINE_OUTPUT_X(2, 0, name, desc)
-#define DEFINE_OUTPUT_8(name, desc) DEFINE_OUTPUT_X(2, 1, name, desc)
-#define DEFINE_OUTPUT_9(name, desc) DEFINE_OUTPUT_X(2, 2, name, desc)
+#define DEFINE_OUTPUT_4(name, desc) _DEFINE_OUTPUT_FIRST(1, 0, name, desc)
+#define DEFINE_OUTPUT_5(name, desc) _DEFINE_OUTPUT(1, 1, name, desc)
+#define DEFINE_OUTPUT_6(name, desc) _DEFINE_OUTPUT(1, 2, name, desc)
 
-#define DEFINE_OUTPUT_10(name, desc) \
-    layout (location = 4) out vec4 output3; \
-    DEFINE_OUTPUT_X(3, 0, name, desc)
-#define DEFINE_OUTPUT_11(name, desc) DEFINE_OUTPUT_X(3, 1, name, desc)
-#define DEFINE_OUTPUT_12(name, desc) DEFINE_OUTPUT_X(3, 2, name, desc)
+#define DEFINE_OUTPUT_7(name, desc) _DEFINE_OUTPUT_FIRST(2, 0, name, desc)
+#define DEFINE_OUTPUT_8(name, desc) _DEFINE_OUTPUT(2, 1, name, desc)
+#define DEFINE_OUTPUT_9(name, desc) _DEFINE_OUTPUT(2, 2, name, desc)
 
-#define DEFINE_OUTPUT_13(name, desc) \
-    layout (location = 5) out vec4 output4; \
-    DEFINE_OUTPUT_X(4, 0, name, desc)
-#define DEFINE_OUTPUT_14(name, desc) DEFINE_OUTPUT_X(4, 1, name, desc)
-#define DEFINE_OUTPUT_15(name, desc) DEFINE_OUTPUT_X(4, 2, name, desc)
+#define DEFINE_OUTPUT_10(name, desc) _DEFINE_OUTPUT_FIRST(3, 0, name, desc)
+#define DEFINE_OUTPUT_11(name, desc) _DEFINE_OUTPUT(3, 1, name, desc)
+#define DEFINE_OUTPUT_12(name, desc) _DEFINE_OUTPUT(3, 2, name, desc)
 
-#define DEFINE_OUTPUT_16(name, desc) \
-    layout (location = 6) out vec4 output5; \
-    DEFINE_OUTPUT_X(5, 0, name, desc)
-#define DEFINE_OUTPUT_17(name, desc) DEFINE_OUTPUT_X(5, 1, name, desc)
-#define DEFINE_OUTPUT_18(name, desc) DEFINE_OUTPUT_X(5, 2, name, desc)
+#define DEFINE_OUTPUT_13(name, desc) _DEFINE_OUTPUT_FIRST(4, 0, name, desc)
+#define DEFINE_OUTPUT_14(name, desc) _DEFINE_OUTPUT(4, 1, name, desc)
+#define DEFINE_OUTPUT_15(name, desc) _DEFINE_OUTPUT(4, 2, name, desc)
 
-#define HALF_PI 1.5707963
+#define DEFINE_OUTPUT_16(name, desc) _DEFINE_OUTPUT_FIRST(5, 0, name, desc)
+#define DEFINE_OUTPUT_17(name, desc) _DEFINE_OUTPUT(5, 1, name, desc)
+#define DEFINE_OUTPUT_18(name, desc) _DEFINE_OUTPUT(5, 2, name, desc)
 
 uniform float time;
 uniform bool firstPass;
@@ -104,25 +106,9 @@ uniform sampler2DRect inputs7;
 uniform sampler2DRect inputs8;
 uniform sampler2DRect inputs9;
 
-uniform sampler2DRect accumulatorIn;
-layout (location = 0) out vec4 accumulatorOut;
-
 in vec2 textureCoordinate;
 
 uniform vec2 resolution;
-
-vec3 input_accumulator(vec2 coords) {
-    return texture(accumulatorIn, coords).xyz;
-}
-
-vec3 input_accumulator() {
-    return input_accumulator(textureCoordinate);
-}
-
-void output_accumulator(vec3 val) {
-    accumulatorOut.xyz = val;
-    accumulatorOut.w = 1.;
-}
 
 // translate texture coordinates to -1 to 1.
 vec2 get_uv_1to1() {

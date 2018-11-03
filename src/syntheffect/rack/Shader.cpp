@@ -20,8 +20,6 @@ namespace syntheffect {
         }
 
         void Shader::setup(int width, int height, int internal_format) {
-            outputs_.allocate(width, height, internal_format);
-
             YAML::Node settings = YAML::LoadFile(ofFilePath::getAbsolutePath(path_));
 
             if (settings["inputs"]) {
@@ -31,17 +29,23 @@ namespace syntheffect {
             }
 
             YAML::Node outputs = settings["outputs"];
-            float max_textures = std::ceil(((float) outputs.size()) / (float) CHANNELS_PER_TEX);
-            for (std::size_t i=0; i < max_textures; i++) {
-                outputs_.createAndAttachTexture(internal_format, i + 1);
+            int texture_count = std::ceil(((float) outputs.size()) / (float) CHANNELS_PER_TEX);
+            outputs_.allocate(width, height, internal_format);
+            last_outputs_.resize(texture_count);
+            for (int i=0; i < texture_count; i++) {
+                ofFbo& last_output = last_outputs_.at(i);
+                last_output.allocate(width, height, internal_format);
+                last_output.begin();
+                ofClear(0);
+                last_output.end();
+                outputs_.createAndAttachTexture(internal_format, i);
             }
 
             for (std::size_t i=0; i < outputs.size(); i++) {
-                int texture_idx = (i / CHANNELS_PER_TEX) + 1;
-                output_channels_[outputs[i].as<std::string>()] = std::make_shared<Channel>(outputs_.getTexture(texture_idx), i % CHANNELS_PER_TEX);
+                int texture_idx = i / CHANNELS_PER_TEX;
+                output_channels_[outputs[i].as<std::string>()] =
+                    std::make_shared<Channel>(outputs_.getTexture(texture_idx), i % CHANNELS_PER_TEX);
             }
-
-            accumulator_.allocate(width, height, internal_format);
 
             std::string frag = "Passthrough";
             if (settings["frag"]) {
@@ -76,9 +80,6 @@ namespace syntheffect {
 
         void Shader::update(float t) {
             std::map<ofTexture*, int> textures;
-
-            ofTexture& accum = accumulator_.dest().getTexture();
-            outputs_.attachTexture(accum, accum.getTextureData().glInternalFormat, ACCUMULATOR_IDX);
 
             outputs_.begin();
             outputs_.activateAllDrawBuffers();
@@ -117,26 +118,35 @@ namespace syntheffect {
                 shader_.setUniform1f(shift_name, getInputConstant(shift_name, 0));
             }
 
+            for (int i=0; i < last_outputs_.size(); i++) {
+                shader_.setUniformTexture("lastOutput" + std::to_string(i), last_outputs_.at(i), idx++);
+            }
+
             shader_.setUniform1f("time", t);
 
             shader_.setUniform2f("resolution", outputs_.getWidth(), outputs_.getHeight());
-            shader_.setUniformTexture("accumulatorIn", accumulator_.source(), idx++);
             shader_.setUniform1i("firstPass", first_pass_ ? 1 : 0);
 
-            TS_START("Shader::update mesh_.draw");
             mesh_.draw();
-            TS_STOP("Shader::update mesh_.draw");
 
             shader_.end();
             outputs_.end();
 
-            accumulator_.swap();
+            TS_START("Shader::update texture transfer");
+            for (int i=0; i < outputs_.getNumTextures(); i++) {
+                ofFbo& buf = last_outputs_.at(i);
+                buf.begin();
+                outputs_.getTexture(i).draw(0, 0);
+                //ofClear(1);
+                buf.end();
+            }
+            TS_STOP("Shader::update texture transfer");
 
             first_pass_ = false;
         }
 
         bool Shader::isReady() {
-            return outputs_.isAllocated() && accumulator_.isAllocated();
+            return outputs_.isAllocated();
         }
     }
 }
