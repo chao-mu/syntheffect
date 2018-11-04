@@ -13,7 +13,7 @@ DEFINE_OUTPUT_3(out3, DESC("output channel for in3"))
 void main() {
     vec3 last = vec3(last_output_out1(), last_output_out2(), last_output_out3());
     vec3 current = vec3(input_in1(), input_in2(), input_in3());
-    float amount = firstPass ? 0 : input_amount();
+    float amount = firstPass ? 1 : input_amount();
     vec3 next = mix(current, last, amount);
 
     output_out1(next.x);
