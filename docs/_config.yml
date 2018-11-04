@@ -1,0 +1,56 @@
+# Site settings
+title: SynthEffect
+email: chao-mu@hackpoetic.com
+description: >
+  SynthEffect is a video synthesizer for hackers
+lang: en-US
+
+baseurl: "/se" # the subpath of your site, e.g. /blog/
+url: https://syntheffect.com/ # the base hostname & protocol for your site
+git_address: https://github.com/chao-mu/syntheffect
+git_edit_address: https://github.com/chao-mu/syntheffect
+
+# theme options from https://bootswatch.com/
+# comment out this to use default Bootstrap
+bootwatch: paper
+
+# Build settings
+markdown: kramdown
+highlighter: rouge
+plugins:
+  - jekyll-feed
+  - jekyll-redirect-from
+  - jekyll-seo-tag
+  - jekyll-sitemap
+
+exclude:
+  - Gemfile
+  - Gemfile.lock
+  - .idea/
+  - .gitignore
+  - README.md
+timezone: Europe/Berlin
+defaults:
+- scope:
+    path: _posts
+    type: posts
+  values:
+    layout: post
+    sectionid: blog
+
+- scope:
+    path: _docs
+    type: docs
+  values:
+    layout: docs
+    sectionid: docs
+    seo:
+      type: "WebPage"
+
+collections:
+  docs:
+    permalink: /:collection/:path/
+    output: true
+  posts:
+    permalink: /blog/:year/:month/:day/:title/
+    output: false
