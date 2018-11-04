@@ -5,7 +5,7 @@ description: >
   SynthEffect is a video synthesizer for hackers
 lang: en-US
 
-baseurl: "/se" # the subpath of your site, e.g. /blog/
+baseurl: "" # the subpath of your site, e.g. /blog/
 url: https://syntheffect.com/ # the base hostname & protocol for your site
 git_address: https://github.com/chao-mu/syntheffect
 git_edit_address: https://github.com/chao-mu/syntheffect
