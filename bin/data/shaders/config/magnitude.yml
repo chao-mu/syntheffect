@@ -1,4 +1,3 @@
-accumulators: []
 frag: Magnitude
 inputs:
 - x1
@@ -11,4 +10,3 @@ outputs:
 - value
 - value_diff
 vert: Passthrough
-

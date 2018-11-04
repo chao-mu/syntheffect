@@ -1,11 +1,11 @@
-frag: "Artifacts"
-vert: "Passthrough"
+frag: Artifacts
 inputs:
-    - "red"
-    - "green"
-    - "blue"
-    - "blood"
+- red
+- green
+- blue
+- blood
 outputs:
-    - "red"
-    - "green"
-    - "blue"
+- red
+- green
+- blue
+vert: Passthrough

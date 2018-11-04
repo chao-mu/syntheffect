@@ -1,5 +1,6 @@
-frag: "SimpleRamp"
-vert: "Passthrough"
+frag: SimpleRamp
+inputs: []
 outputs:
-    - "h"
-    - "v"
+- h
+- v
+vert: Passthrough

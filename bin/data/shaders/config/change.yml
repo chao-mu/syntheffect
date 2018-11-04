@@ -1,4 +1,3 @@
-accumulators: []
 frag: Change
 inputs:
 - in1
@@ -11,4 +10,3 @@ outputs:
 - in2_
 - in3_
 vert: Passthrough
-

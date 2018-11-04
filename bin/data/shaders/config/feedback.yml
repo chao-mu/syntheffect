@@ -1,4 +1,3 @@
-accumulators: []
 frag: Feedback
 inputs:
 - in1
@@ -10,4 +9,3 @@ outputs:
 - out2
 - out3
 vert: Passthrough
-

@@ -1,8 +1,8 @@
-frag: "TimeTunnel"
-vert: "Passthrough"
+frag: TimeTunnel
 inputs:
-    - "speed"
-    - "travelOffset"
-    - "seed"
+- speed
+- travelOffset
+- seed
 outputs:
-    - "value"
+- value
+vert: Passthrough

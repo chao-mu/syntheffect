@@ -1,17 +1,17 @@
-frag: "Compositor"
-vert: "Passthrough"
+frag: Compositor
 inputs:
-    - "red"
-    - "green"
-    - "blue"
-    - "red2"
-    - "green2"
-    - "blue2"
-    - "key"
-    - "keyThreshold"
-    - "keyNegate"
-    - "keyMixMode"
+- red
+- green
+- blue
+- key
+- keyThreshold
+- keyNegate
+- keyMixMode
+- red2
+- green2
+- blue2
 outputs:
-    - "red"
-    - "green"
-    - "blue"
+- red
+- green
+- blue
+vert: Passthrough
