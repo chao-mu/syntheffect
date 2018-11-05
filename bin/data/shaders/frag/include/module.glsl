@@ -7,6 +7,9 @@
 
 #define NO_DEFAULT 0.0
 
+float input_nosync_syncV(vec2 coords);
+float input_nosync_syncH(vec2 coords);
+
 #define DEFINE_INPUT(name, def, desc) \
     uniform int name ## TexIdx; \
     uniform int name ## ChannelIdx; \
@@ -15,7 +18,7 @@
     uniform float name ## _multiplier; \
     uniform float name ## _shift; \
     \
-    float input_ ## name ## (vec2 coord) { \
+    float input_nosync_ ## name(vec2 coord) { \
         float v = def; \
         if (name ## PropertyPassed) { \
             v = name ## PropertyValue; \
@@ -44,15 +47,20 @@
         return v * name ## _multiplier + name ## _shift; \
     } \
     \
-    float input_ ## name ## () { \
-        return input_ ## name ## (textureCoordinate); \
+    float input_ ## name(vec2 coord) { \
+        coord = vec2(mod(coord.x + time * input_nosync_syncH(coord), resolution.x), mod(coord.y + time * input_nosync_syncV(coord), resolution.y)); \
+        return input_nosync_ ## name(coord); \
     } \
-    bool passed_ ## name ## () { \
+    \
+    float input_ ## name() { \
+        return input_ ## name(textureCoordinate); \
+    } \
+    bool passed_ ## name() { \
         return name ## PropertyPassed || name ## TexIdx >= 0; \
     }
 
 #define _DEFINE_OUTPUT(tex_idx, channel_idx, name, desc) \
-    void output_ ## name ## (float x) { \
+    void output_ ## name(float x) { \
         output ## tex_idx ## [channel_idx] = x; \
         output ## tex_idx ## [3] = 1.0; \
     } \
@@ -123,3 +131,6 @@ vec2 from_uv_1to1(vec2 uv) {
 float map(float value, float min1, float max1, float min2, float max2) {
     return ((value - min1) / (max1 - min1)) * (max2 - min2) + min2;
 }
+
+DEFINE_INPUT(syncH, 0, DESC("Horizontal sync"))
+DEFINE_INPUT(syncV, 0, DESC("Vertical sync"))

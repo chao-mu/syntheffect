@@ -1,5 +1,7 @@
 frag: TimeTunnel
 inputs:
+- syncH
+- syncV
 - speed
 - travelOffset
 - seed

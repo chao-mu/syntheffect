@@ -1,5 +1,7 @@
 frag: RGBMapper
 inputs:
+- syncH
+- syncV
 - red
 - green
 - blue

@@ -1,5 +1,7 @@
 frag: SimpleRamp
-inputs: []
+inputs:
+- syncH
+- syncV
 outputs:
 - h
 - v

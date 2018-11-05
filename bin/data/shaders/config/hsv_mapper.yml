@@ -1,5 +1,7 @@
 frag: HSVMapper
 inputs:
+- syncH
+- syncV
 - hue
 - saturation
 - value

@@ -1,5 +1,7 @@
 frag: Blobscope
 inputs:
+- syncH
+- syncV
 - speed
 - shapes
 - sharpness

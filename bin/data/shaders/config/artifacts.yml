@@ -1,5 +1,7 @@
 frag: Artifacts
 inputs:
+- syncH
+- syncV
 - red
 - green
 - blue

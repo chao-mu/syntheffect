@@ -1,5 +1,7 @@
 frag: Change
 inputs:
+- syncH
+- syncV
 - in1
 - in2
 - in3

@@ -1,5 +1,7 @@
 frag: Osc
 inputs:
+- syncH
+- syncV
 - freq
 - freqMod
 - amplitude
