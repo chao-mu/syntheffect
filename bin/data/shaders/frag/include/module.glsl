@@ -59,6 +59,28 @@ float input_nosync_syncH(vec2 coords);
         return name ## PropertyPassed || name ## TexIdx >= 0; \
     }
 
+#define DEFINE_INPUT_GROUP(name, first, second, third) \
+    vec3 input_ ## name(vec2 coords) { \
+        return vec3(input_ ## first(coords), input_ ## second(coords), input_ ## third(coords)); \
+    } \
+    vec3[9] input_3x3_ ## name() { \
+        vec3 n[9]; \
+        n[0] = input_ ## name(bottomLeftTextureCoordinate); \
+        n[1] = input_ ## name(bottomTextureCoordinate); \
+        n[2] = input_ ## name(bottomRightTextureCoordinate); \
+        n[3] = input_ ## name(leftTextureCoordinate); \
+        n[4] = input_ ## name(textureCoordinate); \
+        n[5] = input_ ## name(rightTextureCoordinate); \
+        n[6] = input_ ## name(topLeftTextureCoordinate); \
+        n[7] = input_ ## name(topTextureCoordinate); \
+        n[8] = input_ ## name(topRightTextureCoordinate); \
+        return n; \
+    } \
+    \
+    vec3 input_ ## name() { \
+        return input_ ## name(textureCoordinate); \
+    } \
+
 #define _DEFINE_OUTPUT(tex_idx, channel_idx, name, desc) \
     void output_ ## name(float x) { \
         output ## tex_idx ## [channel_idx] = x; \
@@ -75,6 +97,13 @@ float input_nosync_syncH(vec2 coords);
     uniform sampler2DRect lastOutput ## tex_idx; \
     layout (location = tex_idx) out vec4 output ## tex_idx; \
     _DEFINE_OUTPUT(tex_idx, channel_idx, name, desc)
+
+#define DEFINE_OUTPUT_GROUP(name, first, second, third) \
+    void output_ ## name(vec3 v) { \
+        output_ ## first(v.x); \
+        output_ ## second(v.y); \
+        output_ ## third(v.z); \
+    }
 
 #define DEFINE_OUTPUT_1(name, desc) _DEFINE_OUTPUT_FIRST(0, 0, name, desc)
 #define DEFINE_OUTPUT_2(name, desc) _DEFINE_OUTPUT(0, 1, name, desc)
@@ -99,6 +128,17 @@ float input_nosync_syncH(vec2 coords);
 #define DEFINE_OUTPUT_16(name, desc) _DEFINE_OUTPUT_FIRST(5, 0, name, desc)
 #define DEFINE_OUTPUT_17(name, desc) _DEFINE_OUTPUT(5, 1, name, desc)
 #define DEFINE_OUTPUT_18(name, desc) _DEFINE_OUTPUT(5, 2, name, desc)
+
+in vec2 leftTextureCoordinate;
+in vec2 rightTextureCoordinate;
+
+in vec2 topTextureCoordinate;
+in vec2 topLeftTextureCoordinate;
+in vec2 topRightTextureCoordinate;
+
+in vec2 bottomTextureCoordinate;
+in vec2 bottomLeftTextureCoordinate;
+in vec2 bottomRightTextureCoordinate;
 
 uniform float time;
 uniform bool firstPass;
@@ -130,6 +170,10 @@ vec2 from_uv_1to1(vec2 uv) {
 
 float map(float value, float min1, float max1, float min2, float max2) {
     return ((value - min1) / (max1 - min1)) * (max2 - min2) + min2;
+}
+
+bool is_true(float v) {
+    return v > 0.5;
 }
 
 DEFINE_INPUT(syncH, 0, DESC("Horizontal sync"))

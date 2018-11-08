@@ -1,0 +1,14 @@
+frag: EdgeDetector
+inputs:
+- syncH
+- syncV
+- red
+- green
+- blue
+- negate
+- gate
+outputs:
+- red
+- green
+- blue
+vert: Passthrough
