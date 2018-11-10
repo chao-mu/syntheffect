@@ -9,6 +9,14 @@ namespace syntheffect {
         Webcam::Webcam(const std::string& id) : Module(id) {
         }
 
+        const std::string Webcam::getType() {
+            return getModuleType();
+        }
+
+        const std::string Webcam::getModuleType() {
+            return "webcam";
+        }
+
         void Webcam::setup(int width, int height, int internal_format) {
             player_.setUseTexture(true);
 

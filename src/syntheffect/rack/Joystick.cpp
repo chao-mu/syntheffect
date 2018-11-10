@@ -22,6 +22,14 @@ namespace syntheffect {
         Joystick::Joystick(const std::string& id, const std::string& device_type) : Module(id), device_type_(device_type) {
         }
 
+        const std::string Joystick::getType() {
+            return getModuleType();
+        }
+
+        const std::string Joystick::getModuleType() {
+            return "joystick";
+        }
+
         void Joystick::connect(int glfw_id) {
 #if LOG_JOYSTICK
             ofLogNotice("Joystick", "Connected joystick: %s", device_.c_str());

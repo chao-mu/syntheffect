@@ -19,6 +19,14 @@ namespace syntheffect {
         Shader::Shader(const std::string& id, const std::string& path) : Module(id), path_(path), first_pass_(true) {
         }
 
+        const std::string Shader::getType() {
+            return getModuleType();
+        }
+
+        const std::string Shader::getModuleType() {
+            return "shader";
+        }
+
         void Shader::setup(int width, int height, int internal_format) {
             YAML::Node settings = YAML::LoadFile(ofFilePath::getAbsolutePath(path_));
 
@@ -116,6 +124,9 @@ namespace syntheffect {
 
                 std::string shift_name = name + "_shift";
                 shader_.setUniform1f(shift_name, getInputConstant(shift_name, 0));
+
+                std::string invert_name = name + "_invert";
+                shader_.setUniform1f(invert_name, getInputConstant(invert_name, 0));
             }
 
             for (int i=0; i < last_outputs_.size(); i++) {

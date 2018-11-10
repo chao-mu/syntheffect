@@ -13,21 +13,9 @@
 #include "syntheffect/rack/Carousel.h"
 #include "syntheffect/rack/AudioAnalyzer.h"
 
-#define VIDEO_MODULE "video"
-#define WEBCAM_MODULE "webcam"
-#define JOYSTICK_MODULE "joystick"
-#define AUDIO_ANALYZER_MODULE "audio_analyzer"
-#define GLOBAL_MODULE "global"
-#define CAROUSEL_MODULE "carousel"
-#define OUT_ID "out"
-#define GLOBAL_ID "global"
-
-#define DEFAULT_WIDTH 1280
-#define DEFAULT_HEIGHT 720
-
 namespace syntheffect {
     namespace rack {
-        Rack::Rack(const std::string& path) : path_(path), is_ready_(false) {}
+        Rack::Rack(const std::string& path. const std::string& modules_dir) : path_(path), modules_dir_(modules_dir), is_ready_(false) {}
 
         void Rack::setup(size_t audio_buffer_size, int internal_format) {
             YAML::Node settings = YAML::LoadFile(path_);
@@ -108,13 +96,15 @@ namespace syntheffect {
                     auto joy = std::make_shared<Joystick>(id, device);
                     joy_manager_.addJoystick(joy);
                     addModule(joy);
-                } else {
+                } else if (type == SHADER_MODULE) {
                     const std::string path = "shaders/config/" + type + ".yml";
                     if (!ofFile::doesFileExist(path)) {
                         throw std::runtime_error("module type '" + type + "' is invalid.");
                     }
 
                     addModule(std::make_shared<Shader>(id, path));
+                } else {
+                    // Load module file here and recurse
                 }
             }
 
@@ -282,12 +272,3 @@ namespace syntheffect {
         }
     }
 }
-
-#undef COMPOSITE_MODULE
-#undef CAROUSEL_MODULE
-#undef VIDEO_MODULE
-#undef GLOBAL_MODULE
-#undef OUT_NAME
-#undef GLOBAL_NAME
-#undef DEFAULT_WIDTH
-#undef DEFAULT_HEIGHT

@@ -6,7 +6,6 @@ inputs:
 - green
 - blue
 - negate
-- gate
 outputs:
 - red
 - green

@@ -21,6 +21,9 @@ namespace syntheffect {
                 void update(float t) override;
                 void setup(int width, int height, int internal_format) override;
                 void start() override;
+                const std::string getType() override;
+
+                static const std::string getModuleType();
 
             private:
                 ofxSoundPlayerObject player_;

@@ -16,6 +16,9 @@ namespace syntheffect {
                 virtual std::shared_ptr<Channel> getOutput(const std::string& name) override;
                 virtual void start() override;
                 virtual void update(float t) override;
+                virtual const std::string getType() override;
+
+                static const std::string getModuleType();
 
             private:
                 void updateOutputs();

@@ -18,6 +18,9 @@ namespace syntheffect {
                 virtual void start() override;
                 virtual bool isReady() override;
                 virtual void update(float t) override;
+                virtual const std::string getType() override;
+
+                static const std::string getModuleType();
 
             private:
                 const std::string path_;

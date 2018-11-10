@@ -9,6 +9,14 @@ namespace syntheffect {
         Video::Video(const std::string& id, const std::string& path) : Module(id), path_(path) {
         }
 
+        const std::string Video::getType() {
+            return getModuleType();
+        }
+
+        const std::string Video::getModuleType() {
+            return "video";
+        }
+
         void Video::setup(int width, int height, int internal_format) {
             player_.setUseTexture(true);
 
