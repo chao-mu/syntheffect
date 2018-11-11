@@ -22,6 +22,10 @@ axes:
     2: "left_trigger"
     5: "right_trigger"
 
+triggers:
+    - left_trigger
+    - right_trigger
+
 buttons:
     2: "button_x"
     3: "button_y"

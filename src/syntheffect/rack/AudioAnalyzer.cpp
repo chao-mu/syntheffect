@@ -5,6 +5,14 @@ namespace syntheffect {
         AudioAnalyzer::AudioAnalyzer(const std::string& id, const std::string& path, size_t buffer_size) : Module(id), path_(path), buffer_size_(buffer_size) {
         }
 
+        const std::string AudioAnalyzer::getType() {
+            return getModuleType();
+        }
+
+        const std::string AudioAnalyzer::getModuleType() {
+            return "audio";
+        }
+
         void AudioAnalyzer::setup(int width, int height, int internal_format) {
             fft_ = std::shared_ptr<ofxFft>(ofxFft::create(buffer_size_, OF_FFT_WINDOW_HAMMING));
 

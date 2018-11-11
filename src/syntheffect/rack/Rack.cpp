@@ -238,7 +238,7 @@ namespace syntheffect {
                }
            }
 
-            return all_ready;
+           return all_ready;
         }
 
         void Rack::update(float t) {
@@ -248,8 +248,17 @@ namespace syntheffect {
             // Update global first
             auto global = modules_.at(GLOBAL_ID);
             global->update(t);
+
+            // Then joysticks next
             for (const auto& kv : modules_) {
-                if (kv.second != global) {
+                if (kv.second->getType() == Joystick::getModuleType()) {
+                    kv.second->update(t);
+                }
+            }
+
+            // Finally everything else
+            for (const auto& kv : modules_) {
+                if (kv.second != global && kv.second->getType() != Joystick::getModuleType()) {
                     kv.second->update(t);
                 }
             }

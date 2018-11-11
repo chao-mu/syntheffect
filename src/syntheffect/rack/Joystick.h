@@ -17,6 +17,10 @@ namespace syntheffect {
                 bool isCompatible(int glfw_id);
                 void connect(int glfw_id);
 
+                virtual const std::string getType() override;
+
+                static const std::string getModuleType();
+
             private:
                 void setupJoystickOutput(const std::string& name);
                 void setJoystickOutput(const std::string& name, bool pressed, float t, float v);
@@ -41,6 +45,8 @@ namespace syntheffect {
                 std::string getButtonName(int i);
                 std::string getAxisName(int i);
 
+
+                std::map<std::string, bool> triggers_;
         };
     }
 }

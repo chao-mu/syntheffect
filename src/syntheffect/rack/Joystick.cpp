@@ -10,12 +10,12 @@
 
 #define LOG_JOYSTICK false
 
-#if LOG_JOYSTICK
 #include "ofLog.h"
-#endif
 
 #define AXIS_LOW -1
 #define AXIS_HIGH 1
+#define TRIGGER_LOW 0
+#define TRIGGER_HIGH 1
 
 namespace syntheffect {
     namespace rack {
@@ -23,10 +23,16 @@ namespace syntheffect {
         }
 
         void Joystick::connect(int glfw_id) {
-#if LOG_JOYSTICK
             ofLogNotice("Joystick", "Connected joystick: %s", device_.c_str());
-#endif
             glfw_id_ = glfw_id;
+        }
+
+        const std::string Joystick::getType() {
+            return getModuleType();
+        }
+
+        const std::string Joystick::getModuleType() {
+            return "joystick";
         }
 
         void Joystick::setup(int /* width */, int /* height */, int /* internal_format */) {
@@ -66,6 +72,10 @@ namespace syntheffect {
                 std::string name = it->first.as<std::string>();
                 fake_buttons_positive_[name] = it->second.as<std::string>();
                 setupJoystickOutput(name);
+            }
+
+            for (const auto& node : config["triggers"]) {
+                triggers_[node.as<std::string>()] = true;
             }
         }
 
@@ -137,16 +147,27 @@ namespace syntheffect {
                     } else {
                         v = neutral;
                     }
-                    // Remap to -1 to 1
+
+                    // Remap to desired range
                     if (adjusted) {
-                        v = ofMap(v, adjusted_low, adjusted_high, AXIS_LOW, AXIS_HIGH);
+                        if (triggers_.count(name)) {
+                            v = ofMap(v, adjusted_low, adjusted_high, TRIGGER_LOW, TRIGGER_HIGH);
+                        } else {
+                            v = ofMap(v, adjusted_low, adjusted_high, AXIS_LOW, AXIS_HIGH);
+                        }
                     }
+                } else {
+                    v = 0;
+                }
+
+                if (getInputConstant(name + "_abs", 0) > 0.5) {
+                    v = std::abs(v);
                 }
 
                 setJoystickOutput(name, pressed, t, v);
 
 #if LOG_JOYSTICK
-                    ofLogNotice("Joystick", "axis=%d name=%s raw=%f translated=%f adjusted=%i pressed=%i", i, name.c_str(), axes[i], v, adjusted, pressed);
+                ofLogNotice("Joystick", "axis=%d name=%s raw=%f translated=%f adjusted=%i pressed=%i", i, name.c_str(), axes[i], v, adjusted, pressed);
 #endif
             }
 
@@ -162,7 +183,7 @@ namespace syntheffect {
                 setJoystickOutput(name, pressed, t, pressed ? 1 : 0);
 
 #if LOG_JOYSTICK
-                    ofLogNotice("Joystick", "button=%d name=%s pressed=%i", i, name.c_str(), pressed);
+                ofLogNotice("Joystick", "button=%d name=%s pressed=%i", i, name.c_str(), pressed);
 #endif
             }
 
@@ -245,3 +266,5 @@ namespace syntheffect {
 #undef LOG_JOYSTICK
 #undef AXIS_LOW
 #undef AXIS_HIGH
+#undef TRIGGER_LOW
+#undef TRIGGER_HIGH

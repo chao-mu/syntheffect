@@ -11,6 +11,10 @@ namespace syntheffect {
 
                 virtual void update(float t) override;
                 virtual void setup(int width, int height, int internal_format) override;
+                virtual const std::string getType() override;
+
+                static const std::string getModuleType();
+
 
                 const int width_;
                 const int height_;

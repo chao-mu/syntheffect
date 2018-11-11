@@ -19,10 +19,17 @@ namespace syntheffect {
             return Module::getOutput(name);
         }
 
+        const std::string Carousel::getType() {
+            return getModuleType();
+        }
+
+        const std::string Carousel::getModuleType() {
+            return "carousel";
+        }
+
         void Carousel::start() {
             updateOutputs();
         }
-
 
         void Carousel::update(float /* t */) {
             float prev_val = getInputConstant("prev", 0);
