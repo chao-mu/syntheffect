@@ -4,7 +4,6 @@ DEFINE_INPUT(red, 0., DESC("red component"))
 DEFINE_INPUT(redInvert, 0., DESC("red component, at 0 non-inverted, at 1 inverted"))
 DEFINE_INPUT(redBias, 0., DESC("red component bias"))
 
-
 DEFINE_INPUT(green, 0., DESC("green component"))
 DEFINE_INPUT(greenInvert, 0., DESC("green component, at 0 non-inverted, at 1 inverted"))
 DEFINE_INPUT(greenBias, 0., DESC("green component bias"))

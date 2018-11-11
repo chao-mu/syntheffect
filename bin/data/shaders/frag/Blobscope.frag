@@ -1,8 +1,5 @@
 #pragma include "include/module.glsl"
 
-// Multiple the result of this function call to rotate the coordinates by the given angle.
-#define rotate(angle) mat2(cos(angle),-sin(angle), sin(angle),cos(angle));
-
 DEFINE_INPUT(speed, 0.5, DESC("speed"))
 DEFINE_INPUT(shapes, 20., DESC("corelates to number of shapes"))
 DEFINE_INPUT(sharpness, 2.5, DESC("Sharpness of image"))

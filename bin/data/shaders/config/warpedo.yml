@@ -1,0 +1,14 @@
+frag: Warpedo
+inputs:
+- syncH
+- syncV
+- in1
+- in2
+- in3
+- amountX
+- amountY
+outputs:
+- out1
+- out2
+- out3
+vert: Passthrough

@@ -2,6 +2,9 @@
 
 #define PI 3.14159265359
 #define PI_HALF 1.5707963
+#define HALF_PI 1.5707963
+#define SQRT_2 1.41421356
+
 
 #define DESC(s) #s
 
@@ -17,6 +20,7 @@ float input_nosync_syncH(vec2 coords);
     uniform float name ## PropertyValue; \
     uniform float name ## _multiplier; \
     uniform float name ## _shift; \
+    uniform float name ## _invert; \
     \
     float input_nosync_ ## name(vec2 coord) { \
         float v = def; \
@@ -44,7 +48,12 @@ float input_nosync_syncH(vec2 coords);
             v = texture(inputs9, coord)[name ## ChannelIdx]; \
         } \
         \
-        return v * name ## _multiplier + name ## _shift; \
+        v = v * name ## _multiplier + name ## _shift; \
+        if (is_true(name ## _invert)) { \
+            v = 1 - v; \
+        } \
+        \
+        return v; \
     } \
     \
     float input_ ## name(vec2 coord) { \
@@ -103,6 +112,9 @@ float input_nosync_syncH(vec2 coords);
         output_ ## first(v.x); \
         output_ ## second(v.y); \
         output_ ## third(v.z); \
+    } \
+    vec3 last_output_ ## name() { \
+        return vec3(last_output_ ## first(), last_output_ ## second(), last_output_ ## third()); \
     }
 
 #define DEFINE_OUTPUT_1(name, desc) _DEFINE_OUTPUT_FIRST(0, 0, name, desc)
@@ -163,10 +175,24 @@ vec2 get_uv_1to1() {
     return (2. * textureCoordinate - resolution.xy) / resolution.y;
 }
 
+vec2 get_uv_0to1() {
+    return textureCoordinate / resolution;
+}
+
+vec2 get_uv_polar() {
+    vec2 uv = get_uv_1to1();
+    return vec2(length(uv), atan(uv.y, uv.x));
+}
+
 // translate coordinates in range -1 to 1 to texture coordinates.
 vec2 from_uv_1to1(vec2 uv) {
     return ((uv * resolution.y) + resolution.xy) / 2.;
 }
+
+vec2 from_uv_0to1(vec2 uv) {
+    return uv * resolution;
+}
+
 
 float map(float value, float min1, float max1, float min2, float max2) {
     return ((value - min1) / (max1 - min1)) * (max2 - min2) + min2;
@@ -175,6 +201,9 @@ float map(float value, float min1, float max1, float min2, float max2) {
 bool is_true(float v) {
     return v > 0.5;
 }
+
+// Multiple the result of this function call to rotate the coordinates by the given angle.
+#define rotate(angle) mat2(cos(angle),-sin(angle), sin(angle),cos(angle));
 
 DEFINE_INPUT(syncH, 0, DESC("Horizontal sync"))
 DEFINE_INPUT(syncV, 0, DESC("Vertical sync"))
