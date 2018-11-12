@@ -21,7 +21,7 @@
 
 namespace syntheffect {
     namespace rack {
-        Rack::Rack(const std::string& path, const std::string& modules_dir) : path_(path), modules_dir_(modules_dir), is_ready_(false) {}
+        Rack::Rack(const std::string& path, const std::string& modules_dir) : path_(path), modules_dir_(modules_dir) {}
 
         void Rack::setup(size_t audio_buffer_size, int internal_format) {
             YAML::Node settings = YAML::LoadFile(path_);

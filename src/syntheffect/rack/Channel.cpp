@@ -2,7 +2,7 @@
 
 namespace syntheffect {
     namespace rack {
-        Channel::Channel(ofTexture& texture, int idx) : texture_(&texture), idx_(idx) {
+        Channel::Channel(ofTexture& texture, int idx) : texture_(&texture), idx_(idx), value_(0) {
         }
 
         Channel::Channel(float v) : texture_(nullptr), idx_(-1), value_(v) {

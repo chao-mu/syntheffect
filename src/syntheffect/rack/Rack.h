@@ -41,8 +41,6 @@ namespace syntheffect {
                 std::string path_;
                 std::string modules_dir_;
 
-                bool is_ready_;
-
                 JoystickManager joy_manager_;
 
                 ofxSoundOutput sound_output_;

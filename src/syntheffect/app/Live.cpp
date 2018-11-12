@@ -16,9 +16,9 @@ namespace syntheffect {
     namespace app {
         Live::Live(const std::string& rack_path, const std::string& modules_dir, const std::string& out_path) :
             ofBaseApp(),
-            rack_(rack_path, modules_dir),
             out_path_(out_path),
             rack_path_(rack_path),
+            rack_(rack_path, modules_dir),
             recording_(false) {}
 
         void Live::setup() {

@@ -8,7 +8,7 @@ namespace syntheffect {
         class Channel {
             public:
                 Channel(ofTexture& texture, int idx);
-                Channel(float v);
+                explicit Channel(float v);
 
                 void copyTo(Channel& channel);
 

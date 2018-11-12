@@ -19,7 +19,7 @@
 
 namespace syntheffect {
     namespace rack {
-        Joystick::Joystick(const std::string& id, const std::string& device_type) : Module(id), device_type_(device_type) {
+        Joystick::Joystick(const std::string& id, const std::string& device_type) : Module(id), glfw_id_(-1), device_type_(device_type), deadzone_(0) {
         }
 
         void Joystick::connect(int glfw_id) {
