@@ -11,7 +11,7 @@ namespace syntheffect {
             public:
                 Joystick(const std::string& id, const std::string& device_type);
 
-                void setup(int width, int height, int internal_format) override;
+                void setup(int width, int height, int internal_format, const std::string& modules_dir) override;
                 void update(float t) override;
 
                 bool isCompatible(int glfw_id);

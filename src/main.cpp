@@ -9,16 +9,12 @@
 #include "syntheffect/app/Live.h"
 #include "syntheffect/app/Studio.h"
 
-#define IMAGE_EXTS { "jpg", "png", "tiff", "jpeg", "bmp" }
-
-#define DEFAULT_WIDTH 1280
-#define DEFAULT_HEIGHT 720
-
 int main(int argc, const char *argv[]){
     TCLAP::CmdLine cmd("Syntheffect - Magical magic magic");
 
     TCLAP::ValueArg<std::string> outArg("o", "out", "Output video", false, "", "string", cmd);
     TCLAP::ValueArg<std::string> projectArg("p", "project", "path to rack file", true, "", "string", cmd);
+    TCLAP::ValueArg<std::string> modulesArg("m", "modules", "path to modules repository", true, "", "string", cmd);
     TCLAP::SwitchArg fsArg("f", "fullscreen", "set window to fullscreen", cmd);
     TCLAP::SwitchArg studioArg("s", "studio", "open project studio", cmd);
 
@@ -34,10 +30,8 @@ int main(int argc, const char *argv[]){
         out_path = ofFilePath::getAbsolutePath(outArg.getValue(), false);
     }
 
-    std::string project_path;
-    if (!projectArg.getValue().empty()) {
-        project_path = ofFilePath::getAbsolutePath(projectArg.getValue(), false);
-    }
+    std::string rack_path = ofFilePath::getAbsolutePath(projectArg.getValue(), false);
+    std::string modules_dir = ofFilePath::getAbsolutePath(modulesArg.getValue(), false);
 
     ofGLFWWindowSettings win_settings;
     win_settings.setGLVersion(3, 3); // OpenGL 3,3 #version 330
@@ -49,7 +43,7 @@ int main(int argc, const char *argv[]){
 
     auto display_window = ofCreateWindow(win_settings);
 
-    auto app = std::make_shared<syntheffect::app::Live>(project_path, out_path);
+    auto app = std::make_shared<syntheffect::app::Live>(rack_path, modules_dir, out_path);
     ofRunApp(display_window, app);
 
     if (studioArg.getValue()) {

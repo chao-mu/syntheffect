@@ -18,9 +18,9 @@ namespace syntheffect {
     namespace rack {
         class Rack {
             public:
-                Rack(const std::string& path);
+                Rack(const std::string& path, const std::string& modules_dir);
 
-                void setup(size_t audio_buffer_size, int internal_format=GL_RGBA);
+                void setup(size_t audio_buffer_size, int internal_format=GL_RGBA32F);
                 void start();
                 void update(float t);
                 bool updateUnready(float t);
@@ -39,6 +39,7 @@ namespace syntheffect {
                 ofFbo fbo_;
 
                 std::string path_;
+                std::string modules_dir_;
 
                 bool is_ready_;
 

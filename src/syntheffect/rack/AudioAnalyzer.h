@@ -19,7 +19,7 @@ namespace syntheffect {
                 AudioAnalyzer(const std::string& id, const std::string& path, size_t buffer_size);
                 void process(ofSoundBuffer &input, ofSoundBuffer &output) override;
                 void update(float t) override;
-                void setup(int width, int height, int internal_format) override;
+                void setup(int width, int height, int internal_format, const std::string& modules_dir) override;
                 void start() override;
                 const std::string getType() override;
 

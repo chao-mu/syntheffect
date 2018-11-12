@@ -12,7 +12,7 @@ namespace syntheffect {
             return true;
         }
 
-        void Module::setup(int /* width */, int /* height */, int /* internal_format */) {
+        void Module::setup(int /* width */, int /* height */, int /* internal_format */, const std::string& /* modules_dir */) {
         }
 
         std::shared_ptr<Channel> Module::getOutput(const std::string& name) {

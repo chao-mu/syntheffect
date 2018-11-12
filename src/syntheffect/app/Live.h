@@ -16,7 +16,7 @@ namespace syntheffect {
     namespace app {
         class Live : public ofBaseApp {
             public:
-                Live(const std::string& rack_path, const std::string& out_path);
+                Live(const std::string& rack_path, const std::string& modules_dir, const std::string& out_path);
 
             protected:
                 void setup() override;
@@ -24,7 +24,6 @@ namespace syntheffect {
                 void draw() override;
                 void exit() override;
                 void keyPressed(int c) override;
-                //void audioIn(ofSoundBuffer& buf) override;
 
                 void screenshot();
 

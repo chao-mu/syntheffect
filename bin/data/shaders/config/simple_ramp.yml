@@ -1,8 +1,0 @@
-frag: SimpleRamp
-inputs:
-- syncH
-- syncV
-outputs:
-- h
-- v
-vert: Passthrough

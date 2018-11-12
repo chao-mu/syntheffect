@@ -13,12 +13,6 @@
 #include "syntheffect/rack/Carousel.h"
 #include "syntheffect/rack/AudioAnalyzer.h"
 
-#define VIDEO_MODULE "video"
-#define WEBCAM_MODULE "webcam"
-#define JOYSTICK_MODULE "joystick"
-#define AUDIO_ANALYZER_MODULE "audio_analyzer"
-#define GLOBAL_MODULE "global"
-#define CAROUSEL_MODULE "carousel"
 #define OUT_ID "out"
 #define GLOBAL_ID "global"
 
@@ -27,7 +21,7 @@
 
 namespace syntheffect {
     namespace rack {
-        Rack::Rack(const std::string& path) : path_(path), is_ready_(false) {}
+        Rack::Rack(const std::string& path, const std::string& modules_dir) : path_(path), modules_dir_(modules_dir), is_ready_(false) {}
 
         void Rack::setup(size_t audio_buffer_size, int internal_format) {
             YAML::Node settings = YAML::LoadFile(path_);
@@ -52,11 +46,11 @@ namespace syntheffect {
 
                 const std::string type = properties["module"].as<std::string>();
 
-                if (id  == GLOBAL_ID && type != GLOBAL_MODULE)  {
-                    throw std::runtime_error("global module must have module type global");
+                if (id  == GLOBAL_ID && type != Global::getModuleType())  {
+                    throw std::runtime_error("global module must have module type " + Global::getModuleType());
                 }
 
-                if (type == VIDEO_MODULE) {
+                if (type == Video::getModuleType()) {
                     if (!properties["path"]) {
                         throw std::runtime_error("No path specified for module with id '" + id + "'. Use the property 'path'.");
                     }
@@ -67,7 +61,7 @@ namespace syntheffect {
                     }
 
                     addModule(std::make_shared<Video>(id, path));
-                } else if (type == AUDIO_ANALYZER_MODULE) {
+                } else if (type == AudioAnalyzer::getModuleType()) {
                     if (!properties["path"]) {
                         throw std::runtime_error("No path specified for module with id '" + id + "'. Use the property 'path'.");
                     }
@@ -80,9 +74,9 @@ namespace syntheffect {
                     auto audio = std::make_shared<AudioAnalyzer>(id, path, audio_buffer_size);
                     audio->connectTo(sound_output_);
                     addModule(audio);
-                } else if (type == WEBCAM_MODULE) {
+                } else if (type == Webcam::getModuleType()) {
                     addModule(std::make_shared<Webcam>(id));
-                } else if (type == GLOBAL_MODULE) {
+                } else if (type == Global::getModuleType()) {
                     int width = DEFAULT_WIDTH;
                     if (properties["width"]) {
                         width = properties["width"].as<int>();
@@ -95,9 +89,9 @@ namespace syntheffect {
 
                     global = std::make_shared<Global>(id, width, height);
                     addModule(global);
-                } else if (type == CAROUSEL_MODULE) {
+                } else if (type == Carousel::getModuleType()) {
                     carousels[id] = properties;
-                } else if (type == JOYSTICK_MODULE) {
+                } else if (type == Joystick::getModuleType()) {
                     if (!properties["device"]) {
                         throw std::runtime_error(
                                 "No device type specified for module with id '" + id + "'. Use the property 'device'.");
@@ -109,9 +103,9 @@ namespace syntheffect {
                     joy_manager_.addJoystick(joy);
                     addModule(joy);
                 } else {
-                    const std::string path = "shaders/config/" + type + ".yml";
+                    const std::string path = ofFilePath::join(modules_dir_, type + ".frag");
                     if (!ofFile::doesFileExist(path)) {
-                        throw std::runtime_error("module type '" + type + "' is invalid.");
+                        throw std::runtime_error("module type '" + type + "' not found.");
                     }
 
                     addModule(std::make_shared<Shader>(id, path));
@@ -157,7 +151,7 @@ namespace syntheffect {
             fbo_.end();
 
             for (const auto& kv : modules_) {
-                kv.second->setup(width, height, internal_format);
+                kv.second->setup(width, height, internal_format, modules_dir_);
             }
 
             // Add all connections now that modules are added.
@@ -292,10 +286,6 @@ namespace syntheffect {
     }
 }
 
-#undef COMPOSITE_MODULE
-#undef CAROUSEL_MODULE
-#undef VIDEO_MODULE
-#undef GLOBAL_MODULE
 #undef OUT_NAME
 #undef GLOBAL_NAME
 #undef DEFAULT_WIDTH

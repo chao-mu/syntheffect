@@ -10,10 +10,10 @@ namespace syntheffect {
         }
 
         const std::string AudioAnalyzer::getModuleType() {
-            return "audio";
+            return "core/audio";
         }
 
-        void AudioAnalyzer::setup(int width, int height, int internal_format) {
+        void AudioAnalyzer::setup(int width, int height, int internal_format, const std::string& modules_dir) {
             fft_ = std::shared_ptr<ofxFft>(ofxFft::create(buffer_size_, OF_FFT_WINDOW_HAMMING));
 
             player_.connectTo(*this);

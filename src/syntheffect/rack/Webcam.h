@@ -14,7 +14,7 @@ namespace syntheffect {
             public:
                 Webcam(const std::string& id);
 
-                virtual void setup(int width, int height, int internal_format) override;
+                virtual void setup(int width, int height, int internal_format, const std::string& modules_dir) override;
                 virtual void update(float t) override;
                 virtual bool isReady() override;
                 virtual const std::string getType() override;

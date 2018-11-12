@@ -1,6 +1,7 @@
 #include "syntheffect/rack/Shader.h"
 
 #include <math.h>
+#include <regex>
 
 #include "yaml-cpp/yaml.h"
 
@@ -14,6 +15,7 @@
 #define CHANNELS_PER_TEX 3
 #define ACCUMULATOR_IDX 0
 
+#define RE(s) R ## s
 namespace syntheffect {
     namespace rack {
         Shader::Shader(const std::string& id, const std::string& path) : Module(id), path_(path), first_pass_(true) {
@@ -24,19 +26,24 @@ namespace syntheffect {
         }
 
         const std::string Shader::getModuleType() {
-            return "shader";
+            return "core/shader";
         }
 
-        void Shader::setup(int width, int height, int internal_format) {
-            YAML::Node settings = YAML::LoadFile(ofFilePath::getAbsolutePath(path_));
+        void Shader::setup(int width, int height, int internal_format, const std::string& modules_dir) {
+            ofBuffer buffer = ofBufferFromFile(path_);
 
-            if (settings["inputs"]) {
-                for (const auto& node : settings["inputs"]) {
-                    input_names_.push_back(node.as<std::string>());
+            std::vector<std::string> outputs;
+            std::regex input_re(R"(DEFINE_INPUT\((\w+))");
+            std::regex output_re(R"(DEFINE_OUTPUT_\d+\((\w+))");
+            for (auto line : buffer.getLines()){
+                std::smatch matches;
+                if (std::regex_search(line, matches, input_re)) {
+                    input_names_.push_back(matches[1]);
+                } else if (std::regex_search(line, matches, output_re)) {
+                    outputs.push_back(matches[1]);
                 }
             }
 
-            YAML::Node outputs = settings["outputs"];
             int texture_count = std::ceil(((float) outputs.size()) / (float) CHANNELS_PER_TEX);
             outputs_.allocate(width, height, internal_format);
             last_outputs_.resize(texture_count);
@@ -51,22 +58,12 @@ namespace syntheffect {
 
             for (std::size_t i=0; i < outputs.size(); i++) {
                 int texture_idx = i / CHANNELS_PER_TEX;
-                output_channels_[outputs[i].as<std::string>()] =
+                output_channels_[outputs[i]] =
                     std::make_shared<Channel>(outputs_.getTexture(texture_idx), i % CHANNELS_PER_TEX);
             }
 
-            std::string frag = "Passthrough";
-            if (settings["frag"]) {
-                frag = settings["frag"].as<std::string>();
-            }
-
-            std::string vert = "Passthrough";
-            if (settings["vert"]) {
-                vert = settings["vert"].as<std::string>();
-            }
-
-            std::string vert_path = "shaders/vert/" + vert + ".vert";
-            std::string frag_path = "shaders/frag/" + frag + ".frag";
+            std::string frag_path = path_;
+            std::string vert_path = ofFilePath::join(modules_dir, ofFilePath::join("vert", "Passthrough.vert"));
             if (!shader_.load(vert_path, frag_path)) {
                 throw std::runtime_error("Unable to load shader with paths " + vert_path + " and " + frag_path);
             }

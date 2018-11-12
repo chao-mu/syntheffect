@@ -10,7 +10,7 @@ namespace syntheffect {
                 Global(const std::string& id, int width, int height);
 
                 virtual void update(float t) override;
-                virtual void setup(int width, int height, int internal_format) override;
+                virtual void setup(int width, int height, int internal_format, const std::string& modules_dir) override;
                 virtual const std::string getType() override;
 
                 static const std::string getModuleType();

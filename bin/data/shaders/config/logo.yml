@@ -1,7 +1,0 @@
-frag: Logo
-inputs:
-- syncH
-- syncV
-outputs:
-- value
-vert: Passthrough

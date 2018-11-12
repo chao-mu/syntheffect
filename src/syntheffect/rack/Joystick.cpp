@@ -32,10 +32,10 @@ namespace syntheffect {
         }
 
         const std::string Joystick::getModuleType() {
-            return "joystick";
+            return "core/joystick";
         }
 
-        void Joystick::setup(int /* width */, int /* height */, int /* internal_format */) {
+        void Joystick::setup(int /* width */, int /* height */, int /* internal_format */, const std::string& /* modules_dir */) {
             std::string settings_path = ofFilePath::getAbsolutePath(ofFilePath::join("joysticks", device_type_ + ".yaml"));
             YAML::Node config = YAML::LoadFile(settings_path);
 
