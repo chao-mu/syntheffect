@@ -19,6 +19,7 @@ namespace syntheffect {
                 virtual bool isReady();
                 virtual void update(float t) = 0;
                 virtual const std::string getType() = 0;
+                bool outputExists(const std::string& name);
 
                 void setInput(const std::string& name, std::shared_ptr<Channel> channel);
 

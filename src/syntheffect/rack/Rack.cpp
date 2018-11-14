@@ -259,13 +259,25 @@ namespace syntheffect {
             TS_STOP("Rack::update update children");
 
             auto out = modules_.at(OUT_ID);
-            auto r = out->getOutput("red");
-            auto g = out->getOutput("green");
-            auto b = out->getOutput("blue");
+            std::shared_ptr<Channel> r, g, b;
+            if (out->outputExists("red")) {
+                r = out->getOutput("red");
+                g = out->getOutput("green");
+                b = out->getOutput("blue");
+            } else if (out->outputExists("out1")) {
+                r = out->getOutput("out1");
+                g = out->getOutput("out2");
+                b = out->getOutput("out3");
+            } else {
+                throw std::runtime_error("Module designated 'out' does not have red/green/blue or out1/out2/out3");
+            }
+
 
             if (r->texture_ != g->texture_ || g->texture_ != b->texture_) {
-                // We need them to be stored in the same texture, but that's abstracted away so we lie about requirements
-                throw std::runtime_error("Output module '" + std::string(OUT_ID) + "' must have first three output channels named red green blue. The fourth input determines alpha");
+                // We need them to be stored in the same texture
+                throw std::runtime_error(
+                        "Output module '" + std::string(OUT_ID) +
+                        "' must have first three output channels named red, green, blue or out1, out2, out3. The fourth output determines alpha");
             }
 
             // Remeber this is the same texture of all
