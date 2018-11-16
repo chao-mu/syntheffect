@@ -68,6 +68,7 @@ namespace syntheffect {
 
         void Live::exit() {
             recorder_.waitForThread();
+            rack_.stop();
         }
 
         void Live::update() {

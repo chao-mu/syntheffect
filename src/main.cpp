@@ -7,7 +7,6 @@
 #include "ofMain.h"
 
 #include "syntheffect/app/Live.h"
-#include "syntheffect/app/Studio.h"
 
 int main(int argc, const char *argv[]){
     TCLAP::CmdLine cmd("Syntheffect - Magical magic magic");
@@ -16,7 +15,6 @@ int main(int argc, const char *argv[]){
     TCLAP::ValueArg<std::string> projectArg("p", "project", "path to rack file", true, "", "string", cmd);
     TCLAP::ValueArg<std::string> modulesArg("m", "modules", "path to modules repository", true, "", "string", cmd);
     TCLAP::SwitchArg fsArg("f", "fullscreen", "set window to fullscreen", cmd);
-    TCLAP::SwitchArg studioArg("s", "studio", "open project studio", cmd);
 
     try {
         cmd.parse(argc, argv);
@@ -43,15 +41,7 @@ int main(int argc, const char *argv[]){
 
     auto display_window = ofCreateWindow(win_settings);
 
-    auto app = std::make_shared<syntheffect::app::Live>(rack_path, modules_dir, out_path);
-    ofRunApp(display_window, app);
-
-    if (studioArg.getValue()) {
-        win_settings.setPosition(ofVec2f(100,0));
-        win_settings.windowMode = OF_WINDOW;
-        auto studio_window = ofCreateWindow(win_settings);
-        //ofRunApp(studio_window, std::make_shared<syntheffect::app::Studio>());
-    }
+    ofRunApp(display_window, std::make_shared<syntheffect::app::Live>(rack_path, modules_dir, out_path));
 
     ofRunMainLoop();
 

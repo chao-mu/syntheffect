@@ -24,6 +24,7 @@ namespace syntheffect {
                 void start();
                 void update(float t);
                 bool updateUnready(float t);
+                void stop();
 
                 ofTexture& getTexture();
 

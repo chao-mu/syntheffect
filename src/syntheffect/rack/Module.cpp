@@ -19,6 +19,10 @@ namespace syntheffect {
             return output_channels_.count(name) > 0;
         }
 
+        void Module::stop() {
+
+        }
+
         std::shared_ptr<Channel> Module::getOutput(const std::string& name) {
             if (!output_channels_.count(name)) {
                 throw std::runtime_error("Module " + id_ + " does not have output " + name);

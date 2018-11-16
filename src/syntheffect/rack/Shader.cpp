@@ -33,8 +33,8 @@ namespace syntheffect {
             ofBuffer buffer = ofBufferFromFile(path_);
 
             std::vector<std::string> outputs;
-            std::regex input_re(R"(DEFINE_INPUT\((\w+))");
-            std::regex output_re(R"(DEFINE_OUTPUT_\d+\((\w+))");
+            std::regex input_re(R"(DEFINE_INPUT\s*\(\s*(\w+))");
+            std::regex output_re(R"(DEFINE_OUTPUT_\d+\s*\(\s*(\w+))");
             for (auto line : buffer.getLines()){
                 std::smatch matches;
                 if (std::regex_search(line, matches, input_re)) {

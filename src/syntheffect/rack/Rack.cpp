@@ -5,6 +5,7 @@
 #include "ofGraphics.h"
 #include "ofxTimeMeasurements.h"
 
+// Modules
 #include "syntheffect/rack/Video.h"
 #include "syntheffect/rack/Shader.h"
 #include "syntheffect/rack/Global.h"
@@ -12,6 +13,7 @@
 #include "syntheffect/rack/Webcam.h"
 #include "syntheffect/rack/Carousel.h"
 #include "syntheffect/rack/AudioAnalyzer.h"
+#include "syntheffect/midi/Device.h"
 
 #define OUT_ID "out"
 #define GLOBAL_ID "global"
@@ -22,6 +24,12 @@
 namespace syntheffect {
     namespace rack {
         Rack::Rack(const std::string& path, const std::string& modules_dir) : path_(path), modules_dir_(modules_dir) {}
+
+        void Rack::stop() {
+            for (auto& kv : modules_) {
+                kv.second->stop();
+            }
+        }
 
         void Rack::setup(size_t audio_buffer_size, int internal_format) {
             YAML::Node settings = YAML::LoadFile(path_);
@@ -102,6 +110,16 @@ namespace syntheffect {
                     auto joy = std::make_shared<Joystick>(id, device);
                     joy_manager_.addJoystick(joy);
                     addModule(joy);
+                } else if (type == midi::Device::getModuleType()) {
+                    if (!properties["device"]) {
+                        throw std::runtime_error(
+                                "No device type specified for module with id '" + id + "'. Use the property 'device'.");
+                    }
+
+                    const std::string device = properties["device"].as<std::string>();
+                    const std::string path = ofFilePath::join(modules_dir_, ofFilePath::join("midi", device + ".yml"));
+
+                    addModule(std::make_shared<midi::Device>(id, path));
                 } else {
                     const std::string path = ofFilePath::join(modules_dir_, type + ".frag");
                     if (!ofFile::doesFileExist(path)) {
