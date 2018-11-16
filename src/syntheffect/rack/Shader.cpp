@@ -126,7 +126,7 @@ namespace syntheffect {
                 shader_.setUniform1f(invert_name, getInputConstant(invert_name, 0));
             }
 
-            for (int i=0; i < last_outputs_.size(); i++) {
+            for (size_t i=0; i < last_outputs_.size(); i++) {
                 shader_.setUniformTexture("lastOutput" + std::to_string(i), last_outputs_.at(i), idx++);
             }
 
