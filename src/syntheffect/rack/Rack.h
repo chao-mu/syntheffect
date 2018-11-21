@@ -18,7 +18,7 @@ namespace syntheffect {
     namespace rack {
         class Rack {
             public:
-                Rack(const std::string& path, const std::string& modules_dir);
+                Rack(const std::string& path, const std::string& workspace_dir);
 
                 void setup(size_t audio_buffer_size, int internal_format=GL_RGBA32F);
                 void start();
@@ -40,7 +40,7 @@ namespace syntheffect {
                 ofFbo fbo_;
 
                 std::string path_;
-                std::string modules_dir_;
+                std::string workspace_dir_;
 
                 JoystickManager joy_manager_;
 

@@ -23,7 +23,7 @@
 
 namespace syntheffect {
     namespace rack {
-        Rack::Rack(const std::string& path, const std::string& modules_dir) : path_(path), modules_dir_(modules_dir) {}
+        Rack::Rack(const std::string& path, const std::string& workspace_dir) : path_(path), workspace_dir_(workspace_dir) {}
 
         void Rack::stop() {
             for (auto& kv : modules_) {
@@ -106,8 +106,9 @@ namespace syntheffect {
                     }
 
                     const std::string device = properties["device"].as<std::string>();
+                    const std::string path = ofFilePath::join(workspace_dir_, ofFilePath::join("joysticks", device + ".yml"));
 
-                    auto joy = std::make_shared<Joystick>(id, device);
+                    auto joy = std::make_shared<Joystick>(id, path);
                     joy_manager_.addJoystick(joy);
                     addModule(joy);
                 } else if (type == midi::Device::getModuleType()) {
@@ -117,11 +118,11 @@ namespace syntheffect {
                     }
 
                     const std::string device = properties["device"].as<std::string>();
-                    const std::string path = ofFilePath::join(modules_dir_, ofFilePath::join("midi", device + ".yml"));
+                    const std::string path = ofFilePath::join(workspace_dir_, ofFilePath::join("midi", device + ".yml"));
 
                     addModule(std::make_shared<midi::Device>(id, path));
                 } else {
-                    const std::string path = ofFilePath::join(modules_dir_, type + ".frag");
+                    const std::string path = ofFilePath::join(workspace_dir_, type + ".frag");
                     if (!ofFile::doesFileExist(path)) {
                         throw std::runtime_error("module type '" + type + "' not found.");
                     }
@@ -169,7 +170,7 @@ namespace syntheffect {
             fbo_.end();
 
             for (const auto& kv : modules_) {
-                kv.second->setup(width, height, internal_format, modules_dir_);
+                kv.second->setup(width, height, internal_format, workspace_dir_);
             }
 
             // Add all connections now that modules are added.

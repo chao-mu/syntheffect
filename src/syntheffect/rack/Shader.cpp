@@ -26,10 +26,10 @@ namespace syntheffect {
         }
 
         const std::string Shader::getModuleType() {
-            return "core/shader";
+            return "builtin/shader";
         }
 
-        void Shader::setup(int width, int height, int internal_format, const std::string& modules_dir) {
+        void Shader::setup(int width, int height, int internal_format, const std::string& workspace_dir) {
             ofBuffer buffer = ofBufferFromFile(path_);
 
             std::vector<std::string> outputs;
@@ -63,7 +63,7 @@ namespace syntheffect {
             }
 
             std::string frag_path = path_;
-            std::string vert_path = ofFilePath::join(modules_dir, ofFilePath::join("vert", "Passthrough.vert"));
+            std::string vert_path = ofFilePath::join(workspace_dir, ofFilePath::join("vert", "Passthrough.vert"));
             if (!shader_.load(vert_path, frag_path)) {
                 throw std::runtime_error("Unable to load shader with paths " + vert_path + " and " + frag_path);
             }

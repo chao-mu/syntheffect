@@ -14,10 +14,10 @@ namespace syntheffect {
         }
 
         const std::string Webcam::getModuleType() {
-            return "core/webcam";
+            return "builtin/webcam";
         }
 
-        void Webcam::setup(int width, int height, int internal_format, const std::string& modules_dir) {
+        void Webcam::setup(int width, int height, int internal_format, const std::string& workspace_dir) {
             player_.setUseTexture(true);
 
             if (!player_.setup(width, height)) {

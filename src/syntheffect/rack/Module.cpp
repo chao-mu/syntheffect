@@ -12,7 +12,7 @@ namespace syntheffect {
             return true;
         }
 
-        void Module::setup(int /* width */, int /* height */, int /* internal_format */, const std::string& /* modules_dir */) {
+        void Module::setup(int /* width */, int /* height */, int /* internal_format */, const std::string& /* workspace_dir */) {
         }
 
         bool Module::outputExists(const std::string& name) {

@@ -10,10 +10,10 @@ namespace syntheffect {
         }
 
         const std::string Global::getModuleType() {
-            return "core/global";
+            return "builtin/global";
         }
 
-        void Global::setup(int /* width */, int /* height */, int /* internal_format */, const std::string& /* modules_dir */) {
+        void Global::setup(int /* width */, int /* height */, int /* internal_format */, const std::string& /* workspace_dir */) {
             output_channels_["width"] = std::make_shared<Channel>(width_);
             output_channels_["height"] = std::make_shared<Channel>(height_);
             output_channels_["time"] = std::make_shared<Channel>(0);
