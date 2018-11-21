@@ -99,35 +99,38 @@ namespace syntheffect {
                     addModule(global);
                 } else if (type == Carousel::getModuleType()) {
                     carousels[id] = properties;
-                } else if (type == Joystick::getModuleType()) {
-                    if (!properties["device"]) {
-                        throw std::runtime_error(
-                                "No device type specified for module with id '" + id + "'. Use the property 'device'.");
-                    }
-
-                    const std::string device = properties["device"].as<std::string>();
-                    const std::string path = ofFilePath::join(workspace_dir_, ofFilePath::join("joysticks", device + ".yml"));
-
-                    auto joy = std::make_shared<Joystick>(id, path);
-                    joy_manager_.addJoystick(joy);
-                    addModule(joy);
-                } else if (type == midi::Device::getModuleType()) {
-                    if (!properties["device"]) {
-                        throw std::runtime_error(
-                                "No device type specified for module with id '" + id + "'. Use the property 'device'.");
-                    }
-
-                    const std::string device = properties["device"].as<std::string>();
-                    const std::string path = ofFilePath::join(workspace_dir_, ofFilePath::join("midi", device + ".yml"));
-
-                    addModule(std::make_shared<midi::Device>(id, path));
                 } else {
-                    const std::string path = ofFilePath::join(workspace_dir_, type + ".frag");
-                    if (!ofFile::doesFileExist(path)) {
-                        throw std::runtime_error("module type '" + type + "' not found.");
+                    const std::string frag_ext = "frag";
+                    const std::string midi_ext = "midi.yml";
+                    const std::string joystick_ext = "joystick.yml";
+
+                    std::string tried = "";
+                    std::shared_ptr<Module> mod = nullptr;
+                    for (const auto& ext : {frag_ext, midi_ext, joystick_ext}) {
+                        const std::string path = ofFilePath::join(workspace_dir_, type + "." + ext);
+
+                        if (ofFile::doesFileExist(path)) {
+                            if (ext == frag_ext) {
+                                mod = std::make_shared<Shader>(id, path);
+                            } else if (ext == midi_ext) {
+                                mod = std::make_shared<midi::Device>(id, path);
+                            } else if (ext == joystick_ext) {
+                                mod = std::make_shared<Joystick>(id, path);
+                            } else {
+                                throw std::runtime_error("Internal error: supported extension not listed");
+                            }
+
+                            break;
+                        }
+
+                        tried += path + " ";
                     }
 
-                    addModule(std::make_shared<Shader>(id, path));
+                    if (mod == nullptr) {
+                        throw std::runtime_error("module type '" + type + "' not found. Tried the following paths: " + tried);
+                    } else {
+                        addModule(mod);
+                    }
                 }
             }
 
@@ -255,9 +258,11 @@ namespace syntheffect {
         }
 
         void Rack::update(float t) {
-            joy_manager_.update(t);
-
+#ifdef SYNTHEFFECT_BENCHMARK
+            TSGL_START("GPU");
             TS_START("Rack::update update children");
+#endif
+            joy_manager_.update(t);
             // Update global first
             auto global = modules_.at(GLOBAL_ID);
             global->update(t);
@@ -275,7 +280,10 @@ namespace syntheffect {
                     kv.second->update(t);
                 }
             }
+#ifdef SYNTHEFFECT_BENCHMARK
             TS_STOP("Rack::update update children");
+            TSGL_STOP("GPU");
+#endif
 
             auto out = modules_.at(OUT_ID);
             std::shared_ptr<Channel> r, g, b;

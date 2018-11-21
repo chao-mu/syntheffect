@@ -8,8 +8,6 @@
 #include "ofGraphics.h"
 #include "ofPoint.h"
 
-#include "ofxTimeMeasurements.h"
-
 #include "syntheffect/rack/Channel.h"
 
 #define CHANNELS_PER_TEX 3
@@ -63,7 +61,7 @@ namespace syntheffect {
             }
 
             std::string frag_path = path_;
-            std::string vert_path = ofFilePath::join(workspace_dir, ofFilePath::join("vert", "Passthrough.vert"));
+            std::string vert_path = ofFilePath::join(workspace_dir, ofFilePath::join("shaders", "Passthrough.vert"));
             if (!shader_.load(vert_path, frag_path)) {
                 throw std::runtime_error("Unable to load shader with paths " + vert_path + " and " + frag_path);
             }
@@ -140,7 +138,6 @@ namespace syntheffect {
             shader_.end();
             outputs_.end();
 
-            TS_START("Shader::update texture transfer");
             for (int i=0; i < outputs_.getNumTextures(); i++) {
                 ofFbo& buf = last_outputs_.at(i);
                 buf.begin();
@@ -148,7 +145,6 @@ namespace syntheffect {
                 //ofClear(1);
                 buf.end();
             }
-            TS_STOP("Shader::update texture transfer");
 
             first_pass_ = false;
         }
