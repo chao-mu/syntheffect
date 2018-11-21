@@ -8,9 +8,11 @@
 
 #define FPS 30
 
+#ifdef SYNTHEFFECT_BENCHMARK
 void setup() {
     TIME_SAMPLE_SET_FRAMERATE(FPS);
 }
+#endif
 
 namespace syntheffect {
     namespace app {
@@ -74,13 +76,9 @@ namespace syntheffect {
         void Live::update() {
             float t = ofGetElapsedTimef();
 
-            TS_START_NIF("rack_.updateUnready");
             bool all_ready = rack_.updateUnready(t);
-            TS_STOP_NIF("rack_.updateUnready");
             if (all_ready) {
-                TS_START_NIF("rack_.update");
                 rack_.update(t);
-                TS_STOP_NIF("rack_.update");
 
                 if (recording_) {
                     recordFrame();
@@ -90,10 +88,8 @@ namespace syntheffect {
 
         void Live::draw() {
             ofTexture& tex = rack_.getTexture();
-            TS_START("rack_.draw");
             graphics::Util::drawScaleCenter(tex.getWidth(), tex.getHeight(), ofGetWindowWidth(), ofGetWindowHeight(),
                     [tex](float x, float y, float w, float h) { tex.draw(x, y, w, h); });
-            TS_STOP("rack_.draw");
 
             ofSetWindowTitle("fps: " + std::to_string(ofGetFrameRate()));
         }
