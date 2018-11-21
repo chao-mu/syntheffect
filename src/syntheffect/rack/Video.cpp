@@ -14,10 +14,10 @@ namespace syntheffect {
         }
 
         const std::string Video::getModuleType() {
-            return "core/video";
+            return "builtin/video";
         }
 
-        void Video::setup(int width, int height, int internal_format, const std::string& modules_dir) {
+        void Video::setup(int width, int height, int internal_format, const std::string& workspace_dir) {
             player_.setUseTexture(true);
 
             if (!player_.load(path_)) {

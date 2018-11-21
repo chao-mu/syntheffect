@@ -9,9 +9,9 @@ namespace syntheffect {
     namespace rack {
         class Joystick : public Module {
             public:
-                Joystick(const std::string& id, const std::string& device_type);
+                Joystick(const std::string& id, const std::string& path);
 
-                void setup(int width, int height, int internal_format, const std::string& modules_dir) override;
+                void setup(int width, int height, int internal_format, const std::string& workspace_dir) override;
                 void update(float t) override;
 
                 bool isCompatible(int glfw_id);
@@ -32,7 +32,7 @@ namespace syntheffect {
                 int glfw_id_;
 
                 std::string device_;
-                const std::string device_type_;
+                const std::string path_;
                 std::map<int, float> axis_neutrals_;
                 std::map<int, std::string> axis_names_;
                 std::map<int, std::string> button_names_;

@@ -15,7 +15,7 @@ namespace syntheffect {
             public:
                 Shader(const std::string& id, const std::string& path);
 
-                virtual void setup(int width, int height, int internal_format, const std::string& modules_dir) override;
+                virtual void setup(int width, int height, int internal_format, const std::string& workspace_dir) override;
                 virtual void update(float t) override;
                 virtual bool isReady() override;
                 virtual const std::string getType() override;

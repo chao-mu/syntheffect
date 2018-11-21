@@ -19,7 +19,7 @@
 
 namespace syntheffect {
     namespace rack {
-        Joystick::Joystick(const std::string& id, const std::string& device_type) : Module(id), glfw_id_(-1), device_type_(device_type), deadzone_(0) {
+        Joystick::Joystick(const std::string& id, const std::string& path) : Module(id), glfw_id_(-1), path_(path), deadzone_(0) {
         }
 
         void Joystick::connect(int glfw_id) {
@@ -32,12 +32,11 @@ namespace syntheffect {
         }
 
         const std::string Joystick::getModuleType() {
-            return "core/joystick";
+            return "builtin/joystick";
         }
 
-        void Joystick::setup(int /* width */, int /* height */, int /* internal_format */, const std::string& /* modules_dir */) {
-            std::string settings_path = ofFilePath::getAbsolutePath(ofFilePath::join("joysticks", device_type_ + ".yaml"));
-            YAML::Node config = YAML::LoadFile(settings_path);
+        void Joystick::setup(int /* width */, int /* height */, int /* internal_format */, const std::string& /* workspace_dir */) {
+            YAML::Node config = YAML::LoadFile(path_);
 
             device_ = config["device"].as<std::string>();
             deadzone_ = config["deadzone"].as<float>();

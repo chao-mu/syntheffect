@@ -13,7 +13,7 @@ int main(int argc, const char *argv[]){
 
     TCLAP::ValueArg<std::string> outArg("o", "out", "Output video", false, "", "string", cmd);
     TCLAP::ValueArg<std::string> projectArg("p", "project", "path to rack file", true, "", "string", cmd);
-    TCLAP::ValueArg<std::string> modulesArg("m", "modules", "path to modules repository", true, "", "string", cmd);
+    TCLAP::ValueArg<std::string> workspaceArg("w", "workspace", "path to workspace repository", true, "", "string", cmd);
     TCLAP::SwitchArg fsArg("f", "fullscreen", "set window to fullscreen", cmd);
 
     try {
@@ -29,7 +29,7 @@ int main(int argc, const char *argv[]){
     }
 
     std::string rack_path = ofFilePath::getAbsolutePath(projectArg.getValue(), false);
-    std::string modules_dir = ofFilePath::getAbsolutePath(modulesArg.getValue(), false);
+    std::string workspace_dir = ofFilePath::getAbsolutePath(workspaceArg.getValue(), false);
 
     ofGLFWWindowSettings win_settings;
     win_settings.setGLVersion(3, 3); // OpenGL 3,3 #version 330
@@ -41,7 +41,7 @@ int main(int argc, const char *argv[]){
 
     auto display_window = ofCreateWindow(win_settings);
 
-    ofRunApp(display_window, std::make_shared<syntheffect::app::Live>(rack_path, modules_dir, out_path));
+    ofRunApp(display_window, std::make_shared<syntheffect::app::Live>(rack_path, workspace_dir, out_path));
 
     ofRunMainLoop();
 

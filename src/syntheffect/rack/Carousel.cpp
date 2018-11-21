@@ -24,7 +24,7 @@ namespace syntheffect {
         }
 
         const std::string Carousel::getModuleType() {
-            return "core/carousel";
+            return "builtin/carousel";
         }
 
         void Carousel::start() {

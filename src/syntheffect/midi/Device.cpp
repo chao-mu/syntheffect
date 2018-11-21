@@ -11,7 +11,7 @@ namespace syntheffect {
         Device::Device(const std::string& id, const std::string& path) : Module(id), path_(path), midi_in_(new RtMidiIn()), running_(false) {
         }
 
-        void Device::setup(int /* width */, int /* height */, int /* internal_format */, const std::string& /* modules_dir */) {
+        void Device::setup(int /* width */, int /* height */, int /* internal_format */, const std::string& /* workspace_dir */) {
             load(path_);
             unsigned int port_count = midi_in_->getPortCount();
             bool found = false;
@@ -46,7 +46,7 @@ namespace syntheffect {
         }
 
         const std::string Device::getModuleType() {
-            return "core/midi";
+            return "builtin/midi";
         }
 
 

@@ -20,7 +20,7 @@ namespace syntheffect {
             public:
                 Device(const std::string& id, const std::string& path);
 
-                void setup(int width, int height, int internal_format, const std::string& modules_dir) override;
+                void setup(int width, int height, int internal_format, const std::string& workspace_dir) override;
                 void stop() override;
                 void update(float t) override;
                 void start() override;

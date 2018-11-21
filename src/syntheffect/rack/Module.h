@@ -14,7 +14,7 @@ namespace syntheffect {
         class Module {
             public:
                 Module(const std::string& id);
-                virtual void setup(int width, int height, int internal_format, const std::string& modules_dir);
+                virtual void setup(int width, int height, int internal_format, const std::string& workspace_dir);
                 virtual void start();
                 virtual bool isReady();
                 virtual void update(float t) = 0;
