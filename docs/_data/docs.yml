@@ -1,7 +1,6 @@
 - title: Getting Started
   docs:
   - home
-
-- title: Examples
-  docs:
-  - cheatsheet
+  - source
+  - modules
+  - contribute
