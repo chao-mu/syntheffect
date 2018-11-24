@@ -41,13 +41,14 @@ def generate_shader_markdown(docs):
     md += "|Name|Type|Description|Author|\n"
     md += "|----|----|-----------|------|\n"
     for doc in docs:
-        md += "|{}|{}|{}|{}|\n".format(doc["type"], doc["name"], doc["desc"], doc["author"])
+        t = "[{}](#{})".format(doc["type"], "-".join(doc["name"].split(" ")).lower())
+        md += "|{}|{}|{}|{}|\n".format(t, doc["name"], doc["desc"], doc["author"])
 
     md += "\n"
 
     for doc in docs:
         md += "\n### {}\n\n".format(doc["name"])
-        md += doc["desc"] + "\n"
+        md += doc["desc"] + "\n\n"
         md += "Inputs:\n"
         for i in doc["inputs"]:
             md += "* *{}* - {}\n".format(i["name"], i["desc"])
