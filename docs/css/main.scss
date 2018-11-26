@@ -22,6 +22,8 @@
   "typeahead"
 ;
 
+@import "./bs4-utilities-for-bs3.min.css";
+
 html {
   position: relative;
   min-height: 100%;
@@ -83,4 +85,13 @@ body {
 }
 .navbar-form .has-feedback .form-control-feedback{
   top:10px
+}
+.nav {
+    li a {
+        font-size: 20px;
+    }
+}
+
+img.slack {
+    height: 23px;
 }

@@ -6,6 +6,11 @@ redirect_from: /docs/index.html
 
 ## Getting started
 
+<img class="d-inline-block" src="/img/linux-logo.png">
+<img class="d-inline-block" src="/img/apple-logo.png">
+
+<b>Warning: Alpha Software</b>
+
 The general process of creating visuals with SynthEffect is to write a rack file in YAML and then launch the syntheffect executable. This rack file is a collection of modules you would like to use (some which you may have written), patched together to create pipelines of effects.  Examples of modules include video file input, shaders written in GLSL to apply effects, hardware controllers, and the "global" module used to specify project parameters such as width and height. You give each of these modules a name, a type, and a series of inputs that are either hard coded values or outputs of other modules.
 
 All your work is conducted in subdirectories in the syntheffect-workspace, retrievable from github. This workspace contains all the modules that ship with syntheffect along with a projects directory and personal module directory for you to develop in.
