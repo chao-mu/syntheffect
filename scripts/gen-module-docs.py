@@ -14,6 +14,33 @@ def main():
     docs_path = sys.argv[1]
     workspace_dir = sys.argv[2]
 
+    process_shaders(workspace_dir, docs_path)
+    process_joysticks(workspace_dir, docs_path)
+
+def process_joysticks(workspace_dir, docs_path):
+    docs = []
+    for path in glob.glob(os.path.join(workspace_dir, "*", "*.joystick.yml")):
+        base = os.path.basename(path)
+        name = os.path.splitext(os.path.splitext(base)[0])[0]
+        joysticks_dir = os.path.normpath(path).split(os.sep)[-2]
+        if joysticks_dir == "personal":
+            continue
+
+        doc = read_joystick(path)
+        doc["type"] = "{}/{}".format(joysticks_dir, name)
+
+        docs.append(doc)
+
+    md = "---\n"
+    md += "title: Joystick Modules\n"
+    md += "permalink: /docs/joystick_modules/\n"
+    md += "---\n\n"
+    md += generate_joystick_markdown(docs)
+
+    with open(os.path.join(docs_path, "joystick_modules.md"), "w") as f:
+        f.write(md)
+
+def process_shaders(workspace_dir, docs_path):
     docs = []
     for path in glob.glob(os.path.join(workspace_dir, "*", "*.frag")):
         base = os.path.basename(path)
@@ -28,27 +55,62 @@ def main():
         docs.append(doc)
 
     md = "---\n"
-    md += "title: Modules\n"
-    md += "permalink: /docs/modules/\n"
+    md += "title: Shader Modules\n"
+    md += "permalink: /docs/shader_modules/\n"
     md += "---\n\n"
     md += generate_shader_markdown(docs)
 
-    print(md)
+    with open(os.path.join(docs_path, "shader_modules.md"), "w") as f:
+        f.write(md)
+
+def read_joystick(path):
+    with open(path, 'r') as f:
+        y = yaml.load(f)
+
+    outputs = []
+    for k, v in y["axes"].items():
+        outputs.append(v)
+
+    for k, v in y["buttons"].items():
+        outputs.append(v)
+
+    return {"outputs": outputs, "device_substring": y["device"] , "name": y["name"]}
+
+def generate_joystick_markdown(docs):
+    md = ""
+    md += "## Summary\n\n"
+    md += "|Type|Name|Search String|\n"
+    md += "|----|----|-------------|\n"
+    for doc in docs:
+        t = "[{}](#{})".format(doc["type"], "-".join(doc["device_substring"].split(" ")).lower())
+        md += "|{}|{}|{}|\n".format(t, doc["name"], doc["device_substring"])
+
+    md += "\n## Details\n\n"
+    for doc in docs:
+        md += "\n### {}\n\n".format(doc["name"])
+        md += "Type: {}\n\n".format(doc["type"])
+        md += "Search String: {}\n\n".format(doc["device_substring"])
+
+        md += "\nOutputs:\n"
+        for o in doc["outputs"]:
+            md += "* *{}*\n".format(o)
+
+    return md
 
 def generate_shader_markdown(docs):
     md = ""
-    md += "## Shader Modules\n\n"
-    md += "|Name|Type|Description|Author|\n"
+    md += "## Summary\n\n"
+    md += "|Type|Name|Description|Author|\n"
     md += "|----|----|-----------|------|\n"
     for doc in docs:
         t = "[{}](#{})".format(doc["type"], "-".join(doc["name"].split(" ")).lower())
         md += "|{}|{}|{}|{}|\n".format(t, doc["name"], doc["desc"], doc["author"])
 
-    md += "\n"
-
+    md += "\n## Details\n\n"
     for doc in docs:
         md += "\n### {}\n\n".format(doc["name"])
         md += doc["desc"] + "\n\n"
+        md += "Type: {}\n\n".format(doc["type"])
         md += "Inputs:\n"
         for i in doc["inputs"]:
             md += "* *{}* - {}\n".format(i["name"], i["desc"])

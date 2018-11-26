@@ -2,5 +2,11 @@
   docs:
   - home
   - source
-  - modules
   - contribute
+
+- title: Reference
+  docs:
+  - builtin_modules
+  - shader_modules
+  - midi_modules
+  - joystick_modules

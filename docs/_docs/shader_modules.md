@@ -1,25 +1,24 @@
 ---
-title: Modules
-permalink: /docs/modules/
+title: Shader Modules
+permalink: /docs/shader_modules/
 ---
 
-## Shader Modules
+## Summary
 
-|Name|Type|Description|Author|
+|Type|Name|Description|Author|
 |----|----|-----------|------|
 |[shaders/logo](#logo)|Logo|The author's tattoo and SynthEffect's logo|Danimalia Hackpoetica|
-|[shaders/transform](#transform)|Transform|Apply simple transformations of pixel placement|Danimalia Hackpoetica|
 |[shaders/hsv_mapper](#hsv-mapper)|HSV Mapper|Input HSV, output RGB and YCbCr|Danimalia Hackpoetica|
 |[shaders/rgb_mapper](#rgb-mapper)|RGB Mapper|Map RGB to HSV and YCbCr|Danimalia Hackpoetica|
 |[shaders/compositor](#compositor)|Compositor|Mix two sets of 3 channels according to a key channel|Danimalia Hackpoetica|
-|[shaders/artifacts](#luma-blood)|Luma Blood|Simulate the luma signal bleeding into the chroma signals|Danimalia Hackpoetica|
+|[shaders/reflect](#reflect)|Reflect|Reflect over X or Y axises|Danimalia Hackpoetica|
 |[shaders/time_tunnel](#time-tunnel)|Time Tunnel|Dr Who like graphics generator|Danimalia Hackpoetica|
 |[shaders/pixelate](#pixelate)|Pixelate|Make look like pixels|Danimalia Hackpoetica|
 |[shaders/dac](#digital-to-analog)|Digital to Analog|The opposite of the Analog to Digital module|Danimalia Hackpoetica|
-|[shaders/magnitude](#magnitude)|Magnitude|The magnitude of either the first x1, x2, x3, or the difference between the magnitudes of x1-3 and y1-3|Danimalia Hackpoetica|
+|[shaders/magnitude](#magnitude)|Magnitude|The magnitude of either a vector consisting of x1, x2, x3, or the magnitudes of the difference of x1-3 and y1-3|Danimalia Hackpoetica|
 |[shaders/ramp](#simple-ramp)|Simple Ramp|Simple range horizontally and vertically|Danimalia Hackpoetica|
 |[shaders/warpedo](#warpedo)|Warpedo|Warp the inputs|Danimalia Hackpoetica|
-|[shaders/decay](#decay)|Decay|For each channel, mix in previous frame if its value is higher|Danimalia Hackpoetica|
+|[shaders/decay](#decay)|Decay|For each channel, mix in previous frame if its value is lower than the last output|Danimalia Hackpoetica|
 |[shaders/adc](#analog-to-digital-conversion)|Analog to digital conversion|Represent input value in binary. Each output channel is 1 or 0|Danimalia Hackpoetica|
 |[shaders/wind](#winder)|Winder|Wind the input in a circle|Danimalia Hackpoetica|
 |[shaders/feedback](#feedback)|Feedback|Mix in previous frame to current frame, causing a echo like effect|Danimalia Hackpoetica|
@@ -30,35 +29,25 @@ permalink: /docs/modules/
 |[shaders/change](#change)|Change|Measure the change between each frame.|Danimalia Hackpoetica|
 |[shaders/color_encoder](#color-encoder)|Color Encoder|Tweak colors|Danimalia Hackpoetica|
 
+## Details
+
 
 ### Logo
 
 The author's tattoo and SynthEffect's logo
+
+Type: shaders/logo
 
 Inputs:
 
 Outputs:
 * *value* - the logo
 
-### Transform
-
-Apply simple transformations of pixel placement
-
-Inputs:
-* *in1* - input channel 1
-* *in2* - input channel 2
-* *in3* - input channel 3
-* *mirrorX* - Mirror x axis
-* *mirrorY* - Mirror y axis
-
-Outputs:
-* *out1* - output channel for in1
-* *out2* - output channel for in2
-* *out3* - output channel for in3
-
 ### HSV Mapper
 
 Input HSV, output RGB and YCbCr
+
+Type: shaders/hsv_mapper
 
 Inputs:
 * *hue* - hue component
@@ -77,6 +66,8 @@ Outputs:
 
 Map RGB to HSV and YCbCr
 
+Type: shaders/rgb_mapper
+
 Inputs:
 * *red* - red component
 * *green* - green component
@@ -93,6 +84,8 @@ Outputs:
 ### Compositor
 
 Mix two sets of 3 channels according to a key channel
+
+Type: shaders/compositor
 
 Inputs:
 * *red* - red component
@@ -111,24 +104,29 @@ Outputs:
 * *green* - green component
 * *blue* - blue component
 
-### Luma Blood
+### Reflect
 
-Simulate the luma signal bleeding into the chroma signals
+Reflect over X or Y axises
+
+Type: shaders/reflect
 
 Inputs:
-* *red* - red component
-* *green* - green component
-* *blue* - blue component
-* *blood* - how much bleed yo want
+* *in1* - input channel 1
+* *in2* - input channel 2
+* *in3* - input channel 3
+* *mirrorX* - Mirror x axis
+* *mirrorY* - Mirror y axis
 
 Outputs:
-* *red* - red component
-* *green* - green component
-* *blue* - blue component
+* *out1* - output channel for in1
+* *out2* - output channel for in2
+* *out3* - output channel for in3
 
 ### Time Tunnel
 
 Dr Who like graphics generator
+
+Type: shaders/time_tunnel
 
 Inputs:
 * *speed* - the speed of travel through the tunnel
@@ -141,6 +139,8 @@ Outputs:
 ### Pixelate
 
 Make look like pixels
+
+Type: shaders/pixelate
 
 Inputs:
 * *in1* - input channel 1
@@ -158,6 +158,8 @@ Outputs:
 
 The opposite of the Analog to Digital module
 
+Type: shaders/dac
+
 Inputs:
 * *in1* - input channel for bit 1
 * *in2* - input channel for bit 2
@@ -168,7 +170,9 @@ Outputs:
 
 ### Magnitude
 
-The magnitude of either the first x1, x2, x3, or the difference between the magnitudes of x1-3 and y1-3
+The magnitude of either a vector consisting of x1, x2, x3, or the magnitudes of the difference of x1-3 and y1-3
+
+Type: shaders/magnitude
 
 Inputs:
 * *x1* - first component of vector
@@ -186,6 +190,8 @@ Outputs:
 
 Simple range horizontally and vertically
 
+Type: shaders/ramp
+
 Inputs:
 
 Outputs:
@@ -195,6 +201,8 @@ Outputs:
 ### Warpedo
 
 Warp the inputs
+
+Type: shaders/warpedo
 
 Inputs:
 * *in1* - input channel 1
@@ -210,7 +218,9 @@ Outputs:
 
 ### Decay
 
-For each channel, mix in previous frame if its value is higher
+For each channel, mix in previous frame if its value is lower than the last output
+
+Type: shaders/decay
 
 Inputs:
 * *in1* - input channel 1
@@ -227,6 +237,8 @@ Outputs:
 
 Represent input value in binary. Each output channel is 1 or 0
 
+Type: shaders/adc
+
 Inputs:
 * *value* - input signal to be classified
 * *invert* - 0 is non inverted, 1 is inverted
@@ -240,6 +252,8 @@ Outputs:
 ### Winder
 
 Wind the input in a circle
+
+Type: shaders/wind
 
 Inputs:
 * *in1* - input channel 1
@@ -256,6 +270,8 @@ Outputs:
 
 Mix in previous frame to current frame, causing a echo like effect
 
+Type: shaders/feedback
+
 Inputs:
 * *in1* - input channel 1
 * *in2* - input channel 2
@@ -270,6 +286,8 @@ Outputs:
 ### Oscilator
 
 Generate waves
+
+Type: shaders/osc
 
 Inputs:
 * *freq* - frequency of wave
@@ -289,6 +307,8 @@ Outputs:
 
 Run the channels through an edge detection algorithm (Scharr)
 
+Type: shaders/edge_detector
+
 Inputs:
 * *red* - red component
 * *green* - green component
@@ -303,6 +323,8 @@ Outputs:
 ### Mirror Feedback
 
 Feedback simulating holding a mirror up to the camera, sorta
+
+Type: shaders/mirror_feedback
 
 Inputs:
 * *in1* - input channel 1
@@ -322,6 +344,8 @@ Outputs:
 
 According to the displace channels, displace each pixel
 
+Type: shaders/displace
+
 Inputs:
 * *in1* - input channel 1
 * *in2* - input channel 2
@@ -339,6 +363,8 @@ Outputs:
 
 Measure the change between each frame.
 
+Type: shaders/change
+
 Inputs:
 * *in1* - first component of vector
 * *in2* - second component of vector
@@ -355,6 +381,8 @@ Outputs:
 
 Tweak colors
 
+Type: shaders/color_encoder
+
 Inputs:
 * *red* - red component
 * *redInvert* - red component, at 0 non-inverted, at 1 inverted
@@ -370,4 +398,3 @@ Outputs:
 * *red* - red component
 * *green* - green component
 * *blue* - blue component
-
