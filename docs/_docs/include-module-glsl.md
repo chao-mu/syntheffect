@@ -141,10 +141,6 @@ float last_output_red(vec2 coords)
 
 `DEFINE_OUTPUT_GROUP` groups outputs, allowing you to treat them as one vector
 
-```c
-DEFINE_OUTPUT(red, DESC("Red component"))
-```
-
 Example:
 
 ```c
