@@ -14,6 +14,7 @@ can not change during runtime and consist of values such as file paths.
 |[builtin/video](#video-player)|Video Player|Red RGB values from video|Danimalia Hackpoetica|
 |[builtin/global](#global)|Global|Access global values and configure settings|Danimalia Hackpoetica|
 |[builtin/audio](#audio-analyzer)|Audio Analyzer|Analyze audio file, useful for audio reactive racks|Danimalia Hackpoetica|
+|[builtin/image](#image)|Image|Read an image file|Danimalia Hackpoetica|
 
 ## Details
 
@@ -82,3 +83,17 @@ Outputs:
 * 600hz - The current strength of the 600hz band
 * 300hz - The current strength of the 300hz band
 * 120hz - The current strength of the 120hz band
+
+### Image
+
+Read an image file.
+
+Type: builtin/image
+
+Top level attributes:
+* path - the relative (to the rack file) or absolute path to the image file
+
+Outputs:
+* red - red component of pixel
+* green - green component of pixel
+* blue - blue component of pixel
