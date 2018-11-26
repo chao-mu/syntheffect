@@ -6,6 +6,7 @@
 
 - title: Reference
   docs:
+  - include-module-glsl
   - builtin_modules
   - shader_modules
   - midi_modules
