@@ -11,6 +11,7 @@
 
 #include "syntheffect/rack/Rack.h"
 #include "syntheffect/app/RecordingThread.h"
+#include "syntheffect/graphics/DrawInfo.h"
 
 namespace syntheffect {
     namespace app {

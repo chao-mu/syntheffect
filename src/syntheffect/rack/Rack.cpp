@@ -7,6 +7,7 @@
 
 // Modules
 #include "syntheffect/rack/Video.h"
+#include "syntheffect/rack/Image.h"
 #include "syntheffect/rack/Shader.h"
 #include "syntheffect/rack/Global.h"
 #include "syntheffect/rack/Joystick.h"
@@ -69,6 +70,17 @@ namespace syntheffect {
                     }
 
                     addModule(std::make_shared<Video>(id, path));
+                } else if (type == Image::getModuleType()) {
+                    if (!properties["path"]) {
+                        throw std::runtime_error("No path specified for module with id '" + id + "'. Use the property 'path'.");
+                    }
+
+                    std::string path = properties["path"].as<std::string>();
+                    if (!ofFilePath::isAbsolute(path)) {
+                        path = ofFilePath::join(rack_dir, path);
+                    }
+
+                    addModule(std::make_shared<Image>(id, path));
                 } else if (type == AudioAnalyzer::getModuleType()) {
                     if (!properties["path"]) {
                         throw std::runtime_error("No path specified for module with id '" + id + "'. Use the property 'path'.");

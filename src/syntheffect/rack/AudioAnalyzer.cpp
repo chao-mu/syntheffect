@@ -16,6 +16,7 @@ namespace syntheffect {
         void AudioAnalyzer::setup(int width, int height, int internal_format, const std::string& workspace_dir) {
             fft_ = std::shared_ptr<ofxFft>(ofxFft::create(buffer_size_, OF_FFT_WINDOW_HAMMING));
 
+            player_.setLoop(true);
             player_.connectTo(*this);
 
             output_channels_["15khz"] = std::make_shared<Channel>(0);

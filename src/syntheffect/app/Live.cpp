@@ -4,8 +4,6 @@
 
 #include "ofxTimeMeasurements.h"
 
-#include "syntheffect/graphics/Util.h"
-
 #define FPS 30
 
 #ifdef SYNTHEFFECT_BENCHMARK
@@ -88,8 +86,14 @@ namespace syntheffect {
 
         void Live::draw() {
             ofTexture& tex = rack_.getTexture();
-            graphics::Util::drawScaleCenter(tex.getWidth(), tex.getHeight(), ofGetWindowWidth(), ofGetWindowHeight(),
-                    [tex](float x, float y, float w, float h) { tex.draw(x, y, w, h); });
+            graphics::DrawInfo draw_info = graphics::DrawInfo::scaleCenter(rack_.getWidth(), rack_.getHeight(), ofGetWindowWidth(), ofGetWindowHeight());
+
+            tex.draw(
+                draw_info.x_,
+                draw_info.y_,
+                draw_info.w_,
+                draw_info.h_
+            );
 
             ofSetWindowTitle("fps: " + std::to_string(ofGetFrameRate()));
         }

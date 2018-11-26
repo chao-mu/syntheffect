@@ -7,6 +7,7 @@
 #include "ofFbo.h"
 
 #include "syntheffect/rack/Module.h"
+#include "syntheffect/graphics/DrawInfo.h"
 
 namespace syntheffect {
     namespace rack {
@@ -25,6 +26,7 @@ namespace syntheffect {
                 const std::string path_;
                 ofVideoGrabber player_;
                 ofFbo outputs_;
+                graphics::DrawInfo draw_info_;
         };
     }
 }

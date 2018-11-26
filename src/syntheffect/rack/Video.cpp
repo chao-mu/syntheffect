@@ -2,8 +2,6 @@
 
 #include <stdexcept>
 
-#include "syntheffect/graphics/Util.h"
-
 namespace syntheffect {
     namespace rack {
         Video::Video(const std::string& id, const std::string& path) : Module(id), path_(path) {
@@ -29,20 +27,17 @@ namespace syntheffect {
 
             outputs_.allocate(width, height, internal_format);
 
-            ofTexture& tex = player_.getTexture();
+            ofTexture& tex = outputs_.getTexture();
+
+            draw_info_ = graphics::DrawInfo::scaleCenter(player_.getWidth(), player_.getHeight(), width, height);
 
             auto red = std::make_shared<Channel>(tex, 0);
             auto green = std::make_shared<Channel>(tex, 1);
             auto blue = std::make_shared<Channel>(tex, 2);
 
             output_channels_["red"] = red;
-            output_channels_["r"] = red;
-
             output_channels_["green"] = green;
-            output_channels_["g"] = green;
-
             output_channels_["blue"] = blue;
-            output_channels_["b"] = blue;
 
             output_channels_["frame_new"] = std::make_shared<Channel>(1);
         }
@@ -57,8 +52,12 @@ namespace syntheffect {
             output_channels_["frame_new"]->value_ = player_.isFrameNew() ? 1 : 0;
 
             outputs_.begin();
-            graphics::Util::drawScaleCenter(player_.getWidth(), player_.getHeight(), outputs_.getWidth(), outputs_.getHeight(),
-                    [this](float x, float y, float w, float h) { player_.draw(x, y, w, h); });
+            player_.draw(
+                draw_info_.x_,
+                draw_info_.y_,
+                draw_info_.w_,
+                draw_info_.h_
+            );
             outputs_.end();
         }
 
