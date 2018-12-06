@@ -29,6 +29,7 @@ namespace syntheffect {
                 ofTexture& getTexture();
 
                 void addModule(std::shared_ptr<Module> module);
+                void addModuleAlias(const std::string from, const std::string to);
 
                 ofBaseSoundOutput& getSoundOutput();
 

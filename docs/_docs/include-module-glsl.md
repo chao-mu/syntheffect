@@ -48,7 +48,7 @@ vec2 get_uv_1to1();
 // Get coordinates with value range of [0, 1]
 vec2 get_uv_0to1();
 
-// Get coordinates in polar coordinates
+// Get coordinates in polar coordinates (radius, angle)
 vec2 get_uv_polar();
 
 // translate coordinates in range -1 to 1 to texture coordinates.
@@ -56,6 +56,9 @@ vec2 from_uv_1to1(vec2 uv);
 
 // translate coordinates in range 0 to 1 to texture coordinates
 vec2 from_uv_0to1(vec2 uv);
+
+// translate coordinates from polar coordinates (radius, angle) tp texture coordinates
+vec2 from_uv_polar(vec2 uv);
 
 // Map a value from one range to another
 float map(float value, float min1, float max1, float min2, float max2);
@@ -156,5 +159,5 @@ This would in turn define the following functions, their uses the same as those 
 ```c
 void output_rgb(vec3 x) {...}
 vec3 last_output_red() {...}
-vec3 last_output_red(vec2 coords)
+vec3 last_output_red(vec2 coords) {...}
 ```

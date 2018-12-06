@@ -16,10 +16,17 @@ namespace syntheffect {
     namespace app {
         Live::Live(const std::string& rack_path, const std::string& workspace_dir, const std::string& out_path) :
             ofBaseApp(),
+            workspace_dir_(workspace_dir),
             out_path_(out_path),
             rack_path_(rack_path),
             rack_(rack_path, workspace_dir),
             recording_(false) {}
+
+        void Live::reload() {
+            rack_.stop();
+            rack_ = rack::Rack(rack_path_, workspace_dir_);
+            setup();
+        }
 
         void Live::setup() {
             ofSetFrameRate(FPS);
@@ -122,6 +129,8 @@ namespace syntheffect {
         void Live::keyPressed(int c) {
             if (c == 'p') {
                 screenshot();
+            } else if (c == 'r') {
+                reload();
             } else if (c == 'q') {
                 ofExit();
             }

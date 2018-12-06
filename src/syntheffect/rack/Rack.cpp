@@ -44,10 +44,19 @@ namespace syntheffect {
 
             std::shared_ptr<Global> global;
 
+            // Mapping from one module to another
+            std::map<std::string, std::string> aliases;
+
             // Add all modules
             for (const auto& kv : settings) {
                 std::string id = kv.first.as<std::string>();
                 YAML::Node properties = kv.second;
+
+                // See if this is an alias
+                if (properties.IsScalar()) {
+                    aliases[id] = properties.as<std::string>();
+                    continue;
+                }
 
                 if (!properties["module"]) {
                     throw std::runtime_error("No module type specified for module with id '" + id + "'. Use the property 'module'.");
@@ -175,6 +184,10 @@ namespace syntheffect {
                 addModule(std::make_shared<Carousel>(id, children));
             }
 
+            // Add aliases
+            for (const auto& kv : aliases) {
+                addModuleAlias(kv.first, kv.second);
+            }
 
             int width = global->width_;
             int height = global->height_;
@@ -197,6 +210,11 @@ namespace syntheffect {
                 auto to_module = modules_.at(to_module_id);
 
                 YAML::Node properties = id_props.second;
+
+                // Check if alias
+                if (properties.IsScalar()) {
+                    continue;
+                }
 
                 if (!properties["inputs"]) {
                     continue;
@@ -251,6 +269,14 @@ namespace syntheffect {
 
         void Rack::addModule(std::shared_ptr<Module> module) {
             modules_[module->id_] = module;
+        }
+
+        void Rack::addModuleAlias(const std::string from, const std::string to) {
+            if (!modules_.count(to)) {
+                throw std::runtime_error("Can not create alias from " + from + " to " + to + " because the latter does not exist");
+            }
+
+            modules_[from] = modules_.at(to);
         }
 
         bool Rack::updateUnready(float t) {

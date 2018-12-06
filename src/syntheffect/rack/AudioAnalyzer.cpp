@@ -29,7 +29,7 @@ namespace syntheffect {
             output_channels_["60hz"] = std::make_shared<Channel>(0);
 
             if (!player_.load(boost::filesystem::path(path_))) {
-                throw std::runtime_error("error loading video with path " + path_);
+                throw std::runtime_error("error loading audio file with path " + path_);
             }
         }
 

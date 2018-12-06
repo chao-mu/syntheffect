@@ -31,6 +31,9 @@ namespace syntheffect {
             private:
                 void recordFrame();
 
+                void reload();
+
+                const std::string workspace_dir_;
                 const std::string out_path_;
                 const std::string rack_path_;
 
