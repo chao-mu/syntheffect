@@ -2,6 +2,7 @@
 
 #include <math.h>
 #include <regex>
+#include <string>
 
 #include "yaml-cpp/yaml.h"
 
@@ -33,12 +34,28 @@ namespace syntheffect {
             std::vector<std::string> outputs;
             std::regex input_re(R"(DEFINE_INPUT\s*\(\s*(\w+))");
             std::regex output_re(R"(DEFINE_OUTPUT_\d+\s*\(\s*(\w+))");
+            std::regex input_alt_rgb_re(R"(DEFINE_INPUTS_RGB_FOR\(\s*(\w+))");
+            std::string input_rgb_str = "DEFINE_INPUTS_RGB()";
+            std::string output_rgb_str = "DEFINE_OUTPUTS_RGB_123()";
             for (auto line : buffer.getLines()){
                 std::smatch matches;
                 if (std::regex_search(line, matches, input_re)) {
                     input_names_.push_back(matches[1]);
                 } else if (std::regex_search(line, matches, output_re)) {
                     outputs.push_back(matches[1]);
+                } else if (line.find(output_rgb_str) != std::string::npos) {
+                    outputs.push_back("red");
+                    outputs.push_back("green");
+                    outputs.push_back("blue");
+                } else if (std::regex_search(line, matches, input_alt_rgb_re)) {
+                    std::string name = matches[1];
+                    input_names_.push_back(name + "_red");
+                    input_names_.push_back(name + "_green");
+                    input_names_.push_back(name + "_blue");
+                } else if (line.find(input_rgb_str) != std::string::npos) {
+                    input_names_.push_back("red");
+                    input_names_.push_back("green");
+                    input_names_.push_back("blue");
                 }
             }
 
