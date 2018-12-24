@@ -20,7 +20,7 @@ namespace syntheffect {
         void Webcam::setup(int width, int height, int internal_format, const std::string& workspace_dir) {
             player_.setUseTexture(true);
 
-            if (!player_.setup(width, height)) {
+            if (!player_.setup(1280, 720)) {
                 throw std::runtime_error("Error loading webcam");
             }
 

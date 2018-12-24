@@ -248,7 +248,7 @@ namespace syntheffect {
 
                         auto from_module = modules_.at(from_module_id);
 
-                        to_module->setInput(to_channel_id, from_module->getOutput(from_channel_id));
+                        to_module->setInput(to_channel_id, from_module, from_channel_id);
                     }
                 }
             }
@@ -297,7 +297,6 @@ namespace syntheffect {
 
         void Rack::update(float t) {
 #ifdef SYNTHEFFECT_BENCHMARK
-            TSGL_START("GPU");
             TS_START("Rack::update update children");
 #endif
             joy_manager_.update(t);
@@ -320,7 +319,6 @@ namespace syntheffect {
             }
 #ifdef SYNTHEFFECT_BENCHMARK
             TS_STOP("Rack::update update children");
-            TSGL_STOP("GPU");
 #endif
 
             auto out = modules_.at(OUT_ID);

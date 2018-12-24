@@ -17,7 +17,7 @@ namespace syntheffect {
     namespace app {
         class Live : public ofBaseApp {
             public:
-                Live(const std::string& rack_path, const std::string& workspace_dir, const std::string& out_path);
+                Live(const std::string& rack_path, const std::string& workspace_dir, const std::string& out_path, int fps);
 
             protected:
                 void setup() override;
@@ -43,6 +43,7 @@ namespace syntheffect {
                 RecordingThread recorder_;
 
                 bool recording_;
+                int fps_;
         };
     }
 }

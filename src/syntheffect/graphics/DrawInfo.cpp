@@ -2,6 +2,13 @@
 
 namespace syntheffect {
     namespace graphics {
+        enum ScaleType {
+            STRETCH,
+            FIT,
+            CENTER
+        };
+
+        // stretch, fit, center
         DrawInfo::DrawInfo(float x, float y, float w, float h) : x_(x), y_(y), w_(w), h_(h) {}
         DrawInfo::DrawInfo() : x_(0), y_(0), w_(0), h_(0) {}
 

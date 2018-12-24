@@ -4,23 +4,16 @@
 
 #include "ofxTimeMeasurements.h"
 
-#define FPS 30
-
-#ifdef SYNTHEFFECT_BENCHMARK
-void setup() {
-    TIME_SAMPLE_SET_FRAMERATE(FPS);
-}
-#endif
-
 namespace syntheffect {
     namespace app {
-        Live::Live(const std::string& rack_path, const std::string& workspace_dir, const std::string& out_path) :
+        Live::Live(const std::string& rack_path, const std::string& workspace_dir, const std::string& out_path, int fps) :
             ofBaseApp(),
             workspace_dir_(workspace_dir),
             out_path_(out_path),
             rack_path_(rack_path),
             rack_(rack_path, workspace_dir),
-            recording_(false) {}
+            recording_(false),
+            fps_(fps) {}
 
         void Live::reload() {
             rack_.stop();
@@ -29,7 +22,7 @@ namespace syntheffect {
         }
 
         void Live::setup() {
-            ofSetFrameRate(FPS);
+            ofSetFrameRate(fps_);
 
             ofSetBackgroundColor(0, 0, 0);
             ofSetBackgroundAuto(true);

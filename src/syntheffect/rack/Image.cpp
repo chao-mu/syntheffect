@@ -31,10 +31,12 @@ namespace syntheffect {
             auto red = std::make_shared<Channel>(tex, 0);
             auto green = std::make_shared<Channel>(tex, 1);
             auto blue = std::make_shared<Channel>(tex, 2);
+            auto alpha = std::make_shared<Channel>(tex, 3);
 
             output_channels_["red"] = red;
             output_channels_["green"] = green;
             output_channels_["blue"] = blue;
+            output_channels_["alpha"] = alpha;
         }
 
         void Image::update(float /* t */) {

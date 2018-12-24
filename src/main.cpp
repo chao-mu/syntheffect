@@ -14,6 +14,7 @@ int main(int argc, const char *argv[]){
     TCLAP::ValueArg<std::string> outArg("o", "out", "Output video", false, "", "string", cmd);
     TCLAP::ValueArg<std::string> projectArg("p", "project", "path to rack file", true, "", "string", cmd);
     TCLAP::ValueArg<std::string> workspaceArg("w", "workspace", "path to workspace repository", false, ".", "string", cmd);
+    TCLAP::ValueArg<int> fpsArg("s", "fps", "frames per second", false, 30, "int", cmd);
     TCLAP::SwitchArg fsArg("f", "fullscreen", "set window to fullscreen", cmd);
 
     try {
@@ -41,7 +42,7 @@ int main(int argc, const char *argv[]){
 
     auto display_window = ofCreateWindow(win_settings);
 
-    ofRunApp(display_window, std::make_shared<syntheffect::app::Live>(rack_path, workspace_dir, out_path));
+    ofRunApp(display_window, std::make_shared<syntheffect::app::Live>(rack_path, workspace_dir, out_path, fpsArg.getValue()));
 
     ofRunMainLoop();
 

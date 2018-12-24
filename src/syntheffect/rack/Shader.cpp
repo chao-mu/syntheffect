@@ -9,6 +9,8 @@
 #include "ofGraphics.h"
 #include "ofPoint.h"
 
+#include "ofxTimeMeasurements.h"
+
 #include "syntheffect/rack/Channel.h"
 
 #define CHANNELS_PER_TEX 3
@@ -28,36 +30,54 @@ namespace syntheffect {
             return "builtin/shader";
         }
 
+        bool Shader::inputExists(const std::string& name) {
+            return input_names_.find(name) != input_names_.end();
+        }
+
         void Shader::setup(int width, int height, int internal_format, const std::string& workspace_dir) {
             ofBuffer buffer = ofBufferFromFile(path_);
 
             std::vector<std::string> outputs;
             std::regex input_re(R"(DEFINE_INPUT\s*\(\s*(\w+))");
             std::regex output_re(R"(DEFINE_OUTPUT_\d+\s*\(\s*(\w+))");
-            std::regex input_alt_rgb_re(R"(DEFINE_INPUTS_RGB_FOR\(\s*(\w+))");
-            std::string input_rgb_str = "DEFINE_INPUTS_RGB()";
-            std::string output_rgb_str = "DEFINE_OUTPUTS_RGB_123()";
+            std::regex input_rgb_with_re(R"(DEFINE_INPUTS_(RGBA?)_WITH\(\s*(\w+))");
+            std::regex input_rgb_as_re(R"(DEFINE_INPUTS_(RGBA?)_AS\(\s*(\w+))");
+            std::regex input_rgb_re(R"(DEFINE_INPUTS_(RGBA?)\()");
+            std::regex output_rgb_re(R"(DEFINE_OUTPUTS_RGB(A?)_1234?\()");
             for (auto line : buffer.getLines()){
                 std::smatch matches;
                 if (std::regex_search(line, matches, input_re)) {
-                    input_names_.push_back(matches[1]);
+                    input_names_.insert(matches[1]);
                 } else if (std::regex_search(line, matches, output_re)) {
                     outputs.push_back(matches[1]);
-                } else if (line.find(output_rgb_str) != std::string::npos) {
+                } else if (std::regex_search(line, matches, output_rgb_re)) {
                     outputs.push_back("red");
                     outputs.push_back("green");
                     outputs.push_back("blue");
-                } else if (std::regex_search(line, matches, input_alt_rgb_re)) {
-                    std::string name = matches[1];
-                    input_names_.push_back(name + "_red");
-                    input_names_.push_back(name + "_green");
-                    input_names_.push_back(name + "_blue");
-                } else if (line.find(input_rgb_str) != std::string::npos) {
-                    input_names_.push_back("red");
-                    input_names_.push_back("green");
-                    input_names_.push_back("blue");
+                    if (matches[1] == "a") {
+                        outputs.push_back("alpha");
+                    }
+                } else if (std::regex_search(line, matches, input_rgb_re)) {
+                    input_names_.insert("red");
+                    input_names_.insert("green");
+                    input_names_.insert("blue");
+                    if (matches[1] == "a") {
+                        input_names_.insert("alpha");
+                    }
+                } else if (std::regex_search(line, matches, input_rgb_as_re)) {
+                    std::string name = matches[2];
+                    input_names_.insert(name + "_red");
+                    input_names_.insert(name + "_green");
+                    input_names_.insert(name + "_blue");
+                    if (matches[1] == "a") {
+                        input_names_.insert(name + "_alpha");
+                    }
+                    input_groups_[name] = input_groups_.at(std::string("rgb" + matches[1]);
                 }
             }
+
+            input_names_.insert("syncH");
+            input_names_.insert("syncV");
 
             int texture_count = std::ceil(((float) outputs.size()) / (float) CHANNELS_PER_TEX);
             outputs_.allocate(width, height, internal_format);
@@ -100,6 +120,8 @@ namespace syntheffect {
 
         void Shader::update(float t) {
             std::map<ofTexture*, int> textures;
+
+            TSGL_START("Shader render");
 
             outputs_.begin();
             outputs_.activateAllDrawBuffers();
@@ -154,7 +176,9 @@ namespace syntheffect {
 
             shader_.end();
             outputs_.end();
+            TSGL_STOP("Shader render");
 
+            TSGL_START("Copying outputs");
             for (int i=0; i < outputs_.getNumTextures(); i++) {
                 ofFbo& buf = last_outputs_.at(i);
                 buf.begin();
@@ -162,6 +186,7 @@ namespace syntheffect {
                 //ofClear(1);
                 buf.end();
             }
+            TSGL_STOP("Copying outputs");
 
             first_pass_ = false;
         }
