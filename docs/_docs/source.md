@@ -16,12 +16,21 @@ The following directions are for Linux, but may be adapted by a MacOS hacker.
 
 ### Install Dependencies
 
+
 First you will need to install git and other dependencies needed by SynthEffect.
 
-Using your distributions package manager, perform the equivalent of the following (in the example I use Ubuntu):
+#### Linux
+
+Using your distributions package manager, perform the equivalent of one of the following:
 
 ```
 sudo apt-get install git libtclap-dev libyaml-cpp-dev librtmidi
+```
+
+#### MacOS  (Brew)
+
+```
+brew install yaml-cpp rtmidi tclap
 ```
 
 ### Setup OpenFrameworks
@@ -48,7 +57,7 @@ $ cd syntheffect
 $ ./pull-addons.sh
 ```
 
-Finally we need to build (add -j8 if to build with 8 CPU threads)
+Finally we need to build (add -j8 if you wantto build with 8 CPU threads, or substitute 8 for another number)
 
 ```
 $ make

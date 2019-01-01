@@ -27,12 +27,8 @@ namespace syntheffect {
             ofSetBackgroundColor(0, 0, 0);
             ofSetBackgroundAuto(true);
 
-            #ifdef __APPLE__
-                CGDisplayHideCursor(0);
-            #else
-                ofHideCursor();
-            #endif
-
+            ofHideCursor();
+            
             ofSoundStreamSettings sound_settings;
             // this is here because jack was causing long delays or freezing at the start of video player,
             // with isNewFrame always returning false after the first frame. Even I uninstalled jack,

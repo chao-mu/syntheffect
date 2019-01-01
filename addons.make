@@ -1,4 +1,4 @@
-ofxTimeMeasurements
-ofxSoundObjects
 ofxAudioFile
 ofxFft
+ofxSoundObjects
+ofxTimeMeasurements

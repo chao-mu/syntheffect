@@ -33,7 +33,7 @@ int main(int argc, const char *argv[]){
     std::string workspace_dir = ofFilePath::getAbsolutePath(workspaceArg.getValue(), false);
 
     ofGLFWWindowSettings win_settings;
-    win_settings.setGLVersion(3, 3); // OpenGL 3,3 #version 330
+    win_settings.setGLVersion(4, 1);
     win_settings.setPosition(ofVec2f(0,0));
     win_settings.setSize(1280, 720);
     if (fsArg.getValue()) {
@@ -42,7 +42,12 @@ int main(int argc, const char *argv[]){
 
     auto display_window = ofCreateWindow(win_settings);
 
-    ofRunApp(display_window, std::make_shared<syntheffect::app::Live>(rack_path, workspace_dir, out_path, fpsArg.getValue()));
+    try {
+        ofRunApp(display_window, std::make_shared<syntheffect::app::Live>(rack_path, workspace_dir, out_path, fpsArg.getValue()));
+    } catch (const std::runtime_error& e) {
+        ofLogError("main", "%s", e.what());
+        return 1;
+    }
 
     ofRunMainLoop();
 

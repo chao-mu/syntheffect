@@ -76,8 +76,10 @@
 # $(PROJECT_ROOT)/bin/libs directory.  The following LDFLAGS tell the linker to
 # add a runtime path to search for those shared libraries, since they aren't 
 # incorporated directly into the final executable application binary.
-# TODO: should this be a default setting?
-PROJECT_LDFLAGS= `pkg-config --libs yaml-cpp rtmidi` -L/usr/local/opt/openssl/lib
+PROJECT_LDFLAGS= `pkg-config --libs yaml-cpp rtmidi` -L/usr/local/opt/openssl/lib /usr/local/lib/libyaml-cpp.dylib
+# Major hack for MacOS
+PROJECT_LDFLAGS+= `[ -f /usr/local/lib/libyaml-cpp.dylib ] && echo /usr/local/lib/libyaml-cpp.dylib`
+PROJECT_LDFLAGS+= `[ -f /usr/local/lib/librtmidi.dylib ] && echo /usr/local/lib/librtmidi.dylib`
 #
 ################################################################################
 # PROJECT DEFINES
@@ -106,6 +108,7 @@ PROJECT_LDFLAGS= `pkg-config --libs yaml-cpp rtmidi` -L/usr/local/opt/openssl/li
 #   Note: Leave a leading space when adding list items with the += operator
 ################################################################################
 PROJECT_CFLAGS = `pkg-config --cflags yaml-cpp rtmidi` -I/usr/local/opt/openssl/include
+#PROJECT_CFLAGS += " -DSYNTHEFFECT_BENCHMARK"
 
 ################################################################################
 # PROJECT OPTIMIZATION CFLAGS
