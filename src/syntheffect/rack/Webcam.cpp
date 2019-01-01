@@ -18,9 +18,9 @@ namespace syntheffect {
         }
 
         void Webcam::setup(int width, int height, int internal_format, const std::string& workspace_dir) {
-            player_.setUseTexture(true);
+            cam_.setUseTexture(true);
 
-            if (!player_.setup(1280, 720)) {
+            if (!cam_.setup(1280, 720)) {
                 throw std::runtime_error("Error loading webcam");
             }
 
@@ -28,7 +28,7 @@ namespace syntheffect {
 
             ofTexture& tex = outputs_.getTexture();
 
-            draw_info_ = graphics::DrawInfo::scaleCenter(player_.getWidth(), player_.getHeight(), width, height);
+            draw_info_ = graphics::DrawInfo::scaleCenter(cam_.getWidth(), cam_.getHeight(), width, height);
 
             auto red = std::make_shared<Channel>(tex, 0);
             auto green = std::make_shared<Channel>(tex, 1);
@@ -41,12 +41,12 @@ namespace syntheffect {
         }
 
         void Webcam::update(float /* t */) {
-            player_.update();
+            cam_.update();
 
-            output_channels_["frame_new"]->value_ = player_.isFrameNew() ? 1 : 0;
+            output_channels_["frame_new"]->value_ = cam_.isFrameNew() ? 1 : 0;
 
             outputs_.begin();
-            player_.draw(
+            cam_.draw(
                 draw_info_.x_,
                 draw_info_.y_,
                 draw_info_.w_,
@@ -56,7 +56,7 @@ namespace syntheffect {
         }
 
         bool Webcam::isReady() {
-            return player_.isInitialized();
+            return cam_.isInitialized();
         }
     }
 }

@@ -37,41 +37,58 @@ namespace syntheffect {
             ofBuffer buffer = ofBufferFromFile(path_);
 
             std::vector<std::string> outputs;
-            std::regex input_re(R"(DEFINE_INPUT\s*\(\s*(\w+))");
-            std::regex output_re(R"(DEFINE_OUTPUT_\d+\s*\(\s*(\w+))");
-            //std::regex input_rgb_with_re(R"(DEFINE_INPUTS_(RGBA?)_WITH\(\s*(\w+))");
-            std::regex input_rgb_as_re(R"(DEFINE_INPUTS_(RGBA?)_AS\(\s*(\w+))");
-            std::regex input_rgb_re(R"(DEFINE_INPUTS_(RGBA?)\()");
-            std::regex output_rgb_re(R"(DEFINE_OUTPUTS_(RGBA?)_1234?\()");
+            std::map<std::string, std::function<void(std::smatch&)>> parsers;
+
+            parsers[R"(DEFINE_INPUT\s*\(\s*(\w+))"] = [this](std::smatch& matches) {
+                registerInputs({matches[1]});
+            };
+
+            parsers[R"(DEFINE_OUTPUT_\d+\s*\(\s*(\w+))"] = [&outputs](std::smatch& matches) {
+                outputs.push_back(matches[1]);
+            };
+            
+            parsers[R"(DEFINE_INPUTS_(RGBA?)_WITH\(\s*(\w+))"] = [this](std::smatch& matches) {
+                std::string suffix = matches[2];
+                std::string group_name = "rgb" + suffix;
+                input_groups_[group_name] = {"red" + suffix, "green" + suffix, "blue" + suffix};
+                if (matches[1] == "RGBA") {
+                    input_groups_[group_name].push_back("alpha" + suffix);
+                }
+                
+                registerInputs(input_groups_[group_name]);
+            };
+            
+            parsers[R"(DEFINE_INPUTS_(RGBA?)_AS\(\s*(\w+))"] = [this](std::smatch& matches) {
+                std::string group_name = matches[2];
+                input_groups_[group_name] = {group_name + "_red", group_name + "_green", group_name + "_blue"};
+                if (matches[1] == "RGBA") {
+                    input_groups_.at(group_name).push_back(group_name + "_alpha");
+                }
+                
+                registerInputs(input_groups_[group_name]);
+            };
+            
+            parsers[R"(DEFINE_INPUTS_(RGBA?)\()"] = [this](std::smatch& matches) {
+                registerInputs({"red", "green", "blue"});
+                if (matches[1] == "RGBA") {
+                    registerInputs({"alpha"});
+                }
+            };
+            
+            parsers[R"(DEFINE_OUTPUTS_(RGBA?)_1234?\()"] = [&outputs](std::smatch& matches) {
+                outputs.push_back("red");
+                outputs.push_back("green");
+                outputs.push_back("blue");
+                if (matches[1] == "RGBA") {
+                    outputs.push_back("alpha");
+                }
+            };
+            
             for (auto line : buffer.getLines()){
                 std::smatch matches;
-                if (std::regex_search(line, matches, input_re)) {
-                    input_names_.insert(matches[1]);
-                } else if (std::regex_search(line, matches, output_re)) {
-                    outputs.push_back(matches[1]);
-                } else if (std::regex_search(line, matches, output_rgb_re)) {
-                    outputs.push_back("red");
-                    outputs.push_back("green");
-                    outputs.push_back("blue");
-                    if (matches[1] == "RGBA") {
-                        outputs.push_back("alpha");
-                    }
-                } else if (std::regex_search(line, matches, input_rgb_re)) {
-                    input_names_.insert("red");
-                    input_names_.insert("green");
-                    input_names_.insert("blue");
-                    if (matches[1] == "RGBA") {
-                        input_names_.insert("alpha");
-                    }
-                } else if (std::regex_search(line, matches, input_rgb_as_re)) {
-                    std::string name = matches[2];
-                    input_names_.insert(name + "_red");
-                    input_names_.insert(name + "_green");
-                    input_names_.insert(name + "_blue");
-                    input_groups_[name] = {name + "_red", name + "_green", name + "_blue"};
-                    if (matches[1] == "RGBA") {
-                        input_names_.insert(name + "_alpha");
-                        input_groups_.at(name).push_back(name + "_alpha");
+                for (const auto& kv : parsers) {
+                    if (std::regex_search(line, matches, std::regex(kv.first))) {
+                        kv.second(matches);
                     }
                 }
             }
@@ -92,9 +109,9 @@ namespace syntheffect {
             }
 
             for (std::size_t i=0; i < outputs.size(); i++) {
-                int texture_idx = i / CHANNELS_PER_TEX;
+                std::size_t texture_idx = i / CHANNELS_PER_TEX;
                 output_channels_[outputs[i]] =
-                    std::make_shared<Channel>(outputs_.getTexture(texture_idx), i % CHANNELS_PER_TEX);
+                    std::make_shared<Channel>(outputs_.getTexture((int)texture_idx), i % CHANNELS_PER_TEX);
             }
 
             std::string frag_path = path_;
@@ -116,6 +133,15 @@ namespace syntheffect {
 
             mesh_.addVertex(ofPoint(width, height));
             mesh_.addTexCoord({width, height});
+        }
+        
+        void Shader::registerInputs(std::vector<std::string> inputs) {
+            for (const auto& in : inputs) {
+                input_names_.insert(in);
+                input_names_.insert(in + "_shift");
+                input_names_.insert(in + "_multiplier");
+                input_names_.insert(in + "_invert");
+            }
         }
 
         void Shader::update(float t) {

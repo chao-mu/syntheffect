@@ -24,7 +24,7 @@ namespace syntheffect {
 
             private:
                 const std::string path_;
-                ofVideoGrabber player_;
+                ofVideoGrabber cam_;
                 ofFbo outputs_;
                 graphics::DrawInfo draw_info_;
         };

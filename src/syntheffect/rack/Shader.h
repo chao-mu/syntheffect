@@ -24,6 +24,8 @@ namespace syntheffect {
                 virtual bool inputExists(const std::string& name) override;
 
                 static const std::string getModuleType();
+            
+            void registerInputs(std::vector<std::string> inputs);
 
             private:
                 ofShader shader_;
